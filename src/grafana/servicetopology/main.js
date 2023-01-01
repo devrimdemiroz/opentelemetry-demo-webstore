@@ -1,0 +1,93 @@
+// Set the URL for the Prometheus API endpoint
+let apiUrl = "http://localhost:9090/api/v1/query";
+
+// Set the query string for the trace metrics data
+let queryTraceMetrics = "sum by(service_name,operation,span_kind,status_code) (rate(calls_total[1m0s]))";
+
+// Run the query for the trace metrics data and process the results
+d3.json(apiUrl + "?query=" + queryTraceMetrics)
+    .then(function(result) {
+        // The data is now available in the "data" variable
+        console.log("queryTraceMetrics result=", result);
+                // Create a map of service names to operations
+        var serviceOperationMap = new Map();
+        result.data.result.forEach(function(d) {
+            if (!serviceOperationMap.has(d.metric.service_name)) {
+                serviceOperationMap.set(d.metric.service_name, []);
+            }
+            serviceOperationMap.get(d.metric.service_name).push(d.metric.operation+"_"+d.metric.span_kind);
+        });
+        console.log("queryTraceMetrics serviceOperationMap=", serviceOperationMap);
+        // Set the query string for the cluster data
+        let queryCluster = "sum by(client, server) (rate(traces_service_graph_request_total[1m0s]))";
+
+        // Run the query for the cluster data and process the results
+        d3.json(apiUrl + "?query=" + queryCluster)
+            .then(function(result) {
+                // The data is now available in the "data" variable
+                console.log("queryCluster result=", result);
+
+                // Define the Graphviz code as a string variable
+                var graphvizCode = "digraph {\n";
+
+                // Set the default node shape and edge style
+                graphvizCode += " rankdir=\"LR\"\n";
+                graphvizCode += " compound=true\n";
+                graphvizCode += " ordering=out\n";
+                graphvizCode += " layout=fdp\n";
+                graphvizCode += "  node [shape=circle]\n";
+                graphvizCode += "  edge [style=solid]\n";
+
+                // Create a new Set to store the cluster names
+                var clusterSet = new Set();
+
+                // Iterate over the query result data
+                result.data.result.forEach(function (d) {
+                    // Add the client and server names to the Set
+                    clusterSet.add(d.metric.client);
+                    clusterSet.add(d.metric.server);
+                });
+
+                // Set up the subgraphs for each cluster
+                clusterSet.forEach(function (clusterName) {
+                    graphvizCode += " subgraph cluster_" + clusterName + " {\n";
+                    graphvizCode += " label = \"" + clusterName + "\"\n";
+                    graphvizCode += " labeljust = l\n";
+                    graphvizCode += " shape = circle\n";
+                    console.log("clusterName=",clusterName);
+                    console.log("serviceOperationMap=",serviceOperationMap);
+                    // Check if the cluster name matches any of the service names in the trace metrics data
+                    serviceOperationMap.get(clusterName).forEach(function(operation) {
+                        operation = operation.replace(/[\.\-\/]/g, "");
+                        graphvizCode += " \"" + operation + "\"\n";
+                        console.log("operation=",operation);
+                    });
+
+                    graphvizCode += "  }\n";
+
+                });
+
+// Add the edges (connections) between the clusters, along with their corresponding weights
+                result.data.result.forEach(function (d) {
+                    var source = d.metric.client;
+                    var target = d.metric.server;
+                    var weight = d.value[1];
+                    weight = Number(weight).toFixed(2);
+                    graphvizCode += " cluster_" + source + " -> cluster_" + target + " [label=\"" + weight + "\"]\n";
+                });
+
+// Close the Graphviz code string
+                graphvizCode += "}";
+
+// You can then use this graphvizCode variable to generate the diagram
+
+// Print the Graphviz output
+                console.log(graphvizCode);
+                // Render the graph
+                var container = d3.select("#dataviz");
+                container.graphviz()
+                    .dot(graphvizCode)
+                    .render();
+
+            })});
+

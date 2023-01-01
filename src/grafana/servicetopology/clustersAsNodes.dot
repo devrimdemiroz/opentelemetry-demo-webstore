@@ -1,0 +1,144 @@
+digraph {
+    rankdir="LR"
+    compound=true
+    ordering=out
+    layout=fdp
+    node [shape=circle]
+    edge [style=solid]
+    subgraph cluster_checkoutservice {
+    label = "checkoutservice"
+    labeljust = l
+    shape = circle
+    "HTTP POST [shape=circle]"
+    "hipstershop.CartService/EmptyCart [shape=circle]"
+    "hipstershop.CartService/GetCart [shape=circle]"
+    "hipstershop.CheckoutService/PlaceOrder [shape=circle]"
+    "hipstershop.CurrencyService/Convert [shape=circle]"
+    "hipstershop.PaymentService/Charge [shape=circle]"
+    "hipstershop.ProductCatalogService/GetProduct [shape=circle]"
+    "hipstershop.ShippingService/GetQuote [shape=circle]"
+    "hipstershop.ShippingService/ShipOrder [shape=circle]"
+    "orders send [shape=circle]"
+    "prepareOrderItemsAndShippingQuoteFromCart [shape=circle]"
+    }
+    subgraph cluster_accountingservice {
+    label = "accountingservice"
+    labeljust = l
+    shape = circle
+    "orders receive [shape=circle]"
+    }
+    subgraph cluster_frauddetectionservice {
+    label = "frauddetectionservice"
+    labeljust = l
+    shape = circle
+    "orders process [shape=circle]"
+    }
+    subgraph cluster_cartservice {
+    label = "cartservice"
+    labeljust = l
+    shape = circle
+    "HGET [shape=circle]"
+    "HMSET [shape=circle]"
+    "hipstershop.CartService/AddItem [shape=circle]"
+    "hipstershop.CartService/EmptyCart [shape=circle]"
+    "hipstershop.CartService/GetCart [shape=circle]"
+    }
+    subgraph cluster_currencyservice {
+    label = "currencyservice"
+    labeljust = l
+    shape = circle
+    "CurrencyService/Convert [shape=circle]"
+    }
+    subgraph cluster_emailservice {
+    label = "emailservice"
+    labeljust = l
+    shape = circle
+    "POST /send_order_confirmation [shape=circle]"
+    "send_email [shape=circle]"
+    "sinatra.render_template [shape=circle]"
+    }
+    subgraph cluster_paymentservice {
+    label = "paymentservice"
+    labeljust = l
+    shape = circle
+    "charge [shape=circle]"
+    "grpc.hipstershop.PaymentService/Charge [shape=circle]"
+    "grpc.opentelemetry.proto.collector.metrics.v1.MetricsService/Export [shape=circle]"
+    }
+    subgraph cluster_productcatalogservice {
+    label = "productcatalogservice"
+    labeljust = l
+    shape = circle
+    "hipstershop.FeatureFlagService/GetFlag [shape=circle]"
+    "hipstershop.ProductCatalogService/GetProduct [shape=circle]"
+    "hipstershop.ProductCatalogService/ListProducts [shape=circle]"
+    }
+    subgraph cluster_shippingservice {
+    label = "shippingservice"
+    labeljust = l
+    shape = circle
+    "hipstershop.ShippingService/GetQuote [shape=circle]"
+    "hipstershop.ShippingService/ShipOrder [shape=circle]"
+    "reqwest-http-client [shape=circle]"
+    }
+    subgraph cluster_frontend {
+    label = "frontend"
+    labeljust = l
+    shape = circle
+    "HTTP GET [shape=circle]"
+    "HTTP POST [shape=circle]"
+    "grpc.hipstershop.AdService/GetAds [shape=circle]"
+    "grpc.hipstershop.CartService/AddItem [shape=circle]"
+    "grpc.hipstershop.CartService/GetCart [shape=circle]"
+    "grpc.hipstershop.CheckoutService/PlaceOrder [shape=circle]"
+    "grpc.hipstershop.ProductCatalogService/GetProduct [shape=circle]"
+    "grpc.hipstershop.RecommendationService/ListRecommendations [shape=circle]"
+    "tcp.connect [shape=circle]"
+    }
+    subgraph cluster_adservice {
+    label = "adservice"
+    labeljust = l
+    shape = circle
+    "getAdsByCategory [shape=circle]"
+    "hipstershop.AdService/GetAds [shape=circle]"
+    }
+    subgraph cluster_recommendationservice {
+    label = "recommendationservice"
+    labeljust = l
+    shape = circle
+    "/hipstershop.FeatureFlagService/GetFlag [shape=circle]"
+    "/hipstershop.ProductCatalogService/ListProducts [shape=circle]"
+    "/hipstershop.RecommendationService/ListRecommendations [shape=circle]"
+    "get_product_list [shape=circle]"
+    }
+    subgraph cluster_loadgenerator {
+    label = "loadgenerator"
+    labeljust = l
+    shape = circle
+    "HTTP GET [shape=circle]"
+    "HTTP POST [shape=circle]"
+    }
+    subgraph cluster_quoteservice {
+    label = "quoteservice"
+    labeljust = l
+    shape = circle
+    "/getquote [shape=circle]"
+    "calculate-quote [shape=circle]"
+    }
+    cluster_checkoutservice -> cluster_accountingservice [label="0.00"]
+    cluster_checkoutservice -> cluster_frauddetectionservice [label="0.00"]
+    cluster_checkoutservice -> cluster_cartservice [label="0.00"]
+    cluster_checkoutservice -> cluster_currencyservice [label="0.00"]
+    cluster_checkoutservice -> cluster_emailservice [label="0.00"]
+    cluster_checkoutservice -> cluster_paymentservice [label="0.00"]
+    cluster_checkoutservice -> cluster_productcatalogservice [label="0.00"]
+    cluster_checkoutservice -> cluster_shippingservice [label="0.00"]
+    cluster_frontend -> cluster_adservice [label="0.00"]
+    cluster_frontend -> cluster_cartservice [label="0.00"]
+    cluster_frontend -> cluster_checkoutservice [label="0.00"]
+    cluster_frontend -> cluster_productcatalogservice [label="0.00"]
+    cluster_frontend -> cluster_recommendationservice [label="0.00"]
+    cluster_loadgenerator -> cluster_frontend [label="0.00"]
+    cluster_recommendationservice -> cluster_productcatalogservice [label="0.00"]
+    cluster_shippingservice -> cluster_quoteservice [label="0.00"]
+}
