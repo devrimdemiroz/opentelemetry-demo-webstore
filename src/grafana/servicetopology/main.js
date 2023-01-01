@@ -15,7 +15,7 @@ d3.json(apiUrl + "?query=" + queryTraceMetrics)
             if (!serviceOperationMap.has(d.metric.service_name)) {
                 serviceOperationMap.set(d.metric.service_name, []);
             }
-            serviceOperationMap.get(d.metric.service_name).push(d.metric.operation+"_"+d.metric.span_kind);
+            serviceOperationMap.get(d.metric.service_name).push(d.metric.service_name+"_"+d.metric.operation+"_"+d.metric.span_kind);
         });
         console.log("queryTraceMetrics serviceOperationMap=", serviceOperationMap);
         // Set the query string for the cluster data
