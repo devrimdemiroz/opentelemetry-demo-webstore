@@ -1,10 +1,20 @@
 {
     "name": "OpenTelemetry demo",
-    "postCreateCommand": "cd opentelemetry-demo && npm install",
 	"forwardPorts": [8080, 9090, 49153, 16686, 4317, 49156, 49173],
-	// make 8080 , 9090 public
-	
-    "extensions": [
+	// make 8080 , 9090 public by default
+	"portsAttributes": {
+		"8080": {
+			"label": "OpenTelemetry Collector",
+			"onAutoForward": "notify"
+		},
+		"9090": {
+			"label": "Prometheus",
+			"onAutoForward": "notify"
+		}
+	},
+
+
+	"extensions": [
 		"ms-vscode.github-co-pilot",
 		"ms-azuretools.vscode-docker",
 		"ms-vscode-remote.remote-containers",
