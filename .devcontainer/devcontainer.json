@@ -3,7 +3,7 @@
     "name": "OpenTelemetry demo",
 	"dockerComposeFile": "../docker-compose.yml",
 	"workspaceFolder": "",
-	"runServices": ["frontend", "backend", "jaeger", "prometheus", "otel-collector"],
+	"runServices": ["frontend", "jaeger", "prometheus", "otel-collector"],
 	"service": "frontend",
 	"forwardPorts": [8080, 9090, 49153, 16686, 4317, 49156, 49173],
 	// make 8080 , 9090 public by default
@@ -31,6 +31,6 @@
 		"ms-vscode.js-debug-companion",
 		"ms-vscode.js-debug-nightly",
 		"ms-vscode.vscode-js-profile-table",
-		"msjsdiag.debugger-for-chrome",
-		"docker.docker"]
+		"msjsdiag.debugger-for-chrome"
+	]
 }
