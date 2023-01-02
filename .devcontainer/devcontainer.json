@@ -31,5 +31,6 @@
 		"ms-vscode.js-debug-companion",
 		"ms-vscode.js-debug-nightly",
 		"ms-vscode.vscode-js-profile-table",
-		"msjsdiag.debugger-for-chrome"]
+		"msjsdiag.debugger-for-chrome",
+		"docker.docker"]
 }
