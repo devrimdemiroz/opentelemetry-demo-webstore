@@ -1,0 +1,22 @@
+{
+    "name": "OpenTelemetry demo",
+    "build": {
+        "command": "cd opentelemetry-demo && docker-compose up --no-build",
+        "context": "opentelemetry-demo"
+    },
+    "postCreateCommand": "cd opentelemetry-demo && npm install",
+    "forwardPorts": [8080, 9090, 49153, 16686, 4317, 49156, 49173],
+    "extensions": [
+		"ms-azuretools.vscode-docker",
+		"ms-vscode-remote.remote-containers",
+		"ms-vscode-remote.remote-ssh",
+		"ms-vscode-remote.remote-ssh-edit",
+		"ms-vscode-remote.remote-ssh-explorer",
+		"ms-vscode-remote.remote-wsl",
+		"ms-vscode-remote.vscode-remote-extensionpack",
+		"ms-vscode.js-debug-companion",
+		"ms-vscode.js-debug-nightly",
+		"ms-vscode.vscode-js-profile-table",
+		"msjsdiag.debugger-for-chrome",
+		"msjsdiag.debugger-for-edge ]
+}
