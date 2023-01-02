@@ -1,6 +1,7 @@
 {
     "name": "OpenTelemetry demo",
-	"dockerComposeFile": "docker-compose.yml",
+	"dockerComposeFile": "../docker-compose.yml",
+	"containerEnv": {},
 	"forwardPorts": [8080, 9090, 49153, 16686, 4317, 49156, 49173],
 	// make 8080 , 9090 public by default
 	"portsAttributes": {
