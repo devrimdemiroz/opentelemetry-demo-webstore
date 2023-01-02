@@ -3,7 +3,7 @@
     "name": "OpenTelemetry demo",
 	"dockerComposeFile": "../docker-compose.yml",
 	"workspaceFolder": "",
-	"runServices": ["frontend", "jaeger", "prometheus", "otel-collector"],
+	"runServices": ["frontend", "jaeger", "prometheus", "otelcol"],
 	"service": "frontend",
 	"forwardPorts": [8080, 9090, 49153, 16686, 4317, 49156, 49173],
 	// make 8080 , 9090 public by default
