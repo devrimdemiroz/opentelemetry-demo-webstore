@@ -20,14 +20,10 @@
 		"ms-vscode.github-co-pilot",
 		"ms-azuretools.vscode-docker",
 		"ms-vscode-remote.remote-containers",
-		"ms-vscode-remote.remote-ssh",
-		"ms-vscode-remote.remote-ssh-edit",
 		"ms-vscode-remote.remote-ssh-explorer",
-		"ms-vscode-remote.remote-wsl",
 		"ms-vscode-remote.vscode-remote-extensionpack",
 		"ms-vscode.js-debug-companion",
 		"ms-vscode.js-debug-nightly",
-		"ms-vscode.vscode-js-profile-table",
-		"msjsdiag.debugger-for-chrome"
+		"ms-vscode.vscode-js-profile-table"
 	]
 }
