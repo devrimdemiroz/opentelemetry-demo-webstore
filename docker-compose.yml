@@ -639,7 +639,7 @@ services:
       - --config.file=/etc/prometheus/prometheus-config.yaml
       - --storage.tsdb.path=/prometheus
       - --web.enable-lifecycle
-      - --web.cors.origin=*
+      - --web.cors.origin="*"
       - --web.route-prefix=/
     volumes:
       - ./src/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml

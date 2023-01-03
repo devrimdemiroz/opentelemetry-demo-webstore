@@ -252,24 +252,4 @@ d3.json(apiUrl)//add header
         .render();
 
     }) }); 
-    }) 
-
-    // Set up the subgraphs for each cluster
-
-    clusterSet.forEach(function(clusterName) {
-        graphvizCode += " subgraph cluster_" + clusterName + " {\n";
-        graphvizCode += " label = \"" + clusterName + "\"\n";
-        graphvizCode += " labeljust = l\n";
-        graphvizCode += " shape = circle\n";
-        console.log("clusterName=", clusterName);
-        console.log("serviceOperationMap=", serviceOperationMap);
-        // Check if the cluster name matches any of the service names in the trace metrics data
-        serviceOperationMap.get(clusterName).forEach(function(operation) {
-            operation = operation.replace(/[\.\-\/]/g, "");
-            graphvizCode += " \"" + operation + "\"\n";
-            console.log("operation=", operation);
-        });
-
-        graphvizCode += "  }\n";
-
-    } );
+    });
