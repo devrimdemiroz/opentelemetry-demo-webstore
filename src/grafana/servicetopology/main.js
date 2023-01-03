@@ -11,18 +11,20 @@ domain_name = domain_name.replace("3000","9090");
 // Set the query string for the trace metrics data
 let queryTraceMetrics = "sum by(service_name,operation,span_kind,status_code) (rate(calls_total[1m0s]))";
 let encodedQuery = encodeURIComponent(queryTraceMetrics);
-let apiUrl = `https://${domain_name}/api/v1/query?query=${encodedQuery})`;
+let apiUrl = `http://${domain_name}/api/v1/query?query=${encodedQuery})`;
 // sum by(service_name%2Coperation%2Cspan_kind%2Cstatus_code) (rate(calls_total[1m0s])
 // (Reason: header ‘access-control-allow-credentials’ is not allowed according to header ‘Access-Control-Allow-Headers’ from CORS preflight response).
 // Run the query for the trace metrics data and process the results
 fetch(apiUrl, {
     method: 'GET',
-    mode: 'cors',
     headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token, locale',
-        'Access-Control-Allow-Methods': 'GET, POST',
+        "Sec-Fetch-Site":	"cross-site",
+        "Referer":	"https://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-3000.preview.app.github.dev/src/grafana/servicetopology/",
+        "Origin":	"https://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-3000.preview.app.github.dev",
+        "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+        "Access-Control-Allow-Credentials": "false", // Required for cookies, authorization headers with HTTPS  
+        "Access-Control-Allow-Headers": "Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token, locale",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     },
 }).then((response) => {
     console.log("response=", response);
@@ -47,10 +49,14 @@ fetch(apiUrl, {
         method: 'GET',
         mode: 'cors',
         headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token, locale',
-            'Access-Control-Allow-Methods': 'GET, POST',
+            "Sec-Fetch-Site":	"cross-site",
+            "Referer":	"https://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-3000.preview.app.github.dev/src/grafana/servicetopology/",
+            "Origin":	"https://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-3000.preview.app.github.dev",
+            "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+            "Access-Control-Allow-Credentials": "false", // Required for cookies, authorization headers with HTTPS  
+            "Access-Control-Allow-Headers": "Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token, locale",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        
         },
     }).then((response) => {
         console.log("response=", response);
