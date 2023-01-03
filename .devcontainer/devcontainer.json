@@ -8,7 +8,8 @@
 	"portsAttributes": {
 		"8080": {
 			"label": "OpenTelemetry Collector",
-			"onAutoForward": "notify"
+			"onAutoForward": "notify",
+			"onOpen": "open-preview"
 		},
 		"9090": {
 			"label": "Prometheus",
