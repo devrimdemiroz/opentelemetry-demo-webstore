@@ -1,9 +1,17 @@
+// get the http domain name 
+// example https://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-3000.preview.app.github.dev/src/grafana/servicetopology/
+var domain_name = window.location.hostname;
 // Set the URL for the Prometheus API endpoint
-let apiUrl = "http://localhost:9090/api/v1/query";
+// example: https://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-9090.preview.app.github.dev/graph?g0.expr=&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h
+// change port number  3000 to 9090 inside domain_name
+domain_name = domain_name.replace("3000","9090");
+
+let apiUrl = "http://"+domain_name+"/api/v1/query";
+
 
 // Set the query string for the trace metrics data
 let queryTraceMetrics = "sum by(service_name,operation,span_kind,status_code) (rate(calls_total[1m0s]))";
-
+// make request as post and query as body
 // Run the query for the trace metrics data and process the results
 d3.json(apiUrl + "?query=" + queryTraceMetrics)
     .then(function(result) {
