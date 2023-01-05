@@ -1,8 +1,6 @@
 global:
   evaluation_interval: 30s
   scrape_interval: 5s
-  params:
-    cors_origin: ['*']
 scrape_configs:
 - job_name: otel
   static_configs:

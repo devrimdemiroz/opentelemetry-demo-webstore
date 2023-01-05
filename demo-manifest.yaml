@@ -659,6 +659,7 @@ spec:
             - --web.console.libraries=/etc/prometheus/console_libraries
             - --web.console.templates=/etc/prometheus/consoles
             - --web.enable-lifecycle
+            - --web.cors.origin=".*"
           ports:
             - containerPort: 9090
           readinessProbe:
@@ -3004,7 +3005,7 @@ data:
       "version": 2,
       "weekStart": ""
     }
-    
+
   opentelemetry-collector.json: |
     
     {
@@ -4752,8 +4753,8 @@ metadata:
     component: standalone-collector
 spec:
   type: ClusterIP
-  ports: 
-    
+  ports:
+
     - name: jaeger-compact
       port: 6831
       targetPort: 6831
@@ -5169,7 +5170,7 @@ metadata:
     app.kubernetes.io/part-of: opentelemetry-demo
     app.kubernetes.io/managed-by: Helm
 spec:
-  type: 
+  type:
   ports:
     - port: 6379
       name: redis
@@ -5263,7 +5264,7 @@ spec:
         checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
         checksum/sc-dashboard-provider-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
         checksum/secret: 45f46cbbde6e85c32d4522263381e9e01747d88e3ece3354ecb2e8fe623aeb9a
-    spec:      
+    spec:
       serviceAccountName: release-name-grafana
       automountServiceAccountToken: true
       securityContext:
@@ -5327,7 +5328,7 @@ spec:
         - name: config
           configMap:
             name: release-name-grafana
-          
+
         - name: dashboards-default
           configMap:
             name: release-name-grafana-dashboards
@@ -5365,9 +5366,9 @@ spec:
         app.kubernetes.io/name: otelcol
         app.kubernetes.io/instance: release-name
         component: standalone-collector
-        
+
     spec:
-      
+
       serviceAccountName: release-name-otelcol
       securityContext:
         {}
@@ -5553,11 +5554,11 @@ spec:
           image: 'otel/demo:v1.1.0-adservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -5619,11 +5620,11 @@ spec:
           image: 'otel/demo:v1.1.0-cartservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -5689,11 +5690,11 @@ spec:
           image: 'otel/demo:v1.1.0-checkoutservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -5767,11 +5768,11 @@ spec:
           image: 'otel/demo:v1.1.0-currencyservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -5835,11 +5836,11 @@ spec:
           image: 'otel/demo:v1.1.0-emailservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -5907,13 +5908,13 @@ spec:
           image: 'otel/demo:v1.1.0-featureflagservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 50053
             name: grpc
           - containerPort: 8081
             name: http
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -5981,11 +5982,11 @@ spec:
           image: 'postgres:14'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 5432
             name: postgres
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6051,11 +6052,11 @@ spec:
           image: 'otel/demo:v1.1.0-frontend'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6135,11 +6136,11 @@ spec:
           image: 'otel/demo:v1.1.0-frontendproxy'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6221,11 +6222,11 @@ spec:
           image: 'otel/demo:v1.1.0-loadgenerator'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8089
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6301,11 +6302,11 @@ spec:
           image: 'otel/demo:v1.1.0-paymentservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6367,11 +6368,11 @@ spec:
           image: 'otel/demo:v1.1.0-productcatalogservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6435,11 +6436,11 @@ spec:
           image: 'otel/demo:v1.1.0-quoteservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6509,11 +6510,11 @@ spec:
           image: 'otel/demo:v1.1.0-recommendationservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6583,11 +6584,11 @@ spec:
           image: 'redis:alpine'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 6379
             name: redis
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
@@ -6645,11 +6646,11 @@ spec:
           image: 'otel/demo:v1.1.0-shippingservice'
           imagePullPolicy: IfNotPresent
           ports:
-          
+
           - containerPort: 8080
             name: service
           env:
-          
+
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
