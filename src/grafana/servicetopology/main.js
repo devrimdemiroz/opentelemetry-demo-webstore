@@ -1,6 +1,17 @@
 // get the http domain name
 // example https://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-3000.preview.app.github.dev/src/grafana/servicetopology/
-let domain_name = window.location.hostname;
+// catch window is not defined referenceerrpr exception if ran through local ide terminal
+let domain_name = "localhost";
+try{
+    domain_name = window.location.hostname;
+} catch (e) {
+    console.log("window.location.hostname not defined. Using localhost");
+}
+
+
+
+
+
 // Set the URL for the Prometheus API endpoint
 // example: http<://devrimdemiroz-orange-garbanzo-vr44gqppw953wvpx-9090.preview.app.github.dev/graph?g0.expr=&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h
 
