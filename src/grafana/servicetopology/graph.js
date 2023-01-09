@@ -149,7 +149,7 @@ d3.json(apiUrl + "?query=" + queryTraceMetrics, function(error, data) {
 
 // Set the dimensions of the SVG element
 let width = 2000,
-let height = 2000;
+ height = 2000;
 
 // Set up the graph layout
 var svg = d3.select("#dataviz")

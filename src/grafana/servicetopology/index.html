@@ -3,7 +3,8 @@
 <head>
     <title>Prometheus Query Example</title>
     <script src="https://d3js.org/d3.v7.js"></script>
-
+    <script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
+    <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
 
 
 </head>
@@ -12,10 +13,12 @@
 <div id="dataviz" style="width: 2100px; height: 2100px;" >
     <h1>Hello, dataviz world!</h1>
 </div>
-<div id="dataviz2   " style="width: 2100px; height: 2100px;" >
-    <h1>Hello, dataviz2 world!</h1>
-</div>
-<script src="main.js"></script>
+
+<script>
+    d3.select("#dataviz").graphviz()
+        .renderDot('digraph  {a -> b}');
+
+</script>
 
 </body>
 </html>

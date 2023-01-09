@@ -2,6 +2,7 @@
   "name": "simple-html-panel",
   "version": "1.0.0",
   "dependencies": {
-    "lodash": "^4.17.19"
+    "lodash": "^4.17.19",
+    "graphlib-dot": "^0.6.4"
   }
 }
