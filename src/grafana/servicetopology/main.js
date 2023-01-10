@@ -48,18 +48,28 @@ function createServiceOperationMap(result) {
     return serviceOperationMap;
 }
 
-function add(graph, service, serviceOperationMap) {
+function addServiceAndOperataions(graph, service, serviceOperationMap) {
     // create cluster as subgraph
     // if target or source already exists, do not create a new subgraph
     if (!graph.hasNode(service)) {
         // add subgraph to graph object subgraph cluster_" + source
-        graph.setNode("cluster_"+service, {label: service});
+        let cluster_service = "cluster_"+service;
+        graph.setNode(cluster_service, {label: service});
         serviceOperationMap.get(service).forEach(function (d) {
-
-            //graphvizCode += " " + d.metric.operation_id + " [label=\"" + d.metric.operation + "\"] \n";
-            graph.setNode(d.metric.operation_id, {label: d.metric.operation, cluster: service});
-            graph.setParent(d.metric.operation_id, "cluster_"+service);
+            let cluster_service_spankind = cluster_service+"_"+d.metric.span_kind;
+            // order spankind server subgraphs on left, client on right and internal to be between them
+            let order = 0;
+            if (d.metric.span_kind === "server") {
+                order = 1;
+            }
+            graph.setNode(cluster_service_spankind, {label: d.metric.span_kind, cluster: cluster_service , style: "filled", color: "lightgrey", order: order});
+            graph.setParent(cluster_service_spankind, cluster_service);
+            // layout
+            graph.setNode(d.metric.operation_id, {label: d.metric.operation, cluster: cluster_service_spankind, style: "filled", color: "white"});
+            graph.setParent(d.metric.operation_id, cluster_service_spankind);
         });
+
+
     }
 }
 
@@ -88,12 +98,8 @@ fetch(apiUrl + queryTraceMetrics)
 
                 // Set the graph's layout to 'fdp'
                 graph.setGraph({ layout: 'fdp' });
+                // peripheries
 
-
-                // Set the default node shape to 'circle'
-                graph.setDefaultNodeLabel(function(v) {
-                    return { shape: 'circle' };
-                } );
 
 
 
@@ -104,16 +110,29 @@ fetch(apiUrl + queryTraceMetrics)
                     console.log("source, target, d.value[1]=", source, target, d.value[1]);
                     var weight = d.value[1];
                     weight = Number(weight).toFixed(2);
-                    add(graph, source, serviceOperationMap);
-                    add(graph, target, serviceOperationMap);
+                    addServiceAndOperataions(graph, source, serviceOperationMap);
+                    addServiceAndOperataions(graph, target, serviceOperationMap);
 
                     // put these lines in a sepatate variable which will be added at the end of the graphvizCode
                     //edges += " cluster_" + source + " -> cluster_" + target + " [label=\"" + weight + "\"]\n";
                     graph.setEdge("cluster_" +source, "cluster_"+target, {label: weight});
 
+                    // find if there are matching operations under different cluster between spankind client and server. then print them.
+                    // if there are matching operations, then add edges between them
+                    serviceOperationMap.get(source).forEach(function (d1) {
+                        serviceOperationMap.get(target).forEach(function (d2) {
+                            // not exact match, but contains
+                            if (d1.metric.operation.includes(d2.metric.operation) || d2.metric.operation.includes(d1.metric.operation)) {
+                                console.log("matching operation=", d1.metric.operation);
+                                graph.setEdge(d1.metric.operation_id, d2.metric.operation_id, {label: weight});
+                            }
+                        });
+
+                    } );
+
+
 
                 });
-
 
                 // Print the Graphviz output
                 console.log(dotlib.write(graph));
