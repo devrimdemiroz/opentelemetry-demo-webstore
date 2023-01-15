@@ -27,6 +27,7 @@ let apiUrl = `http://${domain_name}/api/v1/`;
 
 // Run the query for the trace metrics data and process the results
 console.log( "apiUrl+queryTraceMetrics = " , apiUrl+queryTraceMetrics);
+let serviceOperationMap;
 
 function createServiceOperationMap(result) {
     // The data is now available in the "data" variable
@@ -48,6 +49,20 @@ function createServiceOperationMap(result) {
     return serviceOperationMap;
 }
 
+function getColorSpanKind(spankind) {
+    color = "white";
+    if (spankind === "SPAN_KIND_SERVER") {
+        color = "#ccd5ae";
+    }
+    if (spankind === "SPAN_KIND_CLIENT") {
+        color = "#faedcd";
+    }
+    if (spankind === "SPAN_KIND_INTERNAL") {
+        color = "#fefae0";
+    }
+    return color;
+}
+
 function addServiceAndOperataions(graph, service, serviceOperationMap) {
     // create cluster as subgraph
     // if target or source already exists, do not create a new subgraph
@@ -57,97 +72,120 @@ function addServiceAndOperataions(graph, service, serviceOperationMap) {
         graph.setNode(cluster_service, {label: service});
         serviceOperationMap.get(service).forEach(function (d) {
             let cluster_service_spankind = cluster_service+"_"+d.metric.span_kind;
-            // order spankind server subgraphs on left, client on right and internal to be between them
-            let order = 0;
-            if (d.metric.span_kind === "server") {
-                order = 1;
-            }
-            graph.setNode(cluster_service_spankind, {label: d.metric.span_kind, cluster: cluster_service , style: "filled", color: "lightgrey", order: order});
+
+            // set  each span kind cluster different and very light color from a well known color palette
+            let collor= getColorSpanKind(d.metric.span_kind);
+            graph.setNode(cluster_service_spankind, {label: d.metric.span_kind, cluster: cluster_service , color: color,style: "filled", fontcolor: "black"});
             graph.setParent(cluster_service_spankind, cluster_service);
-            // layout
-            graph.setNode(d.metric.operation_id, {label: d.metric.operation, cluster: cluster_service_spankind, style: "filled", color: "white"});
+
+            // set operation nodes equal fixed size, labels shorter add tool tip
+            let operationID = d.metric.operation_id;
+            let operation = d.metric.operation;
+            let operationLabel = operation;
+            // append new line after  / or . or space
+            operationLabel = operationLabel.replace(/(\/|\.| )/g, "$&\n");
+
+
+
+// fit height to the number of lines and width to the length of the longest line
+            graph.setNode(operationID, {label: operationLabel,
+                cluster: cluster_service_spankind, tooltip: operation,
+                width: 1, height: 1, fixedsize: true, shape: "box", color: "white", style: "filled", fontcolor: "black"});
+                // possible shapes: "box", "ellipse", "oval", "circle", "triangle", "diamond", "trapezium", "parallelogram", "house", "pentagon", "hexagon", "septagon", "octagon", "doublecircle", "doubleoctagon", "tripleoctagon", "invtriangle", "invtrapezium", "invhouse", "Mdiamond", "Msquare", "Mcircle", "rect", "rectangle", "square", "star", "none", "underline", "cylinder", "note", "tab", "folder", "box3d", "component", "promoter", "cds", "terminator", "utr", "primersite", "restrictionsite", "fivepoverhang", "threepoverhang", "noverhang", "assembly", "signature", "insulator", "ribosite", "rnastab", "proteasesite", "proteinstab", "rpromoter", "rarrow", "larrow", "lpromoter"
             graph.setParent(d.metric.operation_id, cluster_service_spankind);
-        });
+
+        } );
+
 
 
     }
 }
 
+function createConnections(result, graph) {
+    // Add the edges (connections) between the clusters, along with their corresponding weights
+    result. data.result.forEach(function (d) {
+        var source = d.metric.client;
+        var target = d.metric.server;
+        var weight = d.value[1];
+        weight = Number(weight).toFixed(2);
+        addServiceAndOperataions(graph, source, serviceOperationMap);
+        addServiceAndOperataions(graph, target, serviceOperationMap);
+
+        // set service level edges longer enoough so label is readable
+        let len = 2;
+        if (source === target) {
+            len = 3;
+        }
+        graph.setEdge("cluster_" + source, "cluster_" + target, {label: weight, len: len});
+
+        // find if there are matching operations under different cluster between spankind client and server. then print them.
+        // if there are matching operations, then add edges between them
+        serviceOperationMap.get(source).forEach(function (d1) {
+            serviceOperationMap.get(target).forEach(function (d2) {
+                // not exact match, but contains
+                if (d1.metric.operation.includes(d2.metric.operation) || d2.metric.operation.includes(d1.metric.operation)) {
+                    console.log("matching operation=", d1.metric.operation);
+                    graph.setEdge(d1.metric.operation_id, d2.metric.operation_id, {label: weight});
+                }
+            });
+
+        });
+
+
+    });
+}
+
+function writeFile(graph) {
+    var fs = require('fs');
+    fs.writeFile("graphvizCode.dot", dotlib.write(graph), function (err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    });
+}
+
+function queryCluster() {
+    let queryCluster = "sum by(client, server) (rate(traces_service_graph_request_total[1m0s]))";
+    queryCluster = `query?query=${queryCluster}`;
+    // Run the query for the cluster data and process the results
+    fetch(apiUrl + queryCluster)
+        .then(response => response.json())
+        .then(function (result) {
+            // The data is now available in the "data" variable
+            console.log("queryCluster result=", result);
+
+
+            // Create a new graph
+            let graph = new dotlib.graphlib.Graph({compound: true, directed: false, multigraph: true});
+            //compound=true allows subgraphs
+            graph.setGraph({compound: true});
+            graph.setGraph({layout: 'fdp'});
+
+
+
+            createConnections(result, graph);
+
+
+
+            // Print the Graphviz output
+            console.log(dotlib.write(graph));
+            // save to a file
+            writeFile(graph);
+            // show graph in the browser
+        })
+        .catch(error => {
+            console.log("Error: " + error);
+        });
+}
+
 fetch(apiUrl + queryTraceMetrics)
     .then(response => response.json())
     .then(function(result) {
-        let serviceOperationMap = createServiceOperationMap(result);
+
+        serviceOperationMap = createServiceOperationMap(result);
         // Set the query string for the cluster data
-        let queryCluster = "sum by(client, server) (rate(traces_service_graph_request_total[1m0s]))";
-        queryCluster=`query?query=${queryCluster}`;
-
-        // Run the query for the cluster data and process the results
-        fetch(apiUrl + queryCluster)
-            .then(response => response.json())
-            .then(function(result) {
-                // The data is now available in the "data" variable
-                console.log("queryCluster result=", result);
-
-
-
-                // Create a new graph
-
-                let graph = new dotlib.graphlib.Graph({compound:true, directed:true, multigraph:true});
-                //compound=true allows subgraphs
-                graph.setGraph({compound:true});
-
-                // Set the graph's layout to 'fdp'
-                graph.setGraph({ layout: 'fdp' });
-                // peripheries
-
-
-
-
-                // Add the edges (connections) between the clusters, along with their corresponding weights
-                result.data.result.forEach(function(d) {
-                    var source = d.metric.client;
-                    var target = d.metric.server;
-                    console.log("source, target, d.value[1]=", source, target, d.value[1]);
-                    var weight = d.value[1];
-                    weight = Number(weight).toFixed(2);
-                    addServiceAndOperataions(graph, source, serviceOperationMap);
-                    addServiceAndOperataions(graph, target, serviceOperationMap);
-
-                    // put these lines in a sepatate variable which will be added at the end of the graphvizCode
-                    //edges += " cluster_" + source + " -> cluster_" + target + " [label=\"" + weight + "\"]\n";
-                    graph.setEdge("cluster_" +source, "cluster_"+target, {label: weight});
-
-                    // find if there are matching operations under different cluster between spankind client and server. then print them.
-                    // if there are matching operations, then add edges between them
-                    serviceOperationMap.get(source).forEach(function (d1) {
-                        serviceOperationMap.get(target).forEach(function (d2) {
-                            // not exact match, but contains
-                            if (d1.metric.operation.includes(d2.metric.operation) || d2.metric.operation.includes(d1.metric.operation)) {
-                                console.log("matching operation=", d1.metric.operation);
-                                graph.setEdge(d1.metric.operation_id, d2.metric.operation_id, {label: weight});
-                            }
-                        });
-
-                    } );
-
-
-
-                });
-
-                // Print the Graphviz output
-                console.log(dotlib.write(graph));
-                // save to a file
-                var fs = require('fs');
-                fs.writeFile("graphvizCode.dot", dotlib.write(graph), function(err) {
-                    if(err) {
-                        return console.log(err);
-                    }
-                    console.log("The file was saved!");
-                } );
-            })
-            .catch(error => {
-                console.log("Error: " + error);
-            });
+        queryCluster();
     })
     .catch(error => {
         console.log("Error: " + error);

@@ -1,48 +1,418 @@
-digraph {
+graph {
   layout=fdp;
-  subgraph cluster_frontend {
-    label=frontend;
-    frontend_HTTP_GET_SPAN_KIND_SERVER [label="HTTP GET",cluster=frontend]
-    frontend_HTTP_POST_SPAN_KIND_SERVER [label="HTTP POST",cluster=frontend]
-    frontend_grpc_hipstershop_AdService_GetAds_SPAN_KIND_CLIENT [label="grpc.hipstershop.AdService/GetAds",cluster=frontend]
-    frontend_grpc_hipstershop_CartService_AddItem_SPAN_KIND_CLIENT [label="grpc.hipstershop.CartService/AddItem",cluster=frontend]
-    frontend_grpc_hipstershop_CartService_GetCart_SPAN_KIND_CLIENT [label="grpc.hipstershop.CartService/GetCart",cluster=frontend]
-    frontend_grpc_hipstershop_CheckoutService_PlaceOrder_SPAN_KIND_CLIENT [label="grpc.hipstershop.CheckoutService/PlaceOrder",cluster=frontend]
-    frontend_grpc_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_CLIENT [label="grpc.hipstershop.ProductCatalogService/GetProduct",cluster=frontend]
-    frontend_grpc_hipstershop_RecommendationService_ListRecommendations_SPAN_KIND_CLIENT [label="grpc.hipstershop.RecommendationService/ListRecommendations",cluster=frontend]
-    frontend_tcp_connect_SPAN_KIND_INTERNAL [label="tcp.connect",cluster=frontend]
+  subgraph cluster_checkoutservice {
+    label=checkoutservice;
+    subgraph cluster_checkoutservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_checkoutservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      checkoutservice_hipstershop_CheckoutService_PlaceOrder_SPAN_KIND_SERVER [label="hipstershop.
+CheckoutService/
+PlaceOrder",cluster=cluster_checkoutservice_SPAN_KIND_SERVER,tooltip="hipstershop.CheckoutService/PlaceOrder",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_checkoutservice_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_checkoutservice;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      checkoutservice_HTTP_POST_SPAN_KIND_CLIENT [label="HTTP 
+POST",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="HTTP POST",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      checkoutservice_hipstershop_CartService_EmptyCart_SPAN_KIND_CLIENT [label="hipstershop.
+CartService/
+EmptyCart",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="hipstershop.CartService/EmptyCart",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      checkoutservice_hipstershop_CartService_GetCart_SPAN_KIND_CLIENT [label="hipstershop.
+CartService/
+GetCart",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="hipstershop.CartService/GetCart",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      checkoutservice_hipstershop_CurrencyService_Convert_SPAN_KIND_CLIENT [label="hipstershop.
+CurrencyService/
+Convert",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="hipstershop.CurrencyService/Convert",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      checkoutservice_hipstershop_PaymentService_Charge_SPAN_KIND_CLIENT [label="hipstershop.
+PaymentService/
+Charge",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="hipstershop.PaymentService/Charge",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      checkoutservice_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_CLIENT [label="hipstershop.
+ProductCatalogService/
+GetProduct",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="hipstershop.ProductCatalogService/GetProduct",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      checkoutservice_hipstershop_ShippingService_GetQuote_SPAN_KIND_CLIENT [label="hipstershop.
+ShippingService/
+GetQuote",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="hipstershop.ShippingService/GetQuote",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      checkoutservice_hipstershop_ShippingService_ShipOrder_SPAN_KIND_CLIENT [label="hipstershop.
+ShippingService/
+ShipOrder",cluster=cluster_checkoutservice_SPAN_KIND_CLIENT,tooltip="hipstershop.ShippingService/ShipOrder",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_checkoutservice_SPAN_KIND_PRODUCER {
+      label=SPAN_KIND_PRODUCER;
+      cluster=cluster_checkoutservice;
+      color=white;
+      style=filled;
+      fontcolor=black;
+      checkoutservice_orders_send_SPAN_KIND_PRODUCER [label="orders 
+send",cluster=cluster_checkoutservice_SPAN_KIND_PRODUCER,tooltip="orders send",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_checkoutservice_SPAN_KIND_INTERNAL {
+      label=SPAN_KIND_INTERNAL;
+      cluster=cluster_checkoutservice;
+      color="#fefae0";
+      style=filled;
+      fontcolor=black;
+      checkoutservice_prepareOrderItemsAndShippingQuoteFromCart_SPAN_KIND_INTERNAL [label=prepareOrderItemsAndShippingQuoteFromCart,cluster=cluster_checkoutservice_SPAN_KIND_INTERNAL,tooltip=prepareOrderItemsAndShippingQuoteFromCart,width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
   }
-  subgraph cluster_adservice {
-    label=adservice;
-    adservice_getAdsByCategory_SPAN_KIND_INTERNAL [label=getAdsByCategory,cluster=adservice]
-    adservice_hipstershop_AdService_GetAds_SPAN_KIND_SERVER [label="hipstershop.AdService/GetAds",cluster=adservice]
+  subgraph cluster_accountingservice {
+    label=accountingservice;
+    subgraph cluster_accountingservice_SPAN_KIND_CONSUMER {
+      label=SPAN_KIND_CONSUMER;
+      cluster=cluster_accountingservice;
+      color=white;
+      style=filled;
+      fontcolor=black;
+      accountingservice_orders_receive_SPAN_KIND_CONSUMER [label="orders 
+receive",cluster=cluster_accountingservice_SPAN_KIND_CONSUMER,tooltip="orders receive",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  subgraph cluster_frauddetectionservice {
+    label=frauddetectionservice;
+    subgraph cluster_frauddetectionservice_SPAN_KIND_CONSUMER {
+      label=SPAN_KIND_CONSUMER;
+      cluster=cluster_frauddetectionservice;
+      color=white;
+      style=filled;
+      fontcolor=black;
+      frauddetectionservice_orders_process_SPAN_KIND_CONSUMER [label="orders 
+process",cluster=cluster_frauddetectionservice_SPAN_KIND_CONSUMER,tooltip="orders process",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
   }
   subgraph cluster_cartservice {
     label=cartservice;
-    cartservice_HGET_SPAN_KIND_CLIENT [label=HGET,cluster=cartservice]
-    cartservice_HMSET_SPAN_KIND_CLIENT [label=HMSET,cluster=cartservice]
-    cartservice_hipstershop_CartService_AddItem_SPAN_KIND_SERVER [label="hipstershop.CartService/AddItem",cluster=cartservice]
-    cartservice_hipstershop_CartService_GetCart_SPAN_KIND_SERVER [label="hipstershop.CartService/GetCart",cluster=cartservice]
+    subgraph cluster_cartservice_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_cartservice;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      cartservice_HGET_SPAN_KIND_CLIENT [label=HGET,cluster=cluster_cartservice_SPAN_KIND_CLIENT,tooltip=HGET,width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      cartservice_HMSET_SPAN_KIND_CLIENT [label=HMSET,cluster=cluster_cartservice_SPAN_KIND_CLIENT,tooltip=HMSET,width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_cartservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_cartservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      cartservice_hipstershop_CartService_AddItem_SPAN_KIND_SERVER [label="hipstershop.
+CartService/
+AddItem",cluster=cluster_cartservice_SPAN_KIND_SERVER,tooltip="hipstershop.CartService/AddItem",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      cartservice_hipstershop_CartService_EmptyCart_SPAN_KIND_SERVER [label="hipstershop.
+CartService/
+EmptyCart",cluster=cluster_cartservice_SPAN_KIND_SERVER,tooltip="hipstershop.CartService/EmptyCart",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      cartservice_hipstershop_CartService_GetCart_SPAN_KIND_SERVER [label="hipstershop.
+CartService/
+GetCart",cluster=cluster_cartservice_SPAN_KIND_SERVER,tooltip="hipstershop.CartService/GetCart",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  subgraph cluster_currencyservice {
+    label=currencyservice;
+    subgraph cluster_currencyservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_currencyservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      currencyservice_CurrencyService_Convert_SPAN_KIND_SERVER [label="CurrencyService/
+Convert",cluster=cluster_currencyservice_SPAN_KIND_SERVER,tooltip="CurrencyService/Convert",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  subgraph cluster_emailservice {
+    label=emailservice;
+    subgraph cluster_emailservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_emailservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      emailservice_POST__send_order_confirmation_SPAN_KIND_SERVER [label="POST 
+/
+send_order_confirmation",cluster=cluster_emailservice_SPAN_KIND_SERVER,tooltip="POST /send_order_confirmation",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_emailservice_SPAN_KIND_INTERNAL {
+      label=SPAN_KIND_INTERNAL;
+      cluster=cluster_emailservice;
+      color="#fefae0";
+      style=filled;
+      fontcolor=black;
+      emailservice_send_email_SPAN_KIND_INTERNAL [label=send_email,cluster=cluster_emailservice_SPAN_KIND_INTERNAL,tooltip=send_email,width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      emailservice_sinatra_render_template_SPAN_KIND_INTERNAL [label="sinatra.
+render_template",cluster=cluster_emailservice_SPAN_KIND_INTERNAL,tooltip="sinatra.render_template",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  subgraph cluster_paymentservice {
+    label=paymentservice;
+    subgraph cluster_paymentservice_SPAN_KIND_INTERNAL {
+      label=SPAN_KIND_INTERNAL;
+      cluster=cluster_paymentservice;
+      color="#fefae0";
+      style=filled;
+      fontcolor=black;
+      paymentservice_charge_SPAN_KIND_INTERNAL [label=charge,cluster=cluster_paymentservice_SPAN_KIND_INTERNAL,tooltip=charge,width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_paymentservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_paymentservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      paymentservice_grpc_hipstershop_PaymentService_Charge_SPAN_KIND_SERVER [label="grpc.
+hipstershop.
+PaymentService/
+Charge",cluster=cluster_paymentservice_SPAN_KIND_SERVER,tooltip="grpc.hipstershop.PaymentService/Charge",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_paymentservice_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_paymentservice;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      paymentservice_grpc_opentelemetry_proto_collector_metrics_v1_MetricsService_Export_SPAN_KIND_CLIENT [label="grpc.
+opentelemetry.
+proto.
+collector.
+metrics.
+v1.
+MetricsService/
+Export",cluster=cluster_paymentservice_SPAN_KIND_CLIENT,tooltip="grpc.opentelemetry.proto.collector.metrics.v1.MetricsService/Export",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
   }
   subgraph cluster_productcatalogservice {
     label=productcatalogservice;
-    productcatalogservice_hipstershop_FeatureFlagService_GetFlag_SPAN_KIND_CLIENT [label="hipstershop.FeatureFlagService/GetFlag",cluster=productcatalogservice]
-    productcatalogservice_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_SERVER [label="hipstershop.ProductCatalogService/GetProduct",cluster=productcatalogservice]
+    subgraph cluster_productcatalogservice_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_productcatalogservice;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      productcatalogservice_hipstershop_FeatureFlagService_GetFlag_SPAN_KIND_CLIENT [label="hipstershop.
+FeatureFlagService/
+GetFlag",cluster=cluster_productcatalogservice_SPAN_KIND_CLIENT,tooltip="hipstershop.FeatureFlagService/GetFlag",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_productcatalogservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_productcatalogservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      productcatalogservice_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_SERVER [label="hipstershop.
+ProductCatalogService/
+GetProduct",cluster=cluster_productcatalogservice_SPAN_KIND_SERVER,tooltip="hipstershop.ProductCatalogService/GetProduct",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      productcatalogservice_hipstershop_ProductCatalogService_ListProducts_SPAN_KIND_SERVER [label="hipstershop.
+ProductCatalogService/
+ListProducts",cluster=cluster_productcatalogservice_SPAN_KIND_SERVER,tooltip="hipstershop.ProductCatalogService/ListProducts",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  subgraph cluster_shippingservice {
+    label=shippingservice;
+    subgraph cluster_shippingservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_shippingservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      shippingservice_hipstershop_ShippingService_GetQuote_SPAN_KIND_SERVER [label="hipstershop.
+ShippingService/
+GetQuote",cluster=cluster_shippingservice_SPAN_KIND_SERVER,tooltip="hipstershop.ShippingService/GetQuote",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      shippingservice_hipstershop_ShippingService_ShipOrder_SPAN_KIND_SERVER [label="hipstershop.
+ShippingService/
+ShipOrder",cluster=cluster_shippingservice_SPAN_KIND_SERVER,tooltip="hipstershop.ShippingService/ShipOrder",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_shippingservice_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_shippingservice;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      "shippingservice_reqwest-http-client_SPAN_KIND_CLIENT" [label="reqwest-http-client",cluster=cluster_shippingservice_SPAN_KIND_CLIENT,tooltip="reqwest-http-client",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  subgraph cluster_frontend {
+    label=frontend;
+    subgraph cluster_frontend_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_frontend;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      frontend_HTTP_GET_SPAN_KIND_SERVER [label="HTTP 
+GET",cluster=cluster_frontend_SPAN_KIND_SERVER,tooltip="HTTP GET",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      frontend_HTTP_POST_SPAN_KIND_SERVER [label="HTTP 
+POST",cluster=cluster_frontend_SPAN_KIND_SERVER,tooltip="HTTP POST",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_frontend_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_frontend;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      frontend_grpc_hipstershop_AdService_GetAds_SPAN_KIND_CLIENT [label="grpc.
+hipstershop.
+AdService/
+GetAds",cluster=cluster_frontend_SPAN_KIND_CLIENT,tooltip="grpc.hipstershop.AdService/GetAds",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      frontend_grpc_hipstershop_CartService_AddItem_SPAN_KIND_CLIENT [label="grpc.
+hipstershop.
+CartService/
+AddItem",cluster=cluster_frontend_SPAN_KIND_CLIENT,tooltip="grpc.hipstershop.CartService/AddItem",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      frontend_grpc_hipstershop_CartService_GetCart_SPAN_KIND_CLIENT [label="grpc.
+hipstershop.
+CartService/
+GetCart",cluster=cluster_frontend_SPAN_KIND_CLIENT,tooltip="grpc.hipstershop.CartService/GetCart",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      frontend_grpc_hipstershop_CheckoutService_PlaceOrder_SPAN_KIND_CLIENT [label="grpc.
+hipstershop.
+CheckoutService/
+PlaceOrder",cluster=cluster_frontend_SPAN_KIND_CLIENT,tooltip="grpc.hipstershop.CheckoutService/PlaceOrder",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      frontend_grpc_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_CLIENT [label="grpc.
+hipstershop.
+ProductCatalogService/
+GetProduct",cluster=cluster_frontend_SPAN_KIND_CLIENT,tooltip="grpc.hipstershop.ProductCatalogService/GetProduct",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      frontend_grpc_hipstershop_RecommendationService_ListRecommendations_SPAN_KIND_CLIENT [label="grpc.
+hipstershop.
+RecommendationService/
+ListRecommendations",cluster=cluster_frontend_SPAN_KIND_CLIENT,tooltip="grpc.hipstershop.RecommendationService/ListRecommendations",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_frontend_SPAN_KIND_INTERNAL {
+      label=SPAN_KIND_INTERNAL;
+      cluster=cluster_frontend;
+      color="#fefae0";
+      style=filled;
+      fontcolor=black;
+      frontend_tcp_connect_SPAN_KIND_INTERNAL [label="tcp.
+connect",cluster=cluster_frontend_SPAN_KIND_INTERNAL,tooltip="tcp.connect",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  subgraph cluster_adservice {
+    label=adservice;
+    subgraph cluster_adservice_SPAN_KIND_INTERNAL {
+      label=SPAN_KIND_INTERNAL;
+      cluster=cluster_adservice;
+      color="#fefae0";
+      style=filled;
+      fontcolor=black;
+      adservice_getAdsByCategory_SPAN_KIND_INTERNAL [label=getAdsByCategory,cluster=cluster_adservice_SPAN_KIND_INTERNAL,tooltip=getAdsByCategory,width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_adservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_adservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      adservice_hipstershop_AdService_GetAds_SPAN_KIND_SERVER [label="hipstershop.
+AdService/
+GetAds",cluster=cluster_adservice_SPAN_KIND_SERVER,tooltip="hipstershop.AdService/GetAds",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
   }
   subgraph cluster_recommendationservice {
     label=recommendationservice;
-    recommendationservice__hipstershop_FeatureFlagService_GetFlag_SPAN_KIND_CLIENT [label="/hipstershop.FeatureFlagService/GetFlag",cluster=recommendationservice]
-    recommendationservice__hipstershop_RecommendationService_ListRecommendations_SPAN_KIND_SERVER [label="/hipstershop.RecommendationService/ListRecommendations",cluster=recommendationservice]
-    recommendationservice_get_product_list_SPAN_KIND_INTERNAL [label=get_product_list,cluster=recommendationservice]
+    subgraph cluster_recommendationservice_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_recommendationservice;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      recommendationservice__hipstershop_FeatureFlagService_GetFlag_SPAN_KIND_CLIENT [label="/
+hipstershop.
+FeatureFlagService/
+GetFlag",cluster=cluster_recommendationservice_SPAN_KIND_CLIENT,tooltip="/hipstershop.FeatureFlagService/GetFlag",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      recommendationservice__hipstershop_ProductCatalogService_ListProducts_SPAN_KIND_CLIENT [label="/
+hipstershop.
+ProductCatalogService/
+ListProducts",cluster=cluster_recommendationservice_SPAN_KIND_CLIENT,tooltip="/hipstershop.ProductCatalogService/ListProducts",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_recommendationservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_recommendationservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      recommendationservice__hipstershop_RecommendationService_ListRecommendations_SPAN_KIND_SERVER [label="/
+hipstershop.
+RecommendationService/
+ListRecommendations",cluster=cluster_recommendationservice_SPAN_KIND_SERVER,tooltip="/hipstershop.RecommendationService/ListRecommendations",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_recommendationservice_SPAN_KIND_INTERNAL {
+      label=SPAN_KIND_INTERNAL;
+      cluster=cluster_recommendationservice;
+      color="#fefae0";
+      style=filled;
+      fontcolor=black;
+      recommendationservice_get_product_list_SPAN_KIND_INTERNAL [label=get_product_list,cluster=cluster_recommendationservice_SPAN_KIND_INTERNAL,tooltip=get_product_list,width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
   }
   subgraph cluster_loadgenerator {
     label=loadgenerator;
-    loadgenerator_HTTP_GET_SPAN_KIND_CLIENT [label="HTTP GET",cluster=loadgenerator]
-    loadgenerator_HTTP_POST_SPAN_KIND_CLIENT [label="HTTP POST",cluster=loadgenerator]
+    subgraph cluster_loadgenerator_SPAN_KIND_CLIENT {
+      label=SPAN_KIND_CLIENT;
+      cluster=cluster_loadgenerator;
+      color="#faedcd";
+      style=filled;
+      fontcolor=black;
+      loadgenerator_HTTP_GET_SPAN_KIND_CLIENT [label="HTTP 
+GET",cluster=cluster_loadgenerator_SPAN_KIND_CLIENT,tooltip="HTTP GET",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+      loadgenerator_HTTP_POST_SPAN_KIND_CLIENT [label="HTTP 
+POST",cluster=cluster_loadgenerator_SPAN_KIND_CLIENT,tooltip="HTTP POST",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
   }
-  cluster_frontend -> cluster_adservice [label="0.15"]
-  cluster_frontend -> cluster_cartservice [label="0.45"]
-  cluster_frontend -> cluster_productcatalogservice [label="0.76"]
-  cluster_frontend -> cluster_recommendationservice [label="0.24"]
-  cluster_loadgenerator -> cluster_frontend [label="3.89"]
+  subgraph cluster_quoteservice {
+    label=quoteservice;
+    subgraph cluster_quoteservice_SPAN_KIND_SERVER {
+      label=SPAN_KIND_SERVER;
+      cluster=cluster_quoteservice;
+      color="#ccd5ae";
+      style=filled;
+      fontcolor=black;
+      quoteservice__getquote_SPAN_KIND_SERVER [label="/
+getquote",cluster=cluster_quoteservice_SPAN_KIND_SERVER,tooltip="/getquote",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+    subgraph cluster_quoteservice_SPAN_KIND_INTERNAL {
+      label=SPAN_KIND_INTERNAL;
+      cluster=cluster_quoteservice;
+      color="#fefae0";
+      style=filled;
+      fontcolor=black;
+      "quoteservice_calculate-quote_SPAN_KIND_INTERNAL" [label="calculate-quote",cluster=cluster_quoteservice_SPAN_KIND_INTERNAL,tooltip="calculate-quote",width=1,height=1,fixedsize=true,shape=box,color=white,style=filled,fontcolor=black]
+    }
+  }
+  cluster_accountingservice -- cluster_checkoutservice [label="0.02",len=2]
+  cluster_checkoutservice -- cluster_frauddetectionservice [label="0.00",len=2]
+  cluster_cartservice -- cluster_checkoutservice [label="0.04",len=2]
+  cartservice_hipstershop_CartService_EmptyCart_SPAN_KIND_SERVER -- checkoutservice_hipstershop_CartService_EmptyCart_SPAN_KIND_CLIENT [label="0.04"]
+  cartservice_hipstershop_CartService_GetCart_SPAN_KIND_SERVER -- checkoutservice_hipstershop_CartService_GetCart_SPAN_KIND_CLIENT [label="0.04"]
+  cluster_checkoutservice -- cluster_currencyservice [label="0.04",len=2]
+  checkoutservice_hipstershop_CurrencyService_Convert_SPAN_KIND_CLIENT -- currencyservice_CurrencyService_Convert_SPAN_KIND_SERVER [label="0.04"]
+  cluster_checkoutservice -- cluster_emailservice [label="0.02",len=2]
+  cluster_checkoutservice -- cluster_paymentservice [label="0.02",len=2]
+  checkoutservice_hipstershop_PaymentService_Charge_SPAN_KIND_CLIENT -- paymentservice_grpc_hipstershop_PaymentService_Charge_SPAN_KIND_SERVER [label="0.02"]
+  cluster_checkoutservice -- cluster_productcatalogservice [label="0.02",len=2]
+  checkoutservice_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_CLIENT -- productcatalogservice_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_SERVER [label="0.02"]
+  cluster_checkoutservice -- cluster_shippingservice [label="0.04",len=2]
+  checkoutservice_hipstershop_ShippingService_GetQuote_SPAN_KIND_CLIENT -- shippingservice_hipstershop_ShippingService_GetQuote_SPAN_KIND_SERVER [label="0.04"]
+  checkoutservice_hipstershop_ShippingService_ShipOrder_SPAN_KIND_CLIENT -- shippingservice_hipstershop_ShippingService_ShipOrder_SPAN_KIND_SERVER [label="0.04"]
+  cluster_adservice -- cluster_frontend [label="0.04",len=2]
+  adservice_hipstershop_AdService_GetAds_SPAN_KIND_SERVER -- frontend_grpc_hipstershop_AdService_GetAds_SPAN_KIND_CLIENT [label="0.04"]
+  cluster_cartservice -- cluster_frontend [label="0.09",len=2]
+  cartservice_hipstershop_CartService_AddItem_SPAN_KIND_SERVER -- frontend_grpc_hipstershop_CartService_AddItem_SPAN_KIND_CLIENT [label="0.09"]
+  cartservice_hipstershop_CartService_GetCart_SPAN_KIND_SERVER -- frontend_grpc_hipstershop_CartService_GetCart_SPAN_KIND_CLIENT [label="0.09"]
+  cluster_checkoutservice -- cluster_frontend [label="0.02",len=2]
+  checkoutservice_HTTP_POST_SPAN_KIND_CLIENT -- frontend_HTTP_POST_SPAN_KIND_SERVER [label="0.02"]
+  checkoutservice_hipstershop_CartService_GetCart_SPAN_KIND_CLIENT -- frontend_grpc_hipstershop_CartService_GetCart_SPAN_KIND_CLIENT [label="0.02"]
+  checkoutservice_hipstershop_CheckoutService_PlaceOrder_SPAN_KIND_SERVER -- frontend_grpc_hipstershop_CheckoutService_PlaceOrder_SPAN_KIND_CLIENT [label="0.02"]
+  checkoutservice_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_CLIENT -- frontend_grpc_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_CLIENT [label="0.02"]
+  cluster_frontend -- cluster_productcatalogservice [label="0.11",len=2]
+  frontend_grpc_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_CLIENT -- productcatalogservice_hipstershop_ProductCatalogService_GetProduct_SPAN_KIND_SERVER [label="0.11"]
+  cluster_frontend -- cluster_recommendationservice [label="0.00",len=2]
+  cluster_frontend -- cluster_loadgenerator [label="0.27",len=2]
+  frontend_HTTP_GET_SPAN_KIND_SERVER -- loadgenerator_HTTP_GET_SPAN_KIND_CLIENT [label="0.27"]
+  frontend_HTTP_POST_SPAN_KIND_SERVER -- loadgenerator_HTTP_POST_SPAN_KIND_CLIENT [label="0.27"]
+  cluster_productcatalogservice -- cluster_recommendationservice [label="0.00",len=2]
+  productcatalogservice_hipstershop_FeatureFlagService_GetFlag_SPAN_KIND_CLIENT -- recommendationservice__hipstershop_FeatureFlagService_GetFlag_SPAN_KIND_CLIENT [label="0.00"]
+  productcatalogservice_hipstershop_ProductCatalogService_ListProducts_SPAN_KIND_SERVER -- recommendationservice__hipstershop_ProductCatalogService_ListProducts_SPAN_KIND_CLIENT [label="0.00"]
+  cluster_quoteservice -- cluster_shippingservice [label="0.00",len=2]
 }
