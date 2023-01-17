@@ -1,5 +1,6 @@
-const dotlib = require('graphlib-dot');
+
 let domain_name;
+
 
 setDomainName();
 // Set the query string for the trace metrics data
@@ -11,13 +12,16 @@ let apiUrl = `http://${domain_name}/api/v1/`;
 console.log("apiUrl+queryTraceMetrics = ", apiUrl + queryTraceMetrics);
 let serviceOperationMap;
 
-fetch(apiUrl + queryTraceMetrics)
-    .then(response => response.json())
-    .then(function (result) {
+d3.json(apiUrl + queryTraceMetrics)
+    .then(function(data) {
+        // just log the data
+        console.log("queryTraceMetrics data=", data);
 
-        serviceOperationMap = createServiceOperationMap(result);
+        // process the data
+//        serviceOperationMap = createServiceOperationMap(data);
+
         // Set the query string for the cluster data
-        queryCluster();
+//        queryCluster();
     })
     .catch(error => {
         console.log("Error: " + error);

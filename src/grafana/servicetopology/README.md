@@ -65,4 +65,16 @@ flowchart LR
     
         
 ```
-// place the weblinks in documentation into boxes as clikable links
+// TODO place the weblinks in documentation into boxes as clikable links
+
+```shell
+# rebuild frontend-proxy and update the image and start
+cd ../../../
+docker-compose up --build -d frontendproxy >/dev/null &
+```
+
+```shell
+docker compose up >/dev/null &
+
+
+```
