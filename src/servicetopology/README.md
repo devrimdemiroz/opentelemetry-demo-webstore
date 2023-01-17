@@ -68,13 +68,13 @@ flowchart LR
 // TODO place the weblinks in documentation into boxes as clikable links
 
 ```shell
-# rebuild frontend-proxy and update the image and start
-cd ../../../
-docker-compose up --build -d frontendproxy >/dev/null &
+docker build -t shahmaran .
 ```
 
 ```shell
-docker compose up >/dev/null &
-
-
+docker run -it --rm -p 8181:80 shahmaran
 ```
+http://localhost:8181/index.html
+
+```shell
+

@@ -1,12 +1,10 @@
-
 let domain_name;
 
 
-setDomainName();
 // Set the query string for the trace metrics data
 let queryTraceMetrics = "sum by(service_name,operation,span_kind,status_code) (rate(calls_total[1m0s]))";
 queryTraceMetrics = `query?query=${queryTraceMetrics}`;
-let apiUrl = `http://${domain_name}/api/v1/`;
+let apiUrl = `http://localhost:8181/prometheus/api/v1/`;
 
 // Run the query for the trace metrics data and process the results
 console.log("apiUrl+queryTraceMetrics = ", apiUrl + queryTraceMetrics);
@@ -27,25 +25,7 @@ d3.json(apiUrl + queryTraceMetrics)
         console.log("Error: " + error);
     });
 
-function setDomainName() {
-    domain_name = "localhost";
-    try {
-        domain_name = window.location.hostname;
-    } catch (e) {
-        console.log("window.location.hostname not defined. Using localhost");
-    }
 
-// change port number  3000 to 9090 inside domain_name
-    domain_name = domain_name.replace("3000", "9090");
-// also if domainname is localhost , add :9090 to the end of the domain name
-// also if domain name does not exist (e.g. when running locally), use localhost:9090
-    if (domain_name === "") {
-        domain_name = "localhost:9090";
-    }
-    if (domain_name === "localhost") {
-        domain_name = domain_name + ":9090";
-    }
-}
 
 function createServiceOperationMap(result) {
     // The data is now available in the "data" variable
