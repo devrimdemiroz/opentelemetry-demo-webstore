@@ -77,4 +77,14 @@ docker run -it --rm -p 8181:80 shahmaran
 http://localhost:8181/index.html
 
 ```shell
+# compose docker-compose-min.yml
+cd ../../
+docker-compose -f docker-compose-min.yml up --force-recreate --build web 
+```
+    
+```shell
+docker-compose up --force-recreate --build web image
+```
+
+```shell
 
