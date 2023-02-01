@@ -1,5 +1,3 @@
-let domain_name;
-
 
 // Set the query string for the trace metrics data
 let queryTraceMetrics = "sum by(service_name,operation,span_kind,status_code) (rate(calls_total[1m0s]))";
