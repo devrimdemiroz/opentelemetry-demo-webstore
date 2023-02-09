@@ -12,7 +12,7 @@ datasources:
         datasourceUid: 'Prometheus'
         tags: [{ key: 'service.name', value: 'service' }, { key: 'job' }]
         queries:
-          - name: 'Sample query'
+          - name: 'latency_bucket query'
             query: 'sum(rate(traces_spanmetrics_latency_bucket{$__tags}[5m]))'
       serviceMap:
         datasourceUid: 'Prometheus'
