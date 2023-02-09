@@ -8,29 +8,103 @@ receivers:
             - "http://*"
             - "https://*"
 
+  otlp/spanmetrics:
+    protocols:
+      grpc:
+        endpoint: "localhost:12345"
+#  prometheus:
+#    config:
+#      scrape_configs:
+#        - job_name: 'spanmetrics'
+#          scrape_interval: 1m
+#          static_configs:
+#            - targets: [ "0.0.0.0:8889" ]
 exporters:
-  otlp:
+  jaeger:
     endpoint: "jaeger:4317"
     tls:
       insecure: true
+
   logging:
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
+#  prometheus:
+#    endpoint: "otelcol:9464"
+
   prometheus:
-    endpoint: "otelcol:9464"
-    resource_to_telemetry_conversion:
-      enabled: true
-    enable_open_metrics: true
+    endpoint: "localhost:8889"
+
+  otlp:
+    endpoint: localhost:4317
+    tls:
+      insecure: true
+
 processors:
   batch:
   spanmetrics:
-    metrics_exporter: prometheus
+    metrics_exporter: 'otlp'
+    latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms]
+    dimensions:
+      - name: http.method
+        default: GET
+      - name: http.status_code
+    dimensions_cache_size: 1000
+    aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
 
+  servicegraph:
+    metrics_exporter: 'otlp'
+    latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms]
+    dimensions: [cluster, namespace]
+    store:
+      ttl: 2s
+      max_items: 200
+
+  metricstransform:
+    transforms:
+      - include: ^calls.total$$
+        match_type: regexp
+        action: update
+        new_name: traces_spanmetrics_calls_total
+        operations:
+          - action: update_label
+            label: operation
+            new_label: span.name
+      - include: ^latency_bucket$$
+        match_type: regexp
+        action: update
+        new_name: traces_spanmetrics_latency_bucket
+      - include: ^latency_count$$
+        match_type: regexp
+        action: update
+        new_name: traces_spanmetrics_latency_count
+      - include: ^latency.sum$$
+        match_type: regexp
+        action: update
+        new_name: traces_spanmetrics_latency_sum
+#  filter:
+#    metrics:
+#      exclude:
+#        match_type: regexp
+#        resource_attributes:
+#          - Key: operation
+#            Value: "(HTTP.POST)"
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [spanmetrics, batch]
-      exporters: [logging, otlp]
+      processors: [ spanmetrics,batch]
+      exporters: [jaeger]
+    traces/servicegraph:
+      receivers: [ otlp ]
+      processors: [ servicegraph ]
+      exporters: [ otlp ]
+    metrics/spanmetrics:
+      # This receiver is just a dummy and never used.
+      # Added to pass validation requiring at least one receiver in a pipeline.
+      receivers: [ otlp/spanmetrics ]
+      exporters: [ otlp ]
     metrics:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [prometheus, logging]
+      processors: [metricstransform,batch]
+      exporters: [prometheusremotewrite]
+
