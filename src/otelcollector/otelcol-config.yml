@@ -12,13 +12,6 @@ receivers:
     protocols:
       grpc:
         endpoint: "localhost:12345"
-#  prometheus:
-#    config:
-#      scrape_configs:
-#        - job_name: 'spanmetrics'
-#          scrape_interval: 1m
-#          static_configs:
-#            - targets: [ "0.0.0.0:8889" ]
 exporters:
   jaeger:
     endpoint: "jaeger:4317"
@@ -28,11 +21,8 @@ exporters:
   logging:
   prometheusremotewrite:
     endpoint: http://prometheus:9090/api/v1/write
-#  prometheus:
-#    endpoint: "otelcol:9464"
-
   prometheus:
-    endpoint: "localhost:8889"
+    endpoint: "otelcol:9464"
 
   otlp:
     endpoint: localhost:4317
@@ -81,13 +71,7 @@ processors:
         match_type: regexp
         action: update
         new_name: traces_spanmetrics_latency_sum
-#  filter:
-#    metrics:
-#      exclude:
-#        match_type: regexp
-#        resource_attributes:
-#          - Key: operation
-#            Value: "(HTTP.POST)"
+
 service:
   pipelines:
     traces:
@@ -99,8 +83,6 @@ service:
       processors: [ servicegraph ]
       exporters: [ otlp ]
     metrics/spanmetrics:
-      # This receiver is just a dummy and never used.
-      # Added to pass validation requiring at least one receiver in a pipeline.
       receivers: [ otlp/spanmetrics ]
       exporters: [ otlp ]
     metrics:
