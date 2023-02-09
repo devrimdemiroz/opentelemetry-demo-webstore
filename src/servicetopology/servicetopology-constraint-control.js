@@ -98,15 +98,9 @@ let cy = window.cy = cytoscape({
             desiredAspectRatio: this.width() / this.height()
         });
 
-        this.nodes().forEach(function (node) {
-            let size = Math.random() * 40 + 30;
-            node.css("width", size);
-            node.css("height", size);
-        });
 
         let initialLayout = this.layout({name: 'fcose', step: 'all', animationEasing: 'ease-out'});
         initialLayout.pon('layoutstart').then(function (event) {
-            constraints.fixedNodeConstraint = JSON.parse(JSON.stringify(sample1_constraints.fixedNodeConstraint));
             clearConstraintListTable();
             fillConstraintListTableFromConstraints();
         });
@@ -114,32 +108,6 @@ let cy = window.cy = cytoscape({
     },
     layout: {name: 'preset'},
     style: defaultStylesheet,
-    elements: {
-        nodes: [
-            {data: {id: 'n1'}},
-            {data: {id: 'n2'}},
-            {data: {id: 'n3', parent: 'n8'}},
-            {data: {id: 'n5'}},
-            {data: {id: 'n6', parent: 'n8'}},
-            {data: {id: 'n7', parent: 'n8'}},
-            {data: {id: 'n8'}},
-            {data: {id: 'f1'}, classes: ['fixed']},
-            {data: {id: 'f2'}, classes: ['fixed']},
-            {data: {id: 'f3', parent: 'n8'}, classes: ['fixed']},
-        ],
-        edges: [
-            {data: {source: 'n1', target: 'f1'}},
-            {data: {source: 'n1', target: 'n3'}},
-            {data: {source: 'f1', target: 'n2'}},
-            {data: {source: 'f1', target: 'n3'}},
-            {data: {source: 'n3', target: 'f2'}},
-            {data: {source: 'f2', target: 'n5'}},
-            {data: {source: 'n5', target: 'n8'}},
-            {data: {source: 'n6', target: 'n3'}},
-            {data: {source: 'n6', target: 'n7'}},
-            {data: {source: 'n6', target: 'f3'}}
-        ]
-    },
     wheelSensitivity: 0.3
 });
 
@@ -285,25 +253,25 @@ let download = function (filename, text) {
 
 // Sample File Changer
 let sampleFileNames = {};
-
+function exportJsonFormatted() {
+    const json = cy.json();
+    const elements = json.elements;
+    if (!elements.nodes) {
+        return;
+    }
+    str2file(JSON.stringify(elements, undefined, 4), 'service-graph-formatted.json');
+}
 document.getElementById("sample").addEventListener("change", function () {
     cy.startBatch();
     cy.elements().remove();
     cy.style().clear();
 
-    var selectionObject = document.getElementById("sample");
-
-    var selected = selectionObject.options[selectionObject.selectedIndex].index;
-
-    if (selected == 1) {
-        cy.add(elements3);
-        applyPostLoadOperations(selected);
-    } else if (selected == 2) {
-        queryServiceGraph();
+    queryServiceGraph();
         queryTraceMetrics();
         serviceLevelGraph();
+        // log current graph as json
         applyPostLoadOperations(selected);
-    }
+        exportJsonFormatted();
 
     function applyPostLoadOperations(selected) {
         cy.nodes().forEach(function (node) {
@@ -321,7 +289,7 @@ document.getElementById("sample").addEventListener("change", function () {
 
     }
 
-    let json = sampleFileNames[selectionObject.value];
+    let json = sampleFileNames[servicetopology];
     cy.json(json);
     cy.nodes().forEach(function (node) {
         node.style({
@@ -491,43 +459,7 @@ document.getElementById("coseButton").addEventListener("click", function () {
 // Handle Constraints ----------------------------
 
 let onLoad = function () {
-    let nodeList = "<select id='nodeList' class='custom-select custom-select-sm' style='width:auto;' onchange='onSelect()'>";
-    let simpleNodes = cy.nodes().not(":parent");
-    for (let i = 0; i < simpleNodes.length; i++) {
-        let node = simpleNodes[i];
-        let label = (node.data('label')) ? (node.data('label')) : (node.id());
-        if (label.length > 15)
-            label = label.substring(0, 12).concat("...");
-        nodeList += "<option value='" + cy.nodes().not(":parent")[i].id() + "'>" + label + "</option>";
-    }
-    let listComponentForFixed = document.getElementById("nodeListColumn");
-    listComponentForFixed.innerHTML = nodeList;
-    document.getElementById("fixedNodeX").value = Math.round(cy.nodes().not(":parent")[0].position("x"));
-    document.getElementById("fixedNodeY").value = Math.round(cy.nodes().not(":parent")[0].position("y"));
 
-    let nodeListRP1 = "<select id='nodeListRP1' class='custom-select custom-select-sm' style='width:auto;' onchange='onSelectRP1()'>";
-    for (let i = 0; i < simpleNodes.length; i++) {
-        let node = simpleNodes[i];
-        let label = (node.data('label')) ? (node.data('label')) : (node.id());
-        if (label.length > 15)
-            label = label.substring(0, 12).concat("...");
-        nodeListRP1 += "<option value=" + cy.nodes().not(":parent")[i].id() + ">" + label + "</option>";
-    }
-
-    let nodeListRP2 = "<select id='nodeListRP2' class='custom-select custom-select-sm' style='width:auto;' onchange='onSelectRP2()'>";
-    for (let i = 0; i < simpleNodes.length; i++) {
-        let node = simpleNodes[i];
-        let label = (node.data('label')) ? (node.data('label')) : (node.id());
-        if (label.length > 15)
-            label = label.substring(0, 12).concat("...");
-        nodeListRP2 += "<option value=" + cy.nodes().not(":parent")[i].id() + ">" + label + "</option>";
-    }
-
-    let listComponentForRP1 = document.getElementById("nodeListColumnRP1");
-    listComponentForRP1.innerHTML = nodeListRP1;
-
-    let listComponentForRP2 = document.getElementById("nodeListColumnRP2");
-    listComponentForRP2.innerHTML = nodeListRP2;
 };
 
 let onSelect = function () {
@@ -892,74 +824,5 @@ let fillConstraintListTableFromConstraints = function () {
         });
 
     }
-};
-
-//// Samples
-
-let elements3 = {
-    nodes: [
-        {data: {id: 'r1', parent: 'n8'}, classes: ['relative']},
-        {data: {id: 'r2', parent: 'n8'}, classes: ['relative']},
-        {data: {id: 'r3', parent: 'n8'}, classes: ['relative']},
-        {data: {id: 'r4'}, classes: ['relative']},
-        {data: {id: 'r5'}, classes: ['relative']},
-        {data: {id: 'r6', parent: 'n7'}, classes: ['relative']},
-        {data: {id: 'r7', parent: 'n10'}, classes: ['relative']},
-        {data: {id: 'r8', parent: 'n10'}, classes: ['relative']},
-        {data: {id: 'n1', parent: 'n7'}},
-        {data: {id: 'n2'}},
-        {data: {id: 'n3'}},
-        {data: {id: 'n4'}},
-        {data: {id: 'n5'}},
-        {data: {id: 'n6'}},
-        {data: {id: 'n7', parent: 'n10'}},
-        {data: {id: 'n8'}},
-        {data: {id: 'n9'}},
-        {data: {id: 'n10'}}
-    ],
-    edges: [
-        {data: {source: 'r6', target: 'n1'}},
-        {data: {source: 'r6', target: 'n3'}},
-        {data: {source: 'n1', target: 'r8'}},
-        {data: {source: 'n1', target: 'r5'}},
-        {data: {source: 'n1', target: 'r7'}},
-        {data: {source: 'n2', target: 'n3'}},
-        {data: {source: 'n2', target: 'r2'}},
-        {data: {source: 'n2', target: 'n4'}},
-        {data: {source: 'r5', target: 'n5'}},
-        {data: {source: 'r5', target: 'n6'}},
-        {data: {source: 'r2', target: 'r1'}},
-        {data: {source: 'r2', target: 'r3'}},
-        {data: {source: 'n7', target: 'n9'}},
-        {data: {source: 'n5', target: 'n6'}},
-        {data: {source: 'n5', target: 'r4'}}
-    ]
-};
-
-
-let sample1_constraints = {
-    "fixedNodeConstraint": [
-        {
-            "nodeId": "f1",
-            "position": {
-                "x": -150,
-                "y": -100
-            }
-        },
-        {
-            "nodeId": "f2",
-            "position": {
-                "x": -50,
-                "y": -150
-            }
-        },
-        {
-            "nodeId": "f3",
-            "position": {
-                "x": 100,
-                "y": 150
-            }
-        }
-    ]
 };
 

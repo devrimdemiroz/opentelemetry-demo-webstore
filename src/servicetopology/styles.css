@@ -1,0 +1,24 @@
+#svg, #svg_tree {
+    font: 10px sans-serif;
+}
+
+.link {
+    fill: none;
+    stroke: #999;
+    stroke-width: 2;
+    stroke-opacity: 0.6;
+}
+
+node {
+    stroke: black;
+    stroke-width: 1.5;
+}
+.node rect {
+    stroke: black;
+    fill: #fff;
+}
+
+.node text {
+    fill: red;
+    text-anchor: middle;
+}

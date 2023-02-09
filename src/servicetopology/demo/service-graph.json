@@ -1,0 +1,2312 @@
+{
+    "nodes": [
+        {
+            "data": {
+                "id": "checkoutservice",
+                "label": "checkoutservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 82.02786272219369,
+                "y": 43.61412075753375
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT",
+                "parent": "checkoutservice",
+                "label": "CLIENT",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 51.12359584642543,
+                "y": 45.92711104262354
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_HTTP_POST",
+                "parent": "checkoutservice_CLIENT",
+                "label": "HTTP POST",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 92.34056101629827,
+                "y": 3.280046554146876
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_hipstershop_CartService_EmptyCart",
+                "parent": "checkoutservice_CLIENT",
+                "label": "hipstershop.CartService/EmptyCart",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 80.2713163145833,
+                "y": 51.65250953488412
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_hipstershop_CartService_GetCart",
+                "parent": "checkoutservice_CLIENT",
+                "label": "hipstershop.CartService/GetCart",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 66.4360343968069,
+                "y": 65.71676676162122
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_SERVER",
+                "parent": "checkoutservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 50.04426863522398,
+                "y": 90.1974892514229
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_SERVER_STATUS_CODE_UNSET_hipstershop_CheckoutService_PlaceOrder",
+                "parent": "checkoutservice_SERVER",
+                "label": "hipstershop.CheckoutService/PlaceOrder",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 11.10291443592919,
+                "y": 28.190738808784566
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_hipstershop_CurrencyService_Convert",
+                "parent": "checkoutservice_CLIENT",
+                "label": "hipstershop.CurrencyService/Convert",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.064",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 27.22968383575174,
+                "y": 93.03763947349415
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_hipstershop_PaymentService_Charge",
+                "parent": "checkoutservice_CLIENT",
+                "label": "hipstershop.PaymentService/Charge",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 10.388380939062447,
+                "y": 54.380033701304896
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_hipstershop_ProductCatalogService_GetProduct",
+                "parent": "checkoutservice_CLIENT",
+                "label": "hipstershop.ProductCatalogService/GetProduct",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.042666666666666665",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 0.7307229593236264,
+                "y": 63.599694623025904
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_hipstershop_ShippingService_GetQuote",
+                "parent": "checkoutservice_CLIENT",
+                "label": "hipstershop.ShippingService/GetQuote",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 92.57897346473855,
+                "y": 36.34693960343599
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_CLIENT_STATUS_CODE_UNSET_hipstershop_ShippingService_ShipOrder",
+                "parent": "checkoutservice_CLIENT",
+                "label": "hipstershop.ShippingService/ShipOrder",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 48.57748335996794,
+                "y": 79.25525964871233
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_PRODUCER",
+                "parent": "checkoutservice",
+                "label": "PRODUCER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 95.33712855821598,
+                "y": 8.516573051412612
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_PRODUCER_STATUS_CODE_UNSET_orders_send",
+                "parent": "checkoutservice_PRODUCER",
+                "label": "orders send",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 13.851645357042507,
+                "y": 11.038243618119402
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_INTERNAL",
+                "parent": "checkoutservice",
+                "label": "INTERNAL",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 69.68142027461215,
+                "y": 62.66028042405007
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "checkoutservice_INTERNAL_STATUS_CODE_UNSET_prepareOrderItemsAndShippingQuoteFromCart",
+                "parent": "checkoutservice_INTERNAL",
+                "label": "prepareOrderItemsAndShippingQuoteFromCart",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 24.32813227377708,
+                "y": 81.75238533867595
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "accountingservice",
+                "label": "accountingservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 28.90638387488894,
+                "y": 82.58973450907317
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "accountingservice_CONSUMER",
+                "parent": "accountingservice",
+                "label": "CONSUMER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 77.31577591896756,
+                "y": 86.81925684291892
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "accountingservice_CONSUMER_STATUS_CODE_UNSET_orders_receive",
+                "parent": "accountingservice_CONSUMER",
+                "label": "orders receive",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.03636297521863239",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 98.72233750813001,
+                "y": 99.63560681205142
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frauddetectionservice",
+                "label": "frauddetectionservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 9.857540509246698,
+                "y": 68.29590061061816
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frauddetectionservice_CONSUMER",
+                "parent": "frauddetectionservice",
+                "label": "CONSUMER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 2.0730926031607977,
+                "y": 88.46020905888025
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frauddetectionservice_CONSUMER_STATUS_CODE_UNSET_orders_process",
+                "parent": "frauddetectionservice_CONSUMER",
+                "label": "orders process",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.03636297521863239",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 46.70246666037781,
+                "y": 39.70928292294018
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice",
+                "label": "cartservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 6.843876186037301,
+                "y": 18.03989635502302
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice_CLIENT",
+                "parent": "cartservice",
+                "label": "CLIENT",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 3.612198268140232,
+                "y": 3.5413002829155937
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice_CLIENT_STATUS_CODE_UNSET_HGET",
+                "parent": "cartservice_CLIENT",
+                "label": "HGET",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.16363338848384576",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 8.960194794971832,
+                "y": 81.40705624971437
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice_CLIENT_STATUS_CODE_UNSET_HMSET",
+                "parent": "cartservice_CLIENT",
+                "label": "HMSET",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.07272595043726478",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 97.92727876979075,
+                "y": 36.11057322114998
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice_SERVER",
+                "parent": "cartservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 10.652129231248209,
+                "y": 16.237939988283433
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice_SERVER_STATUS_CODE_UNSET_hipstershop_CartService_AddItem",
+                "parent": "cartservice_SERVER",
+                "label": "hipstershop.CartService/AddItem",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.10908892565589716",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 44.35241115673348,
+                "y": 26.50118140096608
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice_SERVER_STATUS_CODE_UNSET_hipstershop_CartService_EmptyCart",
+                "parent": "cartservice_SERVER",
+                "label": "hipstershop.CartService/EmptyCart",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.022888888888888893",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 87.17282272353688,
+                "y": 87.73746244456096
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "cartservice_SERVER_STATUS_CODE_UNSET_hipstershop_CartService_GetCart",
+                "parent": "cartservice_SERVER",
+                "label": "hipstershop.CartService/GetCart",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.1999963637024781",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 60.405201845488776,
+                "y": 77.14323770314057
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "currencyservice",
+                "label": "currencyservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 13.005741315432552,
+                "y": 29.553814382929744
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "currencyservice_SERVER",
+                "parent": "currencyservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 88.57817721676261,
+                "y": 21.073517824088984
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "currencyservice_SERVER_STATUS_CODE_OK_CurrencyService_Convert",
+                "parent": "currencyservice_SERVER",
+                "label": "CurrencyService/Convert",
+                "statuscode": "STATUS_CODE_OK",
+                "count": "0.064",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 38.42770730298687,
+                "y": 88.67322156612993
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "emailservice",
+                "label": "emailservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 26.704763738353975,
+                "y": 42.30306604072928
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "emailservice_SERVER",
+                "parent": "emailservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 49.54006907122619,
+                "y": 69.6323585831776
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "emailservice_SERVER_STATUS_CODE_UNSET_POST__send_order_confirmation",
+                "parent": "emailservice_SERVER",
+                "label": "POST /send_order_confirmation",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 38.69827203027302,
+                "y": 3.821501940174621
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "emailservice_INTERNAL",
+                "parent": "emailservice",
+                "label": "INTERNAL",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 93.14981958897476,
+                "y": 93.41821385999968
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "emailservice_INTERNAL_STATUS_CODE_UNSET_send_email",
+                "parent": "emailservice_INTERNAL",
+                "label": "send_email",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 78.33240758543731,
+                "y": 52.53716214422981
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "emailservice_INTERNAL_STATUS_CODE_UNSET_sinatra_render_template",
+                "parent": "emailservice_INTERNAL",
+                "label": "sinatra.render_template",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.042666666666666665",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 10.555596120758914,
+                "y": 81.70223413602034
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "productcatalogservice",
+                "label": "productcatalogservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 51.91243819675857,
+                "y": 52.839711433509386
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "productcatalogservice_CLIENT",
+                "parent": "productcatalogservice",
+                "label": "CLIENT",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 95.40223432468498,
+                "y": 19.123771385213928
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "productcatalogservice_CLIENT_STATUS_CODE_UNSET_hipstershop_FeatureFlagService_GetFlag",
+                "parent": "productcatalogservice_CLIENT",
+                "label": "hipstershop.FeatureFlagService/GetFlag",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.05454446282794858",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 63.5082113555982,
+                "y": 73.93800263778786
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "productcatalogservice_SERVER",
+                "parent": "productcatalogservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 74.71541583090645,
+                "y": 83.5137357050406
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "productcatalogservice_SERVER_STATUS_CODE_UNSET_hipstershop_ProductCatalogService_GetProduct",
+                "parent": "productcatalogservice_SERVER",
+                "label": "hipstershop.ProductCatalogService/GetProduct",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.5454446282794858",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 88.91343854964839,
+                "y": 92.22303678246536
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "productcatalogservice_SERVER_STATUS_CODE_UNSET_hipstershop_ProductCatalogService_ListProducts",
+                "parent": "productcatalogservice_SERVER",
+                "label": "hipstershop.ProductCatalogService/ListProducts",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 85.77891403721625,
+                "y": 60.73452136169627
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "shippingservice",
+                "label": "shippingservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 59.09404948227767,
+                "y": 80.18838288278728
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "shippingservice_SERVER",
+                "parent": "shippingservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 92.26465725772185,
+                "y": 72.60361505578943
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "shippingservice_SERVER_STATUS_CODE_UNSET_hipstershop_ShippingService_GetQuote",
+                "parent": "shippingservice_SERVER",
+                "label": "hipstershop.ShippingService/GetQuote",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 25.169617688746172,
+                "y": 36.849509828163605
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "shippingservice_SERVER_STATUS_CODE_UNSET_hipstershop_ShippingService_ShipOrder",
+                "parent": "shippingservice_SERVER",
+                "label": "hipstershop.ShippingService/ShipOrder",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 81.1644652072654,
+                "y": 38.64215857671969
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "shippingservice_CLIENT",
+                "parent": "shippingservice",
+                "label": "CLIENT",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 98.33324998511137,
+                "y": 43.83983828773212
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "shippingservice_CLIENT_STATUS_CODE_UNSET_reqwest-http-client",
+                "parent": "shippingservice_CLIENT",
+                "label": "reqwest-http-client",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 33.19260487279744,
+                "y": 32.933326508702265
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend",
+                "label": "frontend",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 51.25789848039843,
+                "y": 54.21958535304985
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_SERVER",
+                "parent": "frontend",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 21.33631444902948,
+                "y": 6.277997100406807
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_SERVER_STATUS_CODE_ERROR_HTTP_GET",
+                "parent": "frontend_SERVER",
+                "label": "HTTP GET",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 6.5785461927193705,
+                "y": 45.122354696000336
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_SERVER_STATUS_CODE_UNSET_HTTP_GET",
+                "parent": "frontend_SERVER",
+                "label": "HTTP GET",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.836348430028545",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 82.54852000439563,
+                "y": 84.16458600894116
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_SERVER_STATUS_CODE_ERROR_HTTP_POST",
+                "parent": "frontend_SERVER",
+                "label": "HTTP POST",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0.03636297521863239",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 25.70882202954614,
+                "y": 70.2491679790528
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_SERVER_STATUS_CODE_UNSET_HTTP_POST",
+                "parent": "frontend_SERVER",
+                "label": "HTTP POST",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.2909038017490591",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 75.05838965427711,
+                "y": 73.76702108025435
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT",
+                "parent": "frontend",
+                "label": "CLIENT",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 44.087873605469404,
+                "y": 96.78833443117311
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_ERROR_grpc_hipstershop_AdService_GetAds",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.AdService/GetAds",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 44.228813688152215,
+                "y": 51.26604326557879
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_UNSET_grpc_hipstershop_AdService_GetAds",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.AdService/GetAds",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 25.378145210391523,
+                "y": 32.395542970337566
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_ERROR_grpc_hipstershop_CartService_AddItem",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.CartService/AddItem",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 5.730281262332171,
+                "y": 74.80195069599645
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_UNSET_grpc_hipstershop_CartService_AddItem",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.CartService/AddItem",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.10908892565589716",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 35.275831801378224,
+                "y": 44.46055961574208
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_ERROR_grpc_hipstershop_CartService_GetCart",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.CartService/GetCart",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 82.10663829009125,
+                "y": 41.571947617252505
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_UNSET_grpc_hipstershop_CartService_GetCart",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.CartService/GetCart",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.16363338848384576",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 41.682079286096894,
+                "y": 27.258739513381826
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_ERROR_grpc_hipstershop_CheckoutService_PlaceOrder",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.CheckoutService/PlaceOrder",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 6.129264402471168,
+                "y": 85.9668732490785
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_UNSET_grpc_hipstershop_CheckoutService_PlaceOrder",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.CheckoutService/PlaceOrder",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.022888888888888893",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 81.66009912157479,
+                "y": 97.58081010908585
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_ERROR_grpc_hipstershop_ProductCatalogService_GetProduct",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.ProductCatalogService/GetProduct",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 52.00661486329638,
+                "y": 93.34965622953146
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_UNSET_grpc_hipstershop_ProductCatalogService_GetProduct",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.ProductCatalogService/GetProduct",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.47271867784222105",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 46.01234139923155,
+                "y": 24.561175019994884
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_ERROR_grpc_hipstershop_RecommendationService_ListRecommendations",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.RecommendationService/ListRecommendations",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 83.55867462909512,
+                "y": 89.03296085755066
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_CLIENT_STATUS_CODE_UNSET_grpc_hipstershop_RecommendationService_ListRecommendations",
+                "parent": "frontend_CLIENT",
+                "label": "grpc.hipstershop.RecommendationService/ListRecommendations",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 22.798044660044823,
+                "y": 25.439294524507616
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_INTERNAL",
+                "parent": "frontend",
+                "label": "INTERNAL",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 43.49387481054843,
+                "y": 38.29871165390386
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "frontend_INTERNAL_STATUS_CODE_UNSET_tcp_connect",
+                "parent": "frontend_INTERNAL",
+                "label": "tcp.connect",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 28.225819138694032,
+                "y": 59.84313491824961
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "adservice",
+                "label": "adservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 90.5511811031982,
+                "y": 29.863755269802418
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "adservice_INTERNAL",
+                "parent": "adservice",
+                "label": "INTERNAL",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 50.605395046508484,
+                "y": 59.1226936760694
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "adservice_INTERNAL_STATUS_CODE_UNSET_getAdsByCategory",
+                "parent": "adservice_INTERNAL",
+                "label": "getAdsByCategory",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 30.860111756232843,
+                "y": 71.28310217143066
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "adservice_SERVER",
+                "parent": "adservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 63.763427638456335,
+                "y": 93.98541924574666
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "adservice_SERVER_STATUS_CODE_UNSET_hipstershop_AdService_GetAds",
+                "parent": "adservice_SERVER",
+                "label": "hipstershop.AdService/GetAds",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 30.46765925639968,
+                "y": 19.537503441272953
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice",
+                "label": "recommendationservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 37.66563237409005,
+                "y": 75.35749010504603
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice_CLIENT",
+                "parent": "recommendationservice",
+                "label": "CLIENT",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 61.86163393813894,
+                "y": 42.76554245800447
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice_CLIENT_STATUS_CODE_UNSET__hipstershop_FeatureFlagService_GetFlag",
+                "parent": "recommendationservice_CLIENT",
+                "label": "/hipstershop.FeatureFlagService/GetFlag",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 77.28607481568646,
+                "y": 66.5598796329823
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice_CLIENT_STATUS_CODE_UNSET__hipstershop_ProductCatalogService_ListProducts",
+                "parent": "recommendationservice_CLIENT",
+                "label": "/hipstershop.ProductCatalogService/ListProducts",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 74.58938211988881,
+                "y": 69.74815941245997
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice_SERVER",
+                "parent": "recommendationservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 79.96943620282471,
+                "y": 4.104009136642473
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice_SERVER_STATUS_CODE_UNSET__hipstershop_RecommendationService_ListRecommendations",
+                "parent": "recommendationservice_SERVER",
+                "label": "/hipstershop.RecommendationService/ListRecommendations",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 76.70385189688501,
+                "y": 1.7491905751801151
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice_INTERNAL",
+                "parent": "recommendationservice",
+                "label": "INTERNAL",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 83.4598469268105,
+                "y": 61.166097862427385
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "recommendationservice_INTERNAL_STATUS_CODE_UNSET_get_product_list",
+                "parent": "recommendationservice_INTERNAL",
+                "label": "get_product_list",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.018181487609316194",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 41.83240103885423,
+                "y": 98.73060262826272
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "loadgenerator",
+                "label": "loadgenerator",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 44.9191858765155,
+                "y": 26.698272397141476
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "loadgenerator_CLIENT",
+                "parent": "loadgenerator",
+                "label": "CLIENT",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 92.93532954689537,
+                "y": 43.35753875587927
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "loadgenerator_CLIENT_STATUS_CODE_ERROR_HTTP_GET",
+                "parent": "loadgenerator_CLIENT",
+                "label": "HTTP GET",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 2.6950619366574835,
+                "y": 56.97834398965945
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "loadgenerator_CLIENT_STATUS_CODE_UNSET_HTTP_GET",
+                "parent": "loadgenerator_CLIENT",
+                "label": "HTTP GET",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.8908928928564935",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 21.950461280765765,
+                "y": 60.92846530730377
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "loadgenerator_CLIENT_STATUS_CODE_ERROR_HTTP_POST",
+                "parent": "loadgenerator_CLIENT",
+                "label": "HTTP POST",
+                "statuscode": "STATUS_CODE_ERROR",
+                "count": "0.03636297521863239",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 53.467538028433225,
+                "y": 81.52340725646351
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "loadgenerator_CLIENT_STATUS_CODE_UNSET_HTTP_POST",
+                "parent": "loadgenerator_CLIENT",
+                "label": "HTTP POST",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.3272667769676915",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 49.23091454930334,
+                "y": 61.96804468226761
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "quoteservice",
+                "label": "quoteservice",
+                "nodeType": "service"
+            },
+            "position": {
+                "x": 68.83516126608879,
+                "y": 96.73873589132693
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "quoteservice_SERVER",
+                "parent": "quoteservice",
+                "label": "SERVER",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 12.651494892152392,
+                "y": 7.561973069373085
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "quoteservice_SERVER_STATUS_CODE_OK__getquote",
+                "parent": "quoteservice_SERVER",
+                "label": "/getquote",
+                "statuscode": "STATUS_CODE_OK",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 89.45214192166338,
+                "y": 9.599226990612063
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "quoteservice_INTERNAL",
+                "parent": "quoteservice",
+                "label": "INTERNAL",
+                "nodeType": "spankind"
+            },
+            "position": {
+                "x": 86.3940873076206,
+                "y": 41.51259549068147
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        },
+        {
+            "data": {
+                "id": "quoteservice_INTERNAL_STATUS_CODE_UNSET_calculate-quote",
+                "parent": "quoteservice_INTERNAL",
+                "label": "calculate-quote",
+                "statuscode": "STATUS_CODE_UNSET",
+                "count": "0.021333333333333333",
+                "nodeType": "operation"
+            },
+            "position": {
+                "x": 85.8226489919755,
+                "y": 28.53079961578021
+            },
+            "group": "nodes",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": false,
+            "classes": ""
+        }
+    ],
+    "edges": [
+        {
+            "data": {
+                "source": "checkoutservice",
+                "target": "accountingservice",
+                "id": "731c26bc-4884-46ac-ac7e-e8c24fea3961"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "checkoutservice",
+                "target": "frauddetectionservice",
+                "id": "cb89e986-46ea-437a-ae62-a586d37fc9ec"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "checkoutservice",
+                "target": "cartservice",
+                "id": "7037a82b-4420-45ba-aee4-31579c212982"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "checkoutservice",
+                "target": "currencyservice",
+                "id": "6aaee436-241b-41db-a209-1875ad9f132c"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "checkoutservice",
+                "target": "emailservice",
+                "id": "c2898972-4f70-4a13-be6f-5f8e88328e6a"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "checkoutservice",
+                "target": "productcatalogservice",
+                "id": "31d214b5-4f3e-4937-b786-0a95139623ee"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "checkoutservice",
+                "target": "shippingservice",
+                "id": "e21bf290-18dd-475e-baa3-580d657cb3a1"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "frontend",
+                "target": "adservice",
+                "id": "67100681-7ba2-4461-8283-4881fa623014"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "frontend",
+                "target": "cartservice",
+                "id": "635d9c16-6b0d-40a6-8894-31d18e0b2881"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "frontend",
+                "target": "checkoutservice",
+                "id": "06b320b1-33ca-431a-9f51-c0d5e2b24e3b"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "frontend",
+                "target": "productcatalogservice",
+                "id": "5fa65703-bfbe-45da-9abd-5c7df9ecdcd4"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "frontend",
+                "target": "recommendationservice",
+                "id": "99ba282c-e4fb-4fd6-a912-dc875425ee9b"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "loadgenerator",
+                "target": "frontend",
+                "id": "ba1e3248-aa2f-49fa-9481-cd9250fa1ba8"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "recommendationservice",
+                "target": "productcatalogservice",
+                "id": "d5b7837d-821a-4ca4-a719-50ede969f107"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        },
+        {
+            "data": {
+                "source": "shippingservice",
+                "target": "quoteservice",
+                "id": "5a3f79f0-55a9-4527-b9b5-c8e78c815bf8"
+            },
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "group": "edges",
+            "removed": false,
+            "selected": false,
+            "selectable": true,
+            "locked": false,
+            "grabbable": true,
+            "pannable": true,
+            "classes": ""
+        }
+    ]
+}

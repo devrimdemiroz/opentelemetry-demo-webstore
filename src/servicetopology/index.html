@@ -2,39 +2,49 @@
 <html>
 <head>
     <title>Service Graph Topologies</title>
-    <script src="https://d3js.org/d3.v7.js"></script>
 
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <!-- Bootstrap, popper, jQuery and filesaver - for demo purpose only -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Cytoscape and fcose -->
     <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
     <script src="https://unpkg.com/layout-base/layout-base.js"></script>
     <script src="https://unpkg.com/cose-base/cose-base.js"></script>
-    <script src="https://unpkg.com/cytoscape-layout-utilities/cytoscape-layout-utilities.js"></script>
-    <script src="https://unpkg.com/cytoscape-fcose/cytoscape-fcose.js"></script>
+    <script src="cytoscape-fcose.js"></script>
 
-    <style>
-        #cy {
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-    </style>
+
+
+    <script src="https://unpkg.com/cytoscape-layout-utilities/cytoscape-layout-utilities.js"></script>
+    <script src="https://unpkg.com/cytoscape-view-utilities/cytoscape-view-utilities.js"></script>
+    <script src="./dist/cytoscape-complexity-management.umd.js"> </script>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+
+
 </head>
 <body>
 
 <h1>Service Graph Topologies</h1>
-<h2>Force Directed</h2>
-<svg width="960" height="500" id="svg"></svg>
-<h2> Hierarchical Tree</h2>
-<svg width="960" height="500" id="svg_tree"></svg>
-<h2> Fcose</h2>
-<div id="cy"></div>
 
-<!--<script src="main-d3.js">-->
-<!--</script>-->
+<h2> Fcose cmgm</h2>
+<div class="cy-canvas">
+    <div class="cy-container">
+        <div id="cy"></div>
+    </div>
+    <div class="cy-container-header">
+        <h1>Visible Graph</h1>
+        <h1>Invisible Graph</h1>
+    </div>
+    <div class="cy-extension-container">
+        <div id="cyVisible"></div>
+        <div id="cyInvisible"></div>
+    </div>
+</div>
+<script src="main-cy.js"></script>
 
-<script src="main-fcose.js">
-</script>
+<!--<script src="main-fcose.js" defer></script>-->
 
 </body>
 </html>
