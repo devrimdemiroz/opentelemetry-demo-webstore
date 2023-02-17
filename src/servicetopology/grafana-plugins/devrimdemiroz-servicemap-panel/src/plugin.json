@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "panel",
+  "name": "Service Map",
+  "id": "devrimdemiroz-servicemap-panel",
+  "info": {
+    "keywords": ["panel"],
+    "description": "This panel utilizes prometheus to gather metrics that are labeled as source target the collected data is then used to create a service topology map using cytoscape js this allows for a visual representation of the relationships between different services",
+    "author": {
+      "name": "Devrimdemiroz"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=9.2.5",
+    "plugins": []
+  }
+}
