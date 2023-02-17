@@ -33,30 +33,62 @@ services:
 
 
 
-  # Email service
-  emailservice:
-    image: ${IMAGE_NAME}:${IMAGE_VERSION}-emailservice
-    container_name: email-service
+#  # Email service
+#  emailservice:
+#    image: ${IMAGE_NAME}:${IMAGE_VERSION}-emailservice
+#    container_name: email-service
+#    build:
+#      context: ./src/emailservice
+#      cache_from:
+#        - ${IMAGE_NAME}:${IMAGE_VERSION}-emailservice
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 100M
+#    restart: unless-stopped
+#    ports:
+#      - "${EMAIL_SERVICE_PORT}"
+#    environment:
+#      - APP_ENV=production
+#      - EMAIL_SERVICE_PORT
+#      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://${OTEL_COLLECTOR_HOST}:4318/v1/traces
+#      - OTEL_RESOURCE_ATTRIBUTES
+#      - OTEL_SERVICE_NAME=emailservice
+#    depends_on:
+#      - otelcol
+#    logging: *logging
+
+  # Feature Flag service
+  featureflagservice:
+    image: ${IMAGE_NAME}:${IMAGE_VERSION}-featureflagservice
+    container_name: feature-flag-service
     build:
-      context: ./src/emailservice
+      context: ./
+      dockerfile: ./src/featureflagservice/Dockerfile
       cache_from:
-        - ${IMAGE_NAME}:${IMAGE_VERSION}-emailservice
+        - ${IMAGE_NAME}:${IMAGE_VERSION}-featureflagservice
     deploy:
       resources:
         limits:
-          memory: 100M
-    restart: always
+          memory: 200M
+    restart: unless-stopped
     ports:
-      - "${EMAIL_SERVICE_PORT}"
+      - "${FEATURE_FLAG_SERVICE_PORT}"                                  # Feature Flag Service UI
+      - "${FEATURE_FLAG_GRPC_SERVICE_PORT}"                             # Feature Flag Service gRPC API
     environment:
-      - APP_ENV=production
-      - EMAIL_SERVICE_PORT
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://${OTEL_COLLECTOR_HOST}:4318/v1/traces
-      - OTEL_SERVICE_NAME=emailservice
+      - FEATURE_FLAG_SERVICE_PORT
+      - FEATURE_FLAG_GRPC_SERVICE_PORT
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+      - OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=grpc
+      - OTEL_SERVICE_NAME=featureflagservice
+      - DATABASE_URL=ecto://ffs:ffs@ffs_postgres:5432/ffs
+      - FEATURE_FLAG_SERVICE_PATH_ROOT="/feature"
+    healthcheck:
+      test: ["CMD", "curl", "-H", "baggage: synthetic_request=true", "-f", "http://localhost:${FEATURE_FLAG_SERVICE_PORT}"]
     depends_on:
-      - otelcol
+      ffs_postgres:
+        condition: service_healthy
     logging: *logging
-
 
   # Frontend
   frontend:
@@ -71,7 +103,7 @@ services:
       resources:
         limits:
           memory: 200M
-    restart: always
+    restart: unless-stopped
     ports:
       - "${FRONTEND_PORT}"
     environment:
@@ -85,14 +117,17 @@ services:
       - RECOMMENDATION_SERVICE_ADDR
       - SHIPPING_SERVICE_ADDR
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-      - OTEL_RESOURCE_ATTRIBUTES=service.name=frontend
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
       - OTEL_EXPORTER_OTLP_ENDPOINT
       - ENV_PLATFORM
       - OTEL_SERVICE_NAME=frontend
       - PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+      - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
       - WEB_OTEL_SERVICE_NAME=frontend-web
     depends_on:
       - otelcol
+      - quoteservice
       - shippingservice
     logging: *logging
 
@@ -125,34 +160,88 @@ services:
       - featureflagservice
       - loadgenerator
       - grafana
-  # Feature Flag service
-  featureflagservice:
-    image: ${IMAGE_NAME}:${IMAGE_VERSION}-featureflagservice
-    container_name: feature-flag-service
+
+  # Load Generator
+  loadgenerator:
+    image: ${IMAGE_NAME}:${IMAGE_VERSION}-loadgenerator
+    container_name: load-generator
     build:
       context: ./
-      dockerfile: ./src/featureflagservice/Dockerfile
+      dockerfile: ./src/loadgenerator/Dockerfile
       cache_from:
-        - ${IMAGE_NAME}:${IMAGE_VERSION}-featureflagservice
+        - ${IMAGE_NAME}:${IMAGE_VERSION}-loadgenerator
     deploy:
       resources:
         limits:
-          memory: 200M
+          memory: 120M
     restart: always
     ports:
-      - "${FEATURE_FLAG_SERVICE_PORT}"                                  # Feature Flag Service UI
-      - "${FEATURE_FLAG_GRPC_SERVICE_PORT}"                             # Feature Flag Service gRPC API
+      - "${LOCUST_WEB_PORT}"
     environment:
-      - FEATURE_FLAG_SERVICE_PORT
-      - FEATURE_FLAG_GRPC_SERVICE_PORT
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-      - OTEL_EXPORTER_OTLP_TRACES_PROTOCOL=grpc
-      - OTEL_SERVICE_NAME=featureflagservice
-      - DATABASE_URL=ecto://ffs:ffs@ffs_postgres:5432/ffs
-      - FEATURE_FLAG_SERVICE_PATH_ROOT="/feature"
+      - LOCUST_WEB_PORT
+      - LOCUST_USERS
+      - LOCUST_HOST
+      - LOCUST_HEADLESS
+      - LOCUST_AUTOSTART
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://${OTEL_COLLECTOR_HOST}:4318/v1/traces
+      - OTEL_RESOURCE_ATTRIBUTES
+      - OTEL_SERVICE_NAME=loadgenerator
+      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
     depends_on:
-      ffs_postgres:
-        condition: service_healthy
+      - frontend
+    logging: *logging
+
+  # Quote service
+  quoteservice:
+    image: ${IMAGE_NAME}:${IMAGE_VERSION}-quoteservice
+    container_name: quote-service
+    build:
+      context: ./
+      dockerfile: ./src/quoteservice/Dockerfile
+      cache_from:
+        - ${IMAGE_NAME}:${IMAGE_VERSION}-quoteservice
+    deploy:
+      resources:
+        limits:
+          memory: 30M
+    restart: unless-stopped
+    ports:
+      - "${QUOTE_SERVICE_PORT}"
+    environment:
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://${OTEL_COLLECTOR_HOST}:4318/v1/traces
+      - OTEL_PHP_AUTOLOAD_ENABLED=true
+      - QUOTE_SERVICE_PORT
+      - OTEL_RESOURCE_ATTRIBUTES
+      - OTEL_SERVICE_NAME=quoteservice
+    depends_on:
+      - otelcol
+    logging: *logging
+
+
+  # Shipping service
+  shippingservice:
+    image: ${IMAGE_NAME}:${IMAGE_VERSION}-shippingservice
+    container_name: shipping-service
+    build:
+      context: ./
+      dockerfile: ./src/shippingservice/Dockerfile
+      cache_from:
+        - ${IMAGE_NAME}:${IMAGE_VERSION}-shippingservice
+    deploy:
+      resources:
+        limits:
+          memory: 20M
+    restart: unless-stopped
+    ports:
+      - "${SHIPPING_SERVICE_PORT}"
+    environment:
+      - SHIPPING_SERVICE_PORT
+      - QUOTE_SERVICE_ADDR
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+      - OTEL_RESOURCE_ATTRIBUTES
+      - OTEL_SERVICE_NAME=shippingservice
+    depends_on:
+      - otelcol
     logging: *logging
 
   # ******************
@@ -179,61 +268,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Load Generator
-  loadgenerator:
-    image: ${IMAGE_NAME}:${IMAGE_VERSION}-loadgenerator
-    container_name: load-generator
-    build:
-      context: ./
-      dockerfile: ./src/loadgenerator/Dockerfile
-      cache_from:
-        - ${IMAGE_NAME}:${IMAGE_VERSION}-loadgenerator
-    deploy:
-      resources:
-        limits:
-          memory: 120M
-    restart: always
-    ports:
-      - "${LOCUST_WEB_PORT}"
-    environment:
-      - LOCUST_WEB_PORT
-      - LOCUST_USERS
-      - LOCUST_HOST
-      - LOCUST_HEADLESS
-      - LOCUST_AUTOSTART
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-      - OTEL_SERVICE_NAME=loadgenerator
-      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-    depends_on:
-      - frontend
-    logging: *logging
-
-
-
-  # Shipping service
-  shippingservice:
-    image: ${IMAGE_NAME}:${IMAGE_VERSION}-shippingservice
-    container_name: shipping-service
-    build:
-      context: ./
-      dockerfile: ./src/shippingservice/Dockerfile
-      cache_from:
-        - ${IMAGE_NAME}:${IMAGE_VERSION}-shippingservice
-    deploy:
-      resources:
-        limits:
-          memory: 20M
-    restart: always
-    ports:
-      - "${SHIPPING_SERVICE_PORT}"
-    environment:
-      - SHIPPING_SERVICE_PORT
-      - QUOTE_SERVICE_ADDR
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-      - OTEL_SERVICE_NAME=shippingservice
-    depends_on:
-      - otelcol
-    logging: *logging
 
 
 
@@ -255,7 +289,7 @@ services:
       resources:
         limits:
           memory: 275M
-    restart: always
+    restart: unless-stopped
     ports:
       - "${JAEGER_SERVICE_PORT}"                    # Jaeger UI
       - "4317"                           # OTLP gRPC default port
@@ -266,7 +300,7 @@ services:
 
   # Grafana
   grafana:
-    image: grafana/grafana:9.1.0
+    image: grafana/grafana:9.3.6
     container_name: grafana
     volumes:
       - ./src/grafana/grafana.ini:/etc/grafana/grafana.ini
@@ -278,13 +312,13 @@ services:
 
   # OpenTelemetry Collector
   otelcol:
-    image: otel/opentelemetry-collector-contrib:0.68.0
+    image: otel/opentelemetry-collector-contrib:0.70.0
     container_name: otel-col
     deploy:
       resources:
         limits:
           memory: 100M
-    restart: always
+    restart: unless-stopped
     command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
     volumes:
       - ./src/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
@@ -309,7 +343,10 @@ services:
       - --config.file=/etc/prometheus/prometheus-config.yaml
       - --storage.tsdb.path=/prometheus
       - --web.enable-lifecycle
+      - --web.route-prefix=/
+      - --enable-feature=exemplar-storage
       - --web.cors.origin=".*"
+      - --web.enable-remote-write-receiver
     volumes:
       - ./src/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
     ports:

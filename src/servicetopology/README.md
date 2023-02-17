@@ -79,11 +79,13 @@ http://localhost:8181/index.html
 ```shell
 # compose docker-compose-min.yml
 cd ../../
-docker-compose -f docker-compose-min.yml up --force-recreate --build web 
+docker-compose -f docker-compose-min.yml up --force-recreate --no-build
 ```
     
 ```shell
-docker-compose up --force-recreate --build web image
+docker-compose -f docker-compose-min.yml up --force-recreate  otelcol &
+docker-compose -f docker-compose-min.yml up --force-recreate  grafana &
+
 ```
 
 ```shell

@@ -6,11 +6,7 @@ scrape_configs:
   static_configs:
   - targets:
     - 'otelcol:9464'
-  params:
-    cors_origin: ['*']
 - job_name: otel-collector
   static_configs:
   - targets:
     - 'otelcol:8888'
-  params:
-    cors_origin: ['*']
