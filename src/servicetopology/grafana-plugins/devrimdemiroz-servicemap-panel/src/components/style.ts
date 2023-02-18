@@ -8,7 +8,7 @@ export const colors = {
     "ERROR": "#9B110E",
     "3": "#F8AFA8",
     "COMPOUND": "#FDDDA0",
-    "5": "#74A089",
+    "UNSET": "#74A089",
     "6": "#F2AD00",
     "7": "#F98400",
     "8": "#5BBCD6",
@@ -16,7 +16,10 @@ export const colors = {
     "10": "#046C9A",
     "11": "#D69C4E",
     "12": "#ABDDDE",
-    "14": "#446455",
+    "13": "#446455",
+    "14": "#F2AD00",
+    "15": "#F98400",
+    "16": "#5BBCD6",
 } ;
 export const cyStyle =  [
     {
@@ -35,6 +38,15 @@ export const cyStyle =  [
         },
     },
     {
+        selector:  'node[nodeType = "service"]' ,
+        style: {
+
+            "text-valign": "bottom", // default
+            "text-halign": "center", // default
+            "font-size": 8,
+        }
+    },
+    {
         selector:  'node[nodeType = "operation"]' ,
         style: {
             "background-color" : "white",
@@ -43,8 +55,10 @@ export const cyStyle =  [
             "text-halign": "center",
             "shape": "circle",
             "text-wrap" : "ellipsis",
-            "label": "data(label)",
-            "text-max-width": "data(label * 2)",
+            "label": "",
+
+            "width": 10,
+            "height": 10,
 
         }
     },
@@ -54,17 +68,23 @@ export const cyStyle =  [
         style: {
             "color" : colors['ERROR'],
             "border-color": colors['ERROR'],
+            "fill": colors['ERROR'],
+            "text-valign": "top",
+            "width": 5,
+            "height": 5,
         }
     },
     {
-        selector:  'node[nodeType = "service"]' ,
+        selector:  'node[spanStatus = "UNSET"]' ,
         style: {
-
-                "text-valign": "bottom", // default
-                "text-halign": "center", // default
-                "font-size": 8,
-            }
+            "color" : colors['UNSET'],
+            "border-color": colors['UNSET'],
+            "text-valign": "top",
+            "width": 5,
+            "height": 5,
+        }
     },
+
     {
         selector:  'node[nodeType = "CLIENT"]' ,
         style: {
@@ -82,12 +102,10 @@ export const cyStyle =  [
         style:{
             "background-opacity": 0.333,
             "text-valign": "bottom",
-
-             "shape": "barrel",
-
-            "text-margin-y": "2px",
-            "font-weight ": "normal",
+            "shape": "barrel",
+            "text-margin-y": "10px",
             "border-color": colors['COMPOUND'],
+            "text-wrap" : "wrap",// options
 
         }
 

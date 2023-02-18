@@ -6,4 +6,5 @@ This branch is reflection of the [Shahmaran](https://tractatus.one/shahmaran-20a
 
 explore the topological capabilities and limitations of the spanmetrics and servicegraph processors available in the opentelemetry contrib library. I will examine their usefulness in visualizing the shape of our system and consider what additional features and functionality we might desire in the future.
 
-
+### Cytoscape on Grafana Preview 18 Feb 2023
+![ucm based topology - cytoscape footprint](preview1.png)

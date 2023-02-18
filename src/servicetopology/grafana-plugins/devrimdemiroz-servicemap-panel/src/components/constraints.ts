@@ -8,7 +8,8 @@ let constraints = {
         }
     ],
     alignmentConstraint: {
-        horizontal: [[ "loadgenerator", "frontend" ],]
+        horizontal: [[ "loadgenerator", "frontend" ],],
+        vertical: [[  ]]
     },
     relativePlacementConstraint: [{ left: "loadgenerator", right: "frontend", gap: 100 }],
 };

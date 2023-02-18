@@ -71,6 +71,7 @@ export const addRelativeConstraint = ( node1,node2 ) =>{
 export const resetConstraints = () => {
     if (constraints.alignmentConstraint){
         layoutOptions.alignmentConstraint = {};
+
         if (constraints.alignmentConstraint.horizontal) {
 
             layoutOptions.alignmentConstraint.horizontal = constraints.alignmentConstraint.horizontal;

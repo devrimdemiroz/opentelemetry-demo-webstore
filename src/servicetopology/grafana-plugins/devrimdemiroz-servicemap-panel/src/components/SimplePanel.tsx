@@ -126,10 +126,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.setServiceEdges();
         resetConstraints();
         this.setOperationNodes();
-        this.groupNodes("spanKind");
         this.correlateOperations();
-        //this.calculateConstraints();
-        //this.styleNodes();
+        this.calculateConstraints();
 
         this.cy.fit();
         console.log("this.cy", this.cy);
@@ -197,23 +195,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         // TODO: listen to changes in the Services variable combobox and update the graph accordingly
     }
 
-    private styleNodes() {
-
-
-        // find the largest label length
-        const maxLabelLength = this.cy.nodes().reduce((max: any, ele: any) => {
-            const label = ele.data("label");
-            return Math.max(max, label.length);
-        }, 5);
-
-        // set the width to maxLabelLength * 10px
-        this.cy.style().selector("node").style({
-            "text-max-width": maxLabelLength * 5,
-
-        });
-
-
-    }
 
     private setServiceEdges() {
         const {data} = this.props;
@@ -315,75 +296,77 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             let value = operation.fields[1].values.get(0);
             // round the value to 2 decimals after the dot
             value = Math.round(value * 100) / 100;
+
+            // Create spankind compound node if it does not exist
+
+
             // if operation node does not exist create it
             if (this.cy.getElementById(operationId).length === 0) {
-                this.cy.add({
-                    data: {
-                        id: operationId,
-                        label: operationName,
-                        nodeType: "operation",
-                        spanKind: spanKind,
-                        spanStatus: spanStatus,
-                        httpMethod: httpMethod,
-                        httpStatusCode: httpStatusCode,
-                        service: service,
-                        parent: service+"-compound",
-                    }
-                });
-                this.cy.add({
-                    data: {
-                        id: operationStatusId,
-                        label: operationStatus,
-                        nodeType: "operationStatus",
-                        spanStatus: spanStatus,
-                        httpStatusCode: httpStatusCode,
-                        value: value,
-                        parent: operationId,
-                    }
-                } );
+                this.addOperationCompound(operationId, operationName, service);
+                this.addOperationNode(operationId, operationName, spanKind, httpMethod, service);
+                this.addOperationStatusNode(operationStatusId, operationStatus, spanStatus, httpStatusCode, value, operationId);
             } else {
-                // if operation node exists update the label
-                this.cy.getElementById(operationStatusId).data('value', value);
+                // if operation node exists but if the status node does not exist create it
+                if (this.cy.getElementById(operationStatusId).length === 0) {
+                    this.addOperationStatusNode(operationStatusId, operationStatus, spanStatus, httpStatusCode, value, operationId);
+                    } else {
+                    // if operation node exists and status node exists update the value
+                    this.cy.getElementById(operationStatusId).data('value', value);
+                }
             }
+            // once finished , itreate status nodes and sum up the values into operation node
+            const operationStatusNodes = this.cy.nodes().filter("node[nodeType = 'operationStatus'][parent = '" + operationId+"-compound" + "']" );
+            let operationValue=0;
+            operationStatusNodes.forEach((operationStatusNode: any) => {
+                operationValue+=operationStatusNode.data('value');
+            } );
+            this.cy.getElementById(operationId).data('value', operationValue);
 
         });
 
     }
 
-    private groupNodes(attrName: string) {
-        // get distinct values of the attribute available on operation nodes
-        const distinctValues = this.cy.nodes().filter("node[nodeType = 'operation']").map((node: any) => node.data(attrName)).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
-        // iterate over the services and get matching operations containing distinct values
-        this.cy.nodes().filter("node[nodeType = 'service']").forEach((service: any) => {
-            // iterate over the distinct values
-            distinctValues.forEach((value: any) => {
 
-                // get the matching operations
-                const matchingOperations = this.cy.nodes().filter("node[nodeType = 'operation'][parent = '" + service.data('id') + "-compound'][spanKind = '" + value + "']");
-                // if there are matching operations
-                if (matchingOperations.length > 0) {
-                    // create a group node
-                    // if group node exists skip
-                    if (this.cy.getElementById(service.data('id') + "_" + value).length > 0) {
-                        return;
-                    }
-                    const groupNode = this.cy.add({
-                        data: {
-                            id: service.data('id') + "_" + value,
-                            label: value,
-                            nodeType: value,
-                            parent: service.data('id')+ "-compound",
-                        }
-                    });
-                    // move the matching operations under the group node
-                    matchingOperations.move({parent: groupNode.data('id')});
-                }
-
-            });
-
+    private addOperationStatusNode(operationStatusId: string, operationStatus, spanStatus, httpStatusCode, value, operationId: string) {
+        this.cy.add({
+            data: {
+                id: operationStatusId,
+                label: operationStatus, // ERROR_500 or UNSET or similar
+                nodeType: "operationStatus",
+                spanStatus: spanStatus,
+                httpStatusCode: httpStatusCode,
+                value: value,
+                parent: operationId + "-compound",
+            }
         });
+    }
 
+    private addOperationCompound(operationId: string, operationName, service) {
+        this.cy.add({
+            data: {
+                id: operationId + "-compound",
+                label: operationName,
+                nodeType: "operation-compound",
+                service: service,
+                parent: service + "-compound",
+            }
+        });
+    }
 
+    private addOperationNode(operationId: string, operationName, spanKind, httpMethod, service) {
+        this.cy.add({
+            data: {
+                id: operationId,
+                label: operationName,
+                name: operationName,
+                nodeType: "operation",
+                spanKind: spanKind,
+                httpMethod: httpMethod,
+                service: service,
+                parent: operationId + "-compound",
+                value: 0,
+            }
+        });
     }
 
     private correlateOperations() {
@@ -394,10 +377,10 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         console.log("clientOperations", clientOperations);
         // iterate over the collections of client operations
         clientOperations.forEach((clientOperation: any) => {
-            //console.log("clientOperation", clientOperation);
+            console.log("clientOperation", clientOperation.data());
             // get the matching server operations
-            const serverOperations = this.cy.nodes().filter("node[nodeType = 'operation'][spanKind = 'SERVER'][label = '" + clientOperation.data('label') + "'][spanStatus = '" + clientOperation.data('spanStatus') + "'][httpStatusCode = '" + clientOperation.data('httpStatusCode') + "']");
-            //console.log("serverOperations", serverOperations);
+            const serverOperations = this.cy.nodes().filter("node[nodeType = 'operation'][spanKind = 'SERVER'][name = '" + clientOperation.data('name') + "']" );
+            console.log("serverOperations", serverOperations.data);
             // if there are matching operations
             if (serverOperations.length > 0) {
                 // create an edge from client to server
@@ -469,30 +452,36 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     private calculateConstraints() {
         resetConstraints();
         this.vAllignOperations();
-        this.relativeAllignSpanKinds();
-
+        //this.hAllignOperations();
 
     }
-
-    private relativeAllignSpanKinds() {
-        // relative allignment for spanKind group compounds: SERVER left and CLIENT right
-        // find services containing both spanKind SERVER and CLIENT
-        const services = this.cy.nodes().filter("node[nodeType = 'service']");
-        services.forEach((service: any) => {
-            const spanKindGroups = service.children();
-            const serverGroup = spanKindGroups.filter("node[label = 'SERVER']");
-            const clientGroup = spanKindGroups.filter("node[label = 'CLIENT']");
-            if (serverGroup.length === 1 && clientGroup.length === 1) {
-                addRelativeConstraint(serverGroup.data('id'), clientGroup.data('id'));
-                let vallign = [];
-                vallign.push(serverGroup.data('id'));
-                vallign.push(clientGroup.data('id'));
-                addVallignConstraint(vallign);
-            }
-        });
-    }
+    //
+    // private relativeAllignSpanKinds() {
+    //     // relative allignment for spanKind group compounds: SERVER left and CLIENT right
+    //     // find services containing both spanKind SERVER and CLIENT
+    //     const services = this.cy.nodes().filter("node[nodeType = 'service']");
+    //     services.forEach((service: any) => {
+    //         const spanKindGroups = service.children();
+    //         const serverGroup = spanKindGroups.filter("node[label = 'SERVER']");
+    //         const clientGroup = spanKindGroups.filter("node[label = 'CLIENT']");
+    //         if (serverGroup.length === 1 && clientGroup.length === 1) {
+    //             addRelativeConstraint(serverGroup.data('id'), clientGroup.data('id'));
+    //             let vallign = [];
+    //             vallign.push(serverGroup.data('id'));
+    //             vallign.push(clientGroup.data('id'));
+    //             addVallignConstraint(vallign);
+    //         }
+    //     });
+    // }
 
     private vAllignOperations() {
+       //
+
+
+    }
+
+    private hAllignOperations() {
+       // horizintally allign operations that have same service and spanKind
         // get all operation nodes
         const operations = this.cy.nodes().filter("node[nodeType = 'operation']");
         // iterate over the operations
@@ -502,13 +491,13 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             // if there are matching operations
             if (matchingOperations.length > 0) {
                 // iterate over the matching operations
-                let vallign = [];
+                let hallign = [];
 
                 matchingOperations.forEach((matchingOperation: any) => {
-                    vallign.push(matchingOperation.data('id'));
+                    hallign.push(matchingOperation.data('id'));
                 });
-                addVallignConstraint(vallign);
+                addHallignConstraint(hallign);
             }
-        });
+        } );
     }
 }

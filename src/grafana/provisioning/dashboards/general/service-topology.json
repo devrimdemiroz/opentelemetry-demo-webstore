@@ -99,7 +99,7 @@
           "type": "prometheus",
           "uid": "webstore-metrics"
         },
-        "definition": "label_values(service_name)",
+        "definition": "query_result(count by (service_name)(count_over_time(traces_spanmetrics_calls_total[$__range])))",
         "description": "label_values(service_name)",
         "hide": 0,
         "includeAll": true,
@@ -107,13 +107,13 @@
         "name": "Services",
         "options": [],
         "query": {
-          "query": "label_values(service_name)",
+          "query": "query_result(count by (service_name)(count_over_time(traces_spanmetrics_calls_total[$__range])))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
-        "regex": "",
+        "regex": "/.*service_name=\"(.*)\".*/",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 5,
         "type": "query"
       },
       {
@@ -149,7 +149,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
