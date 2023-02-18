@@ -14,3 +14,9 @@ Click on the link below to open Grafana Explore page.
 
 Select "Fake Tempo" datasource. Click on service graph tab and refresh the page to see the service graph. 
 You might need to wait for a few seconds to see all services.
+
+![Tempo Apm Dashboard](TempoApmDashboard.png)
+
+
+```shell
+docker-compose -f docker-compose-min.yml up --no-build
