@@ -50,3 +50,4 @@ src/shippingservice/target/
 /src/productcatalogservice/genproto/
 /src/recommendationservice/demo_pb2*.py
 /src/shippingservice/proto/
+/package-lock.json
