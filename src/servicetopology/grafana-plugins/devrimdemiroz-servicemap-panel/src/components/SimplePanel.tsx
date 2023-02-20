@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {PanelProps} from '@grafana/data';
 import {getTemplateSrv} from '@grafana/runtime';
 import './style.css';
-import cytoscape,{NodeSingular} from "cytoscape";
+import cytoscape, {NodeSingular} from "cytoscape";
 import layoutUtilities from 'cytoscape-layout-utilities';
 import fcose from 'cytoscape-fcose';
 import BubbleSets from 'cytoscape-bubblesets';
@@ -25,7 +25,7 @@ cytoscape.use(BubbleSets);
 cytoscape.use(fcose);
 cytoscape.use(layoutUtilities);
 cytoscape.use(complexityManagement);
-cytoscape.use( cola );
+cytoscape.use(cola);
 
 
 interface PanelState {
@@ -36,7 +36,7 @@ interface PanelState {
 }
 
 
-function round2(value) {
+export function round2(value) {
     return Math.round((value + Number.EPSILON) * 100) / 100
 }
 
@@ -45,6 +45,7 @@ class Operation {
     spanStatus: any;
     spanKind: any;
     id: string;
+
     constructor(serie: any) {
         this.service = serie.fields[1].labels.service_name;
         this.name = serie.fields[1].labels.span_name.replace(/(\/|\s|\.)/g, "_");
@@ -55,12 +56,12 @@ class Operation {
         // if exists add to operationId
         this.httpMethod = serie.fields[1].labels.http_method;
         if (this.httpMethod !== undefined) {
-            this.id +=  "_" + this.httpMethod;
+            this.id += "_" + this.httpMethod;
         }
 
         this.httpStatusCode = serie.fields[1].labels.http_status_code;
         // if exists add to operationId
-        this.status=this.spanStatus;
+        this.status = this.spanStatus;
         if (this.httpStatusCode !== undefined) {
             this.status +=
                 "_" + this.httpStatusCode;
@@ -72,6 +73,7 @@ class Operation {
         // round the value to 2 decimals after the dot
         this.value = round2(value);
     }
+
     value: number;
     statusId: string;
     status: string;
@@ -79,6 +81,20 @@ class Operation {
     httpStatusCode: any;
     service: any;
 
+}
+
+class Service {
+    name: string;
+    id: string;
+
+    constructor(serie: any) {
+        this.name = serie.fields[1].labels.service_name;
+        this.id = this.name;
+        this.value = round2(serie.fields[1].values.get(0));
+
+    }
+
+    value: number;
 }
 
 export class SimplePanel extends PureComponent<PanelProps, PanelState> {
@@ -130,11 +146,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
         this.cy.on('dblclick', 'node', (event: any) => {
             const node = event.target;
-            console.log("node.data()", node.data(),node);
+            console.log("node.data()", node.data(), node);
             //this.instance.collapseNodes(this.cy.nodes(':selected'));
             this.instance.collapseAllNodes();
         });
     }
+
     componentDidMount() {
 
         this.cyVisible = cytoscape({
@@ -147,31 +164,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
         this.cy = cytoscape({
             container: document.getElementById('cy'),
-            // elements: {
-            //     nodes: [
-            //         {
-            //             data: { id: 'a' }
-            //         },
-            //
-            //         {
-            //             data: { id: 'b' }
-            //         }
-            //     ],
-            //     edges: [
-            //         {
-            //             data: { id: 'ab', source: 'a', target: 'b' }
-            //         }
-            //     ]
-            // },
-
-
 
         });
         this.cy.style(cyStyle);
         this.cy.layoutUtilities({
-            desiredAspectRatio: this.props.width/this.props.height,
+            desiredAspectRatio: this.props.width / this.props.height,
         });
-        console.log("desiredAspectRatio", this.props.width/this.props.height);
         this.instance = this.cy.complexityManagement();
 
 
@@ -182,43 +180,42 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             instance: this.instance,
         });
         this.cy.ready(() => {
-            this.initGraph(); });
+            this.initGraph();
+        });
 
         console.log("instance", this.instance);
         this.initListeners();
 
 
-
     }
-
 
 
     private initGraph() {
         this.setServiceNodes();
 
         this.setServiceEdges();
-        resetConstraints();
-        this.setOperationNodes();
-        this.correlateOperations();
-        this.calculateConstraints();
+        // resetConstraints();
+        // this.setOperationNodes();
+        // this.correlateOperations();
+        // this.calculateConstraints();
+        //
+        // this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
+        // this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
 
-        this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
-        this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
-
-       // this.cy.fit();
+        // this.cy.fit();
         console.log("this.cy", this.cy);
-        let layout = this.cy.layout({...layoutOptions,
-        stop: () => {
-        //this.initializer(this.cy);
-        }
+        let layout = this.cy.layout({
+            ...layoutOptions,
+            stop: () => {
+                //this.initializer(this.cy);
+            }
         });
 
         layout.run();
 
 
-
-
     }
+
     private updateGraph() {
         console.log("updateGraph");
 
@@ -232,36 +229,18 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     }
 
     private setServiceNodes() {
-        const variables = getTemplateSrv().getVariables();
-        console.log("variables", variables);
-        // find the Services variable combobox and get the selected value(s)
-        const services = variables.find((v: any) => v.name === "Services");
-        console.log("services", services);
+        const {data} = this.props;
+        console.log("data", data);
+        // get series with refId ServiceGraphEdges
+        data.series.filter((services: any) => services.refId === "service_calls_total").forEach((serie: any) => {
 
-         // get all services except value "All"
-        // These are the services observed  of all time for now. labelValues from Prometheus
-        // @ts-ignore
-        console.log("services.options", services.options);
-        // iterate over options and get the text value except "All"
-        // @ts-ignore
-        const servicesObserved = services.options.filter((o: any) => o.text !== "All").map((o: any) => o.text);
-        console.log("servicesObserved", servicesObserved);
-        // add to cy servicesObserved as nodes
-        this.cy.add(servicesObserved.map((s: any) => ({
-            data: {
-                id: s+"-compound",
-                label: s,
-                nodeType: "serviceCompound"
-            }
-        })));
-        this.cy.add(servicesObserved.map((s: any) => ({
-            data: {
-                id: s,
-                label: s,
-                nodeType: "service",
-                parent: s+"-compound"
-            }
-        })));
+            let service: Service;
+            service = new Service(serie);
+            this.addServiceCompound(service);
+            this.addServiceNode(service);
+
+        });
+
 
         // TODO: listen to changes in the Services variable combobox and update the graph accordingly
     }
@@ -274,12 +253,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         data.series.filter((edges: any) => edges.refId === "ServiceGraphEdges").forEach((edges: any) => {
 
 
-            // const edges = data.series.find((s: any) => s.refId === "ServiceGraphEdges");
             console.log("ServiceGraphEdges", edges);
             // if edges is undefined return
             if (edges === undefined) {
                 return;
             }
+            console.log("edges", edges);
 
             const edgesLength = edges.fields.length;
             for (let i = 1; i < edgesLength; i++) {
@@ -289,7 +268,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 const target = edge.labels.server;
                 let value = edge.values.get(0);
                 // round the value to 2 decimals after the dot
-                value = Math.round(value * 100) / 100;
+                value = round2(value);
                 // if edge is undefined create it
                 if (this.cy.getElementById('service-' + source + '-' + target).length === 0) {
                     this.cy.add({
@@ -297,23 +276,23 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                             id: 'service-' + source + '-' + target,
                             label: value,
                             edgeType: "service",
-                            source: source+"-compound",
-                            target: target+"-compound",
+                            source: source,
+                            target: target,
                             value
                         }
 
                     });
                     // Move styling to style.js
                     // show value and direction of the edge
-                    this.cy.style().selector("edge").style({
-                        "label": "data(label)",
-                        "curve-style": "bezier",
-                        "target-arrow-shape": "triangle",
-                        "text-rotation": "autorotate",
-                        "text-margin-y": -5,
-                        "text-margin-x": 5,
-                        "font-size": 10,
-                    });
+                    // this.cy.style().selector("edge").style({
+                    //     "label": "data(label)",
+                    //     "curve-style": "bezier",
+                    //     "target-arrow-shape": "triangle",
+                    //     "text-rotation": "autorotate",
+                    //     "text-margin-y": -5,
+                    //     "text-margin-x": 5,
+                    //     "font-size": 10,
+                    // });
 
 
                 } else {
@@ -328,7 +307,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
 
 
-        } );
+        });
     }
 
     private setOperationNodes() {
@@ -350,23 +329,46 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 // if serie node exists but if the status node does not exist create it
                 if (this.cy.getElementById(operation.statusId).length === 0) {
                     this.addOperationStatusNode(operation);
-                    } else {
+                } else {
                     // if serie node exists and status node exists update the value
                     this.cy.getElementById(operation.statusId).data('value', operation.value);
                 }
             }
             // once finished , itreate status nodes and sum up the values into serie node
-            const operationStatusNodes = this.cy.nodes().filter("node[nodeType = 'operationStatus'][parent = '" + operation.id+"-compound" + "']" );
-            let operationValue=0;
+            const operationStatusNodes = this.cy.nodes().filter("node[nodeType = 'operationStatus'][parent = '" + operation.id + "-compound" + "']");
+            let operationValue = 0;
             operationStatusNodes.forEach((operationStatusNode: any) => {
-                operationValue+=operationStatusNode.data('value');
-            } );
+                operationValue += operationStatusNode.data('value');
+            });
             this.cy.getElementById(operation.id).data('value', operationValue);
 
         });
 
     }
 
+
+    private addServiceNode(service: Service) {
+        this.cy.add({
+            data: {
+                id: service.id,
+                label: service.value.toString(),
+                nodeType: "service",
+                parent: service.id + "-compound",
+                value: service.value
+            }
+        });
+    }
+
+    private addServiceCompound(service: Service) {
+        this.cy.add({
+            data: {
+                id: service.id + "-compound",
+                label: service.name,
+                nodeType: "serviceCompound",
+                value: service.value
+            }
+        });
+    }
 
     private addOperationStatusNode(operation: Operation) {
         this.cy.add({
@@ -421,8 +423,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         clientOperations.forEach((clientOperation: any) => {
             //console.log("clientOperation", clientOperation.data());
             // get the matching server operations
-            const serverOperations = this.cy.nodes().filter("node[nodeType = 'operation'][spanKind = 'SERVER'][name = '" + clientOperation.data('name') + "']" );
-           // console.log("serverOperations", serverOperations.length," list=", serverOperations);
+            const serverOperations = this.cy.nodes().filter("node[nodeType = 'operation'][spanKind = 'SERVER'][name = '" + clientOperation.data('name') + "']");
+            // console.log("serverOperations", serverOperations.length," list=", serverOperations);
             // if there are matching operations
             if (serverOperations.length === 1) {
                 let clientOperationValue = round2(clientOperation.data('value'));
@@ -439,13 +441,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                     }
                 });
                 // values to be decimal 2
-                addHallignConstraint([clientOperation.data('id'), serverOperations[0].data('id')]) ;
+                addHallignConstraint([clientOperation.data('id'), serverOperations[0].data('id')]);
 
             } else if (serverOperations.length > 1) {
-                console.log("More than one Match! ...serverOperations", serverOperations.length," list=", serverOperations);
+                console.log("More than one Match! ...serverOperations", serverOperations.length, " list=", serverOperations);
             }
-        } );
-
+        });
 
 
     }
@@ -502,6 +503,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         //this.hAllignOperations();
 
     }
+
     //
     // private relativeAllignSpanKinds() {
     //     // relative allignment for spanKind group compounds: SERVER left and CLIENT right
@@ -522,13 +524,13 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     // }
 
     private vAllignOperations() {
-       //
+        //
 
 
     }
 
     private hAllignOperations() {
-       // horizintally allign operations that have same service and spanKind
+        // horizintally allign operations that have same service and spanKind
         // get all operation nodes
         const operations = this.cy.nodes().filter("node[nodeType = 'operation']");
         // iterate over the operations
@@ -545,6 +547,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 });
                 addHallignConstraint(hallign);
             }
-        } );
+        });
     }
 }

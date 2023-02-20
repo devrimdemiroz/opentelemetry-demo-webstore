@@ -1,26 +1,5 @@
+import {colors} from "./colors";
 
-
-export const colors = {
-    // from https://github.com/karthik/wesanderson
-    //Royal2
-    "CLIENT": "#899DA4",
-    "SERVER": "#F5CDB4",
-    "ERROR": "#9B110E",
-    "3": "#F8AFA8",
-    "COMPOUND": "#FDDDA0",
-    "UNSET": "#74A089",
-    "6": "#F2AD00",
-    "7": "#F98400",
-    "8": "#5BBCD6",
-    "9": "#ECCBAE",
-    "10": "#046C9A",
-    "11": "#D69C4E",
-    "12": "#ABDDDE",
-    "13": "#446455",
-    "14": "#F2AD00",
-    "15": "#F98400",
-    "16": "#5BBCD6",
-} ;
 export const cyStyle =  [
     {
         selector: 'node',
@@ -30,9 +9,8 @@ export const cyStyle =  [
             "border-style": "solid",
             "font-size": 5,
             "color" : "gray",
-            //"background-color" : this.colors['COMPOUND'],
             //'compound-sizing-wrt-labels': 'include',
-            "background-opacity": 0.3,
+          //  "background-opacity": 0.3,
             "text-wrap" : "ellipsis",
             "label": "data(label)",
         },
@@ -40,12 +18,14 @@ export const cyStyle =  [
     {
         selector:  'node[nodeType = "service"]' ,
         style: {
-            "background-color": colors['COMPOUND'],
-            "text-valign": "bottom", // default
+            "background-color" : "white",
+            "border-color": colors['COMPOUND'],
+            "text-valign": "center", // default
             "text-halign": "center", // default
-            "font-size": 8,
-            "width": 10,
-            "height": 10,
+            "font-size": 7,
+            "color" : "black",
+            "width": 20,
+            "height": 20,
         }
     },
     {
@@ -109,5 +89,28 @@ export const cyStyle =  [
 
         }
 
-}
+},
+    // edges
+
+    { // default
+        selector: 'edge',
+        style: {
+            "curve-style": "bezier",
+            "target-arrow-shape": "vee",// options are 'tee' 'triangle' 'triangle-tee' 'triangle-cross' 'triangle-backcurve' 'vee' 'square' 'circle' 'diamond' 'none'
+            "text-rotation": "autorotate",
+             "text-margin-y": -15,
+            // "text-margin-x": -10,
+            "font-size": 8,
+            "label": "data(label)",
+            "color" : "gray",
+        }
+    },
+    {// service to service
+        selector: 'edge[edgeType = "service"]',
+        style: {
+            //edge color
+            "line-color": colors['COMPOUND'],
+        }
+        }
+
 ];
