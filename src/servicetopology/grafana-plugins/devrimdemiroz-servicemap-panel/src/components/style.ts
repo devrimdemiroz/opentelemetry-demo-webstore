@@ -40,10 +40,12 @@ export const cyStyle =  [
     {
         selector:  'node[nodeType = "service"]' ,
         style: {
-
+            "background-color": colors['COMPOUND'],
             "text-valign": "bottom", // default
             "text-halign": "center", // default
             "font-size": 8,
+            "width": 10,
+            "height": 10,
         }
     },
     {
@@ -53,7 +55,6 @@ export const cyStyle =  [
             "background-opacity": 0.7,
             "text-valign": "bottom",
             "text-halign": "center",
-            "shape": "circle",
             "text-wrap" : "ellipsis",
             "label": "",
 
@@ -68,7 +69,6 @@ export const cyStyle =  [
         style: {
             "color" : colors['ERROR'],
             "border-color": colors['ERROR'],
-            "fill": colors['ERROR'],
             "text-valign": "top",
             "width": 5,
             "height": 5,
@@ -86,13 +86,13 @@ export const cyStyle =  [
     },
 
     {
-        selector:  'node[nodeType = "CLIENT"]' ,
+        selector:  'node[spanKind = "CLIENT"]' ,
         style: {
             "background-color" : colors['CLIENT'],
         }
     },
     {
-        selector:  'node[nodeType = "SERVER"]' ,
+        selector:  'node[spanKind = "SERVER"]' ,
         style: {
             "background-color" : colors['SERVER'],
         }
@@ -109,7 +109,5 @@ export const cyStyle =  [
 
         }
 
-
-},
-
+}
 ];

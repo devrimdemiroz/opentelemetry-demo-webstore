@@ -11,6 +11,6 @@ let constraints = {
         horizontal: [[ "loadgenerator", "frontend" ],],
         vertical: [[  ]]
     },
-    relativePlacementConstraint: [{ left: "loadgenerator", right: "frontend", gap: 100 }],
+    relativePlacementConstraint: [{ left: "loadgenerator", right: "frontend", gap: 10 }],
 };
 export default constraints;

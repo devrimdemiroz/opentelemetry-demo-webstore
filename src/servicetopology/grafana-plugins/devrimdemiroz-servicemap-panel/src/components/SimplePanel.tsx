@@ -2,15 +2,16 @@ import React, {PureComponent} from 'react';
 import {PanelProps} from '@grafana/data';
 import {getTemplateSrv} from '@grafana/runtime';
 import './style.css';
-import cytoscape from "cytoscape";
+import cytoscape,{NodeSingular} from "cytoscape";
 import layoutUtilities from 'cytoscape-layout-utilities';
 import fcose from 'cytoscape-fcose';
 import BubbleSets from 'cytoscape-bubblesets';
+import cola from 'cytoscape-cola';
 
 import {
     addHallignConstraint,
     addRelativeConstraint,
-    addVallignConstraint,
+    addVallignConstraint, colaOptions,
     layoutOptions,
     resetConstraints
 } from "./layout";
@@ -24,6 +25,8 @@ cytoscape.use(BubbleSets);
 cytoscape.use(fcose);
 cytoscape.use(layoutUtilities);
 cytoscape.use(complexityManagement);
+cytoscape.use( cola );
+
 
 interface PanelState {
     cy?: cytoscape.Core | undefined;
@@ -32,6 +35,51 @@ interface PanelState {
     instance?: complexityManagement | undefined;
 }
 
+
+function round2(value) {
+    return Math.round((value + Number.EPSILON) * 100) / 100
+}
+
+class Operation {
+    name: any;
+    spanStatus: any;
+    spanKind: any;
+    id: string;
+    constructor(serie: any) {
+        this.service = serie.fields[1].labels.service_name;
+        this.name = serie.fields[1].labels.span_name.replace(/(\/|\s|\.)/g, "_");
+        this.spanKind = serie.fields[1].labels.span_kind.replace(/SPAN_KIND_(.*)/g, "$1");
+        this.spanStatus = serie.fields[1].labels.status_code.replace(/STATUS_CODE_(.*)/g, "$1");
+        this.id = this.service + "_" + this.name + "_" + this.spanKind;
+
+        // if exists add to operationId
+        this.httpMethod = serie.fields[1].labels.http_method;
+        if (this.httpMethod !== undefined) {
+            this.id +=  "_" + this.httpMethod;
+        }
+
+        this.httpStatusCode = serie.fields[1].labels.http_status_code;
+        // if exists add to operationId
+        this.status=this.spanStatus;
+        if (this.httpStatusCode !== undefined) {
+            this.status +=
+                "_" + this.httpStatusCode;
+        }
+
+        this.statusId = this.id + "_" + this.status;
+
+        let value = serie.fields[1].values.get(0);
+        // round the value to 2 decimals after the dot
+        this.value = round2(value);
+    }
+    value: number;
+    statusId: string;
+    status: string;
+    httpMethod: string;
+    httpStatusCode: any;
+    service: any;
+
+}
 
 export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     ref: any;
@@ -68,6 +116,25 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         );
     }
 
+
+    private initListeners() {
+        this.cy.on('click', 'node', (event: any) => {
+            const node = event.target;
+            console.log("node.data()", node.data());
+        });
+
+        this.cy.on('click', 'edge', (event: any) => {
+            const edge = event.target;
+            console.log("edge.data()", edge.data());
+        });
+
+        this.cy.on('dblclick', 'node', (event: any) => {
+            const node = event.target;
+            console.log("node.data()", node.data(),node);
+            //this.instance.collapseNodes(this.cy.nodes(':selected'));
+            this.instance.collapseAllNodes();
+        });
+    }
     componentDidMount() {
 
         this.cyVisible = cytoscape({
@@ -80,6 +147,23 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
         this.cy = cytoscape({
             container: document.getElementById('cy'),
+            // elements: {
+            //     nodes: [
+            //         {
+            //             data: { id: 'a' }
+            //         },
+            //
+            //         {
+            //             data: { id: 'b' }
+            //         }
+            //     ],
+            //     edges: [
+            //         {
+            //             data: { id: 'ab', source: 'a', target: 'b' }
+            //         }
+            //     ]
+            // },
+
 
 
         });
@@ -100,25 +184,14 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.cy.ready(() => {
             this.initGraph(); });
 
-
         console.log("instance", this.instance);
-        this.cy.on('click', 'node', (event: any) => {
-            const node = event.target;
-            console.log("node.data()", node.data(),node);
-            const nodeType = node.data("nodeType");
-            if (nodeType === "service") {
+        this.initListeners();
 
-            }
-
-
-        });
-        // double click to expand
-        this.cy.on('dblclick', 'node', (event: any) => {
-            this.instance.collapseNodes(this.cy.nodes(':selected'));
-        });
 
 
     }
+
+
 
     private initGraph() {
         this.setServiceNodes();
@@ -129,34 +202,33 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.correlateOperations();
         this.calculateConstraints();
 
-        this.cy.fit();
+        this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
+        this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
+
+       // this.cy.fit();
         console.log("this.cy", this.cy);
         let layout = this.cy.layout({...layoutOptions,
         stop: () => {
-        this.initializer(this.cy);
+        //this.initializer(this.cy);
         }
         });
 
         layout.run();
-        // find service nodes and collapse them
 
 
 
-        //this.instance.collapseAllNodes();
-        //this.instance.collapseAllEdges();
+
     }
     private updateGraph() {
         console.log("updateGraph");
 
         this.calculateConstraints();
-         this.cy.resize();
-        this.cy.fit();
+        this.cy.resize();
         layoutOptions.randomize = false;
-        let layout = this.cy.layout({...layoutOptions, stop: () => {
-                this.initializer(this.cy);
-            }});
-        this.cy.layoutUtilities("get").setOption("randomize", false);
+
+        let layout = this.cy.layout({...layoutOptions});
         layout.run();
+
 
     }
 
@@ -209,12 +281,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             if (edges === undefined) {
                 return;
             }
-            // get edges length, iterate over fields starting from 1 up to length
-            // fields[0] is the time field
-            // fields[1] is the edges value field with labels
 
             const edgesLength = edges.fields.length;
-            console.log("edgesLength", edgesLength);
             for (let i = 1; i < edgesLength; i++) {
                 const edge = edges.fields[i];
                 // get the source and target
@@ -230,12 +298,24 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                             id: 'service-' + source + '-' + target,
                             label: value,
                             edgeType: "service",
-                            source,
-                            target,
+                            source: source+"-compound",
+                            target: target+"-compound",
                             value
                         }
 
                     });
+                    // Move styling to style.js
+                    // show value and direction of the edge
+                    this.cy.style().selector("edge").style({
+                        "label": "data(label)",
+                        "curve-style": "bezier",
+                        "target-arrow-shape": "triangle",
+                        "text-rotation": "autorotate",
+                        "text-margin-y": -5,
+                        "text-margin-x": 5,
+                        "font-size": 10,
+                    });
+
 
                 } else {
                     // if edge exists update the value and label
@@ -248,16 +328,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
             }
 
-            // show value and direction of the edge
-            this.cy.style().selector("edge").style({
-                "label": "data(label)",
-                "curve-style": "bezier",
-                "target-arrow-shape": "triangle",
-                "text-rotation": "autorotate",
-                "text-margin-y": -5,
-                "text-margin-x": 5,
-                "font-size": 10,
-            });
+
         } );
     }
 
@@ -265,105 +336,77 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         const {data} = this.props;
         // TODO: A hash map to store the operation nodes would be better, parenting(compound) can be then used
         // for now sticking with hierarchical approach
-        data.series.filter((operation: any) => operation.refId === "spanmetrics_calls_total").forEach((operation: any) => {
-            // get the service name from the labels
-            const service = operation.fields[1].labels.service_name;
-            // get the operation name from the labels
-            const operationName = operation.fields[1].labels.span_name.replace(/(\/|\s|\.)/g, "_");
-            let spanKind = operation.fields[1].labels.span_kind.replace(/SPAN_KIND_(.*)/g, "$1");
-            let spanStatus = operation.fields[1].labels.status_code.replace(/STATUS_CODE_(.*)/g, "$1");
-            let operationId = service + "_" + operationName + "_" + spanKind;
-            // optional , get http_method and htt_status_code from the labels if
-            let httpMethod = operation.fields[1].labels.http_method;
+        data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total").forEach((serie: any) => {
+            let operation: Operation;
+            operation = new Operation(serie);
 
-            // if exists add to operationId
-            if (httpMethod !== undefined) {
-                operationId = operationId + "_" + httpMethod;
-            }
-
-            const httpStatusCode = operation.fields[1].labels.http_status_code;
-            // if exists add to operationId
-            let operationStatus=spanStatus;
-            if (httpStatusCode !== undefined) {
-                operationStatus +=
-                "_" + httpStatusCode;
-            }
-            let operationStatusId = operationId + "_" + operationStatus;
-            // Create a unique node id from labels extracted from the fields with optionals as well
             // TODO: hash node id in case length is too long or similar restrictions in cytoscape
-            // get the value from the values array
 
-            let value = operation.fields[1].values.get(0);
-            // round the value to 2 decimals after the dot
-            value = Math.round(value * 100) / 100;
-
-            // Create spankind compound node if it does not exist
-
-
-            // if operation node does not exist create it
-            if (this.cy.getElementById(operationId).length === 0) {
-                this.addOperationCompound(operationId, operationName, service);
-                this.addOperationNode(operationId, operationName, spanKind, httpMethod, service);
-                this.addOperationStatusNode(operationStatusId, operationStatus, spanStatus, httpStatusCode, value, operationId);
+            // if serie node does not exist create it
+            if (this.cy.getElementById(operation.id).length === 0) {
+                this.addOperationCompound(operation);
+                this.addOperationNode(operation);
+                this.addOperationStatusNode(operation);
             } else {
-                // if operation node exists but if the status node does not exist create it
-                if (this.cy.getElementById(operationStatusId).length === 0) {
-                    this.addOperationStatusNode(operationStatusId, operationStatus, spanStatus, httpStatusCode, value, operationId);
+                // if serie node exists but if the status node does not exist create it
+                if (this.cy.getElementById(operation.statusId).length === 0) {
+                    this.addOperationStatusNode(operation);
                     } else {
-                    // if operation node exists and status node exists update the value
-                    this.cy.getElementById(operationStatusId).data('value', value);
+                    // if serie node exists and status node exists update the value
+                    this.cy.getElementById(operation.statusId).data('value', operation.value);
                 }
             }
-            // once finished , itreate status nodes and sum up the values into operation node
-            const operationStatusNodes = this.cy.nodes().filter("node[nodeType = 'operationStatus'][parent = '" + operationId+"-compound" + "']" );
+            // once finished , itreate status nodes and sum up the values into serie node
+            const operationStatusNodes = this.cy.nodes().filter("node[nodeType = 'operationStatus'][parent = '" + operation.id+"-compound" + "']" );
             let operationValue=0;
             operationStatusNodes.forEach((operationStatusNode: any) => {
                 operationValue+=operationStatusNode.data('value');
             } );
-            this.cy.getElementById(operationId).data('value', operationValue);
+            this.cy.getElementById(operation.id).data('value', operationValue);
 
         });
 
     }
 
 
-    private addOperationStatusNode(operationStatusId: string, operationStatus, spanStatus, httpStatusCode, value, operationId: string) {
+    private addOperationStatusNode(operation: Operation) {
         this.cy.add({
             data: {
-                id: operationStatusId,
-                label: operationStatus, // ERROR_500 or UNSET or similar
+                id: operation.statusId,
+                label: operation.status, // ERROR_500 or UNSET or similar
                 nodeType: "operationStatus",
-                spanStatus: spanStatus,
-                httpStatusCode: httpStatusCode,
-                value: value,
-                parent: operationId + "-compound",
+                spanStatus: operation.spanStatus,
+                httpStatusCode: operation.httpStatusCode,
+                value: operation.value,
+                parent: operation.id + "-compound",
             }
         });
     }
 
-    private addOperationCompound(operationId: string, operationName, service) {
+    private addOperationCompound(operation: Operation) {
         this.cy.add({
             data: {
-                id: operationId + "-compound",
-                label: operationName,
+                id: operation.id + "-compound",
+                label: operation.name,
                 nodeType: "operation-compound",
-                service: service,
-                parent: service + "-compound",
+                service: operation.service,
+                parent: operation.service + "-compound",
+                spanKind: operation.spanKind,
             }
         });
     }
 
-    private addOperationNode(operationId: string, operationName, spanKind, httpMethod, service) {
+    private addOperationNode(operation: Operation) {
         this.cy.add({
             data: {
-                id: operationId,
-                label: operationName,
-                name: operationName,
+                id: operation.id,
+                label: operation.name,
+                name: operation.name,
                 nodeType: "operation",
-                spanKind: spanKind,
-                httpMethod: httpMethod,
-                service: service,
-                parent: operationId + "-compound",
+                spanKind: operation.spanKind,
+                httpMethod: operation.httpMethod,
+                service: operation.service,
+                parent: operation.id + "-compound",
                 value: 0,
             }
         });
@@ -377,25 +420,30 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         console.log("clientOperations", clientOperations);
         // iterate over the collections of client operations
         clientOperations.forEach((clientOperation: any) => {
-            console.log("clientOperation", clientOperation.data());
+            //console.log("clientOperation", clientOperation.data());
             // get the matching server operations
             const serverOperations = this.cy.nodes().filter("node[nodeType = 'operation'][spanKind = 'SERVER'][name = '" + clientOperation.data('name') + "']" );
-            console.log("serverOperations", serverOperations.data);
+           // console.log("serverOperations", serverOperations.length," list=", serverOperations);
             // if there are matching operations
-            if (serverOperations.length > 0) {
+            if (serverOperations.length === 1) {
+                let clientOperationValue = round2(clientOperation.data('value'));
                 // create an edge from client to server
+                let serverOperationsValue = round2(serverOperations[0].data('value'));
                 this.cy.add({
                     data: {
                         id: clientOperation.data('id') + "_" + serverOperations[0].data('id'),
                         source: clientOperation.data('id'),
                         target: serverOperations[0].data('id'),
                         edgeType: "operation",
-                        label: clientOperation.data('value') + "/" + serverOperations[0].data('value'),
-                        value: (clientOperation.data('value') + serverOperations[0].data('value')) / 2
+                        label: clientOperationValue + " / " + serverOperationsValue.toFixed(2),
+                        value: (clientOperationValue + serverOperationsValue) / 2
                     }
                 });
+                // values to be decimal 2
                 addHallignConstraint([clientOperation.data('id'), serverOperations[0].data('id')]) ;
 
+            } else if (serverOperations.length > 1) {
+                console.log("More than one Match! ...serverOperations", serverOperations.length," list=", serverOperations);
             }
         } );
 

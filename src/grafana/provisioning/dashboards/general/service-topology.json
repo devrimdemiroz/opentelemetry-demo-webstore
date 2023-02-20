@@ -52,7 +52,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (client, server)(rate(traces_service_graph_request_total{}[$__rate_interval]))",
+          "expr": "sum by (client, server)(rate(traces_service_graph_request_total{}[$__range]))",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -149,7 +149,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
