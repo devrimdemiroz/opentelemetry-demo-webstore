@@ -374,16 +374,16 @@ services:
       - NODE_ENV=production
     depends_on:
       - frontend
-  shahmaran:
-    image: shahmaran
-    container_name: shahmaran
-    ports:
-      - "8181:80"
-    volumes:
-      - ./src/servicetopology/index.html:/usr/share/nginx/html/index.html
-      - ./src/servicetopology/main-d3.js:/usr/share/nginx/html/main-d3.js
-      - ./src/servicetopology/main-fcose.js:/usr/share/nginx/html/main-fcose.js
-      - ./src/servicetopology/fcose.html:/usr/share/nginx/html/fcose.html
-      - ./src/servicetopology/servicetopology-constraint-control.js:/usr/share/nginx/html/servicetopology-constraint-control.js
-      - ./src/servicetopology/cytoscape-fcose.js:/usr/share/nginx/html/cytoscape-fcose.js
-      - ./src/servicetopology/nginx.conf:/etc/nginx/nginx.conf
+#  shahmaran:
+#    image: shahmaran
+#    container_name: shahmaran
+#    ports:
+#      - "8181:80"
+#    volumes:
+#      - ./src/servicetopology/index.html:/usr/share/nginx/html/index.html
+#      - ./src/servicetopology/main-d3.js:/usr/share/nginx/html/main-d3.js
+#      - ./src/servicetopology/main-fcose.js:/usr/share/nginx/html/main-fcose.js
+#      - ./src/servicetopology/fcose.html:/usr/share/nginx/html/fcose.html
+#      - ./src/servicetopology/servicetopology-constraint-control.js:/usr/share/nginx/html/servicetopology-constraint-control.js
+#      - ./src/servicetopology/cytoscape-fcose.js:/usr/share/nginx/html/cytoscape-fcose.js
+#      - ./src/servicetopology/nginx.conf:/etc/nginx/nginx.conf

@@ -225,7 +225,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.calculateConstraints();
         this.cy.resize();
         layoutOptions.randomize = false;
-
         let layout = this.cy.layout({...layoutOptions});
         layout.run();
 

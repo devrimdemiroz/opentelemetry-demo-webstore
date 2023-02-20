@@ -8,7 +8,7 @@ export let layoutOptions = {
     // - "draft" only applies spectral layout
     // - "default" improves the quality with incremental layout (fast cooling rate)
     // - "proof" improves the quality with incremental layout (slow cooling rate)
-    quality: "proof",
+    quality: "default",
     // Use random node positions at beginning of layout
     // if this is set to false, then quality option must be "proof"
     randomize: true,
@@ -21,7 +21,7 @@ export let layoutOptions = {
     // Fit the viewport to the repositioned nodes
     fit: true,
     // Padding around layout
-    padding: 5,
+    padding: 15,
     // Whether to include labels in node dimensions. Valid in "proof" quality
     nodeDimensionsIncludeLabels: false,
     // Whether or not simple nodes (non-compound nodes) are of uniform dimensions
@@ -38,7 +38,7 @@ export let layoutOptions = {
     // Sample size to construct distance matrix
     sampleSize: 25,
     // Separation amount between nodes
-    nodeSeparation: 25,
+    nodeSeparation: 75,
     // Power iteration tolerance
     piTol: 0.0000001,
 
@@ -48,9 +48,9 @@ export let layoutOptions = {
     nodeRepulsion: node => 4500,
     // nodeRepulsion: 4000,
     // Ideal edge (non nested) length
-    idealEdgeLength: edge => 5,
+    idealEdgeLength: edge => 75,
     // Divisor to compute edge forces
-    edgeElasticity: edge => 0.05,
+    edgeElasticity: edge => 0,
      //edgeElasticity: 1, // Devrim note: Change works for good
     // Nesting factor (multiplier) to compute ideal edge length for nested edges
     nestingFactor: 1,
