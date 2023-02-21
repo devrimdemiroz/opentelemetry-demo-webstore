@@ -71,7 +71,22 @@
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
-          "refId": "ServiceGraphEdges"
+          "refId": "service_graph_request_total"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (client, server)(rate(traces_service_graph_request_failed_total{}[$__range]))",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "traces_service_graph_request_failed_total"
         },
         {
           "datasource": {
@@ -248,6 +263,30 @@
                 "value": 69
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "client"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 81
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "server"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 107
+              }
+            ]
           }
         ]
       },
@@ -296,113 +335,11 @@
               "Time": true
             },
             "indexByName": {
-              "Time": 0,
-              "Value": 4,
-              "client": 1,
-              "failed": 3,
-              "server": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "webstore-metrics"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "failed"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 69
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 3,
-        "x": 13,
-        "y": 18
-      },
-      "id": 10,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "9.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "webstore-metrics"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum (rate(traces_service_graph_request_total{}[$__range]))",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "all/{{client}}->{{server}}",
-          "range": false,
-          "refId": "good"
-        }
-      ],
-      "title": "Grand-traces_service_graph_request_total ",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "indexByName": {
-              "Time": 0,
-              "Value": 4,
-              "client": 1,
-              "failed": 3,
-              "server": 2
+              "Time": 1,
+              "Value": 0,
+              "client": 2,
+              "failed": 4,
+              "server": 3
             },
             "renameByName": {}
           }
@@ -450,6 +387,24 @@
               {
                 "id": "custom.width",
                 "value": 84
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-RdYlGr"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 92
               }
             ]
           }
@@ -458,8 +413,8 @@
       "gridPos": {
         "h": 6,
         "w": 7,
-        "x": 6,
-        "y": 24
+        "x": 13,
+        "y": 18
       },
       "id": 5,
       "options": {
@@ -522,18 +477,12 @@
           "color": {
             "mode": "thresholds"
           },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "inspect": false
-          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -542,38 +491,110 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "failed"
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 10,
+        "y": 24
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum (rate(traces_service_graph_request_total{}[$__range]))",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "all/{{client}}->{{server}}",
+          "range": false,
+          "refId": "good"
+        }
+      ],
+      "title": "Grand-request_total ",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
             },
-            "properties": [
+            "indexByName": {
+              "Time": 0,
+              "Value": 4,
+              "client": 1,
+              "failed": 3,
+              "server": 2
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "id": "custom.width",
-                "value": 69
+                "color": "red"
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 3,
         "w": 3,
         "x": 13,
         "y": 24
       },
       "id": 11,
       "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
           ],
-          "show": false
+          "fields": "",
+          "values": false
         },
-        "showHeader": true,
-        "sortBy": []
+        "textMode": "auto"
       },
       "pluginVersion": "9.3.6",
       "targets": [
@@ -593,7 +614,7 @@
           "refId": "good"
         }
       ],
-      "title": "Grand-traces_service_graph_request_total ",
+      "title": "Grand-failed",
       "transformations": [
         {
           "id": "organize",
@@ -612,7 +633,7 @@
           }
         }
       ],
-      "type": "table"
+      "type": "stat"
     }
   ],
   "schemaVersion": 37,
@@ -684,13 +705,13 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "ServiceTopology",
   "uid": "8AjB9mJ4z",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }

@@ -97,7 +97,28 @@ class Service {
     value: number;
 }
 
-export class SimplePanel extends PureComponent<PanelProps, PanelState> {
+class Edge {
+    name: string;
+    id: string;
+    source: string;
+    target: string;
+
+    value: number;
+    type: string;
+    label: string;
+
+
+    constructor(serie: any) {
+        this.source = serie.labels.client;
+        this.target = serie.labels.server;
+        this.value=round2(serie.values.get(0));
+        this.label = this.value.toString();
+
+    }
+}
+
+
+    export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     ref: any;
     cy: any | undefined;
     cyVisible: cytoscape.Core | undefined;
@@ -194,7 +215,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.setServiceNodes();
 
         this.setServiceEdges();
-        // resetConstraints();
+         resetConstraints();
         // this.setOperationNodes();
         // this.correlateOperations();
         // this.calculateConstraints();
@@ -221,6 +242,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
         this.calculateConstraints();
         this.cy.resize();
+        this.cy.fit();
         layoutOptions.randomize = false;
         let layout = this.cy.layout({...layoutOptions});
         layout.run();
@@ -250,67 +272,51 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         const {data} = this.props;
         console.log("data", data);
         // get series with refId ServiceGraphEdges
-        data.series.filter((edges: any) => edges.refId === "ServiceGraphEdges").forEach((edges: any) => {
-
-
-            console.log("ServiceGraphEdges", edges);
-            // if edges is undefined return
-            if (edges === undefined) {
+        data.series.filter((series: any) => series.refId === "service_graph_request_total").forEach((serie: any) => {
+            // if serie is undefined return
+            if (serie === undefined) {
                 return;
             }
-            console.log("edges", edges);
+            console.log("edges", serie);
 
-            const edgesLength = edges.fields.length;
+            const edgesLength = serie.fields.length;
             for (let i = 1; i < edgesLength; i++) {
-                const edge = edges.fields[i];
-                // get the source and target
-                const source = edge.labels.client;
-                const target = edge.labels.server;
-                let value = edge.values.get(0);
-                // round the value to 2 decimals after the dot
-                value = round2(value);
+                // use Edge class to create an edge
+                let edge: Edge;
+                edge = new Edge(serie);
+                edge.id = 'service-' + edge.source + '-' + edge.target;
+                edge.type = 'service';
                 // if edge is undefined create it
-                if (this.cy.getElementById('service-' + source + '-' + target).length === 0) {
-                    this.cy.add({
-                        data: {
-                            id: 'service-' + source + '-' + target,
-                            label: value,
-                            edgeType: "service",
-                            source: source,
-                            target: target,
-                            value
-                        }
-
-                    });
-                    // Move styling to style.js
-                    // show value and direction of the edge
-                    // this.cy.style().selector("edge").style({
-                    //     "label": "data(label)",
-                    //     "curve-style": "bezier",
-                    //     "target-arrow-shape": "triangle",
-                    //     "text-rotation": "autorotate",
-                    //     "text-margin-y": -5,
-                    //     "text-margin-x": 5,
-                    //     "font-size": 10,
-                    // });
-
+                if (this.cy.getElementById(edge.id).length === 0) {
+                    this.addServiceEdge(edge);
 
                 } else {
                     // if edge exists update the value and label
-                    this.cy.getElementById('service-' + source + '-' + target).data('label', value);
-                    this.cy.getElementById('service-' + source + '-' + target).data('value', value);
+                    this.cy.getElementById(edge.id).data('value', edge.value).data('label', edge.label);
                 }
-                // TODO: query is instant for the moment, needs to be average on selected time range
-                // TODO: traces_service_graph_request_failed_total is not available yet
-
 
             }
+            // TODO: query is instant for the moment, needs to be average on selected time range
+            // TODO: traces_service_graph_request_failed_total is not available yet
 
 
         });
     }
 
-    private setOperationNodes() {
+        private addServiceEdge(edge: Edge) {
+            this.cy.add({
+                data: {
+                    id: edge.id,
+                    label: edge.label,
+                    edgeType: edge.type,
+                    source: edge.source,
+                    target: edge.target,
+                }
+
+            });
+        }
+
+        private setOperationNodes() {
         const {data} = this.props;
         // TODO: A hash map to store the operation nodes would be better, parenting(compound) can be then used
         // for now sticking with hierarchical approach

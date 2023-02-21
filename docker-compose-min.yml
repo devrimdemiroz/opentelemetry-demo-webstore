@@ -128,7 +128,6 @@ services:
     depends_on:
       - otelcol
       - quoteservice
-      - shippingservice
     logging: *logging
 
   # Frontend Proxy (Envoy)
@@ -217,32 +216,32 @@ services:
       - otelcol
     logging: *logging
 
-
-  # Shipping service
-  shippingservice:
-    image: ${IMAGE_NAME}:${IMAGE_VERSION}-shippingservice
-    container_name: shipping-service
+  # Cart service
+  cartservice:
+    image: ${IMAGE_NAME}:${IMAGE_VERSION}-cartservice
+    container_name: cart-service
     build:
       context: ./
-      dockerfile: ./src/shippingservice/Dockerfile
+      dockerfile: ./src/cartservice/src/Dockerfile
       cache_from:
-        - ${IMAGE_NAME}:${IMAGE_VERSION}-shippingservice
+        - ${IMAGE_NAME}:${IMAGE_VERSION}-cartservice
     deploy:
       resources:
         limits:
-          memory: 20M
+          memory: 160M
     restart: unless-stopped
     ports:
-      - "${SHIPPING_SERVICE_PORT}"
+      - "${CART_SERVICE_PORT}"
     environment:
-      - SHIPPING_SERVICE_PORT
-      - QUOTE_SERVICE_ADDR
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+      - CART_SERVICE_PORT
+      - REDIS_ADDR
+      - OTEL_EXPORTER_OTLP_ENDPOINT
       - OTEL_RESOURCE_ATTRIBUTES
-      - OTEL_SERVICE_NAME=shippingservice
+      - OTEL_SERVICE_NAME=cartservice
+      - ASPNETCORE_URLS=http://*:${CART_SERVICE_PORT}
     depends_on:
+      - redis-cart
       - otelcol
-    logging: *logging
 
   # ******************
   # Dependent Services
@@ -268,7 +267,19 @@ services:
       timeout: 5s
       retries: 5
 
-
+  # Redis used by Cart service
+  redis-cart:
+    image: redis:alpine
+    container_name: redis-cart
+    user: redis
+    deploy:
+      resources:
+        limits:
+          memory: 20M
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT}"
+    logging: *logging
 
 
   # ********************
