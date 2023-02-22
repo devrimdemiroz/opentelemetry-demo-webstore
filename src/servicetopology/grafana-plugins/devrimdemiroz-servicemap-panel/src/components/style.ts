@@ -78,14 +78,13 @@ export const cyStyle =  [
         }
     },
     {
-        selector: ":parent",
+        selector: ':compound',
         style:{
             "background-opacity": 0.333,
             "text-valign": "bottom",
-            "shape": "barrel",
             "text-margin-y": "10px",
-            "border-color": colors['COMPOUND'],
             "text-wrap" : "wrap",// options
+            "border-opacity": 0,
 
         }
 

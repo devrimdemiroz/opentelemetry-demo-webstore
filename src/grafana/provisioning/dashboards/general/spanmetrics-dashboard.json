@@ -71,6 +71,7 @@
     ]
   },
   "editable": true,
+  "description": "Spanmetrics way of application view. (contact Devrim Demiroz)",
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
