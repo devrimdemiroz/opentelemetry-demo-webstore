@@ -106,14 +106,22 @@ class Edge {
     value: number;
     type: string;
     label: string;
+    failed_value: number;//default 0
 
 
-    constructor(serie: any) {
-        this.source = serie.labels.client;
-        this.target = serie.labels.server;
-        this.value=round2(serie.values.get(0));
-        this.label = this.value.toString();
 
+    constructor(edge: any) {
+//        var edge = edge.data;
+        console.log("Edge", edge);
+        this.source = edge.labels.client;
+        this.target = edge.labels.server;
+        this.value=round2(edge.values.get(0));
+        this.failed_value=0;//default 0
+        this.label = this.getLabel();
+
+    }
+    getLabel(){
+        return this.value.toString()+" / "+this.failed_value.toString();
     }
 }
 
@@ -216,7 +224,7 @@ class Edge {
 
         this.setServiceEdges();
          resetConstraints();
-        // this.setOperationNodes();
+         this.setOperationNodes();
         // this.correlateOperations();
         // this.calculateConstraints();
         //
@@ -283,24 +291,59 @@ class Edge {
             for (let i = 1; i < edgesLength; i++) {
                 // use Edge class to create an edge
                 let edge: Edge;
-                edge = new Edge(serie);
+                edge = new Edge(serie.fields[i]);
                 edge.id = 'service-' + edge.source + '-' + edge.target;
                 edge.type = 'service';
+                edge.failed_value = 0;
                 // if edge is undefined create it
                 if (this.cy.getElementById(edge.id).length === 0) {
                     this.addServiceEdge(edge);
 
                 } else {
                     // if edge exists update the value and label
-                    this.cy.getElementById(edge.id).data('value', edge.value).data('label', edge.label);
+                    this.cy.getElementById(edge.id).data('value', edge.value);
+                    this.cy.getElementById(edge.id).data('label', edge.getLabel());
+
                 }
 
             }
+
+            data.series.filter((series: any) => series.refId === "traces_service_graph_request_failed_total").forEach((serie: any) => {
+                // if serie is undefined return
+                if (serie === undefined) {
+                    return;
+                }
+                console.log("edges", serie);
+
+                const edgesLength = serie.fields.length;
+                for (let i = 1; i < edgesLength; i++) {
+                    // use Edge class to create an edge
+                    let edge: Edge;
+                    edge = new Edge(serie.fields[i]);
+                    edge.id = 'service-' + edge.source + '-' + edge.target;
+                    edge.type = 'service';
+                    edge.failed_value = edge.value;
+                    edge.value = 0;//this one is failed
+
+                    // if edge is undefined create it
+                    if (this.cy.getElementById(edge.id).length === 0) {
+                        this.addServiceEdge(edge);
+
+                    } else {
+                        // if edge exists update the value and label
+                        this.cy.getElementById(edge.id).data('failed_value', edge.failed_value);
+                        this.cy.getElementById(edge.id).data('label', edge.getLabel());
+                        console.log("edge", edge);
+
+                    }
+
+                }
             // TODO: query is instant for the moment, needs to be average on selected time range
             // TODO: traces_service_graph_request_failed_total is not available yet
 
 
         });
+    });
     }
 
         private addServiceEdge(edge: Edge) {
@@ -311,6 +354,8 @@ class Edge {
                     edgeType: edge.type,
                     source: edge.source,
                     target: edge.target,
+                    value: edge.value,
+                    failed_value: edge.failed_value,
                 }
 
             });
