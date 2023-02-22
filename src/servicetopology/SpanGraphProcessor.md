@@ -96,7 +96,7 @@ This methodology provides a scalable and efficient way to extract and visualize 
 
 Here are some potential pros and cons for each approach:
 
-Putting edge information on metrics:
+### _Putting edge information on metrics:_
 
 #### Pros:
 
@@ -108,7 +108,8 @@ It may be more suitable for small-scale systems where the increase in cardinalit
 
 It could lead to high cardinality, which may result in performance issues and increased storage costs.
 It may not be as suitable for complex graph queries that may require traversing multiple nodes and edges.
-Exporting to a graph database on the collector level:
+
+### _Exporting to a graph database on the collector level:_
 
 #### Pros:
 
