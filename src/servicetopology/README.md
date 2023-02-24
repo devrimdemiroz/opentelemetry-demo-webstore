@@ -27,7 +27,7 @@ http://localhost:8181/index.html
 ```shell
 # compose docker-compose-min.yml
 cd ../../
-docker-compose -f docker-compose-min.yml up --force-recreate --no-build --remove-orphans &
+docker-compose -f docker-compose-min.yml  up --force-recreate --no-build --remove-orphans &
 ```
     
 ```shell

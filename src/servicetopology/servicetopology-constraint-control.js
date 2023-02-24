@@ -153,8 +153,8 @@ $("body").on("change", "#inputFile", function (e, fileObject) {
             constraints.relativePlacementConstraint = undefined;
 
             document.getElementById("nodeList").addEventListener("change", function () {
-                document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-                document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+                document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+                document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
             });
 
 
@@ -337,8 +337,8 @@ document.getElementById("sample").addEventListener("change", function () {
     onLoad();
 
     document.getElementById("nodeList").addEventListener("change", function () {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     });
 });
 
@@ -380,8 +380,8 @@ document.getElementById("fcoseButton").addEventListener("click", function () {
     finalOptions.relativePlacementConstraint = constraints.relativePlacementConstraint ? constraints.relativePlacementConstraint : undefined;
     let layout = cy.layout(finalOptions);
     layout.one("layoutstop", function (event) {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     });
     cy.layoutUtilities("get").setOption("randomize", finalOptions.randomize);
 //  let start = performance.now();
@@ -398,8 +398,8 @@ document.getElementById("draftButton").addEventListener("click", function () {
     finalOptions.relativePlacementConstraint = constraints.relativePlacementConstraint ? constraints.relativePlacementConstraint : undefined;
     let layout = cy.layout(finalOptions);
     layout.one("layoutstop", function (event) {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     });
     cy.layoutUtilities("get").setOption("randomize", true);
     layout.run();
@@ -415,8 +415,8 @@ document.getElementById("transformButton").addEventListener("click", function ()
 
     let layout = cy.layout(finalOptions);
     layout.one("layoutstop", function (event) {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     });
     layout.run();
 });
@@ -432,8 +432,8 @@ document.getElementById("enforceButton").addEventListener("click", function () {
 
     let layout = cy.layout(finalOptions);
     layout.one("layoutstop", function (event) {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     });
     layout.run();
 });
@@ -449,8 +449,8 @@ document.getElementById("coseButton").addEventListener("click", function () {
     finalOptions.step = "cose";
     let layout = cy.layout(finalOptions);
     layout.one("layoutstop", function (event) {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     });
     cy.layoutUtilities("get").setOption("randomize", finalOptions.randomize);
     layout.run();
@@ -482,8 +482,8 @@ let onSelectRP2 = function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("nodeList").addEventListener("change", function () {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     });
 });
 
@@ -492,14 +492,14 @@ cy.ready(function (event) {
 });
 
 document.getElementById("nodeList").addEventListener("change", function () {
-    document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-    document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+    document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+    document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
 });
 
 cy.on("position", "node", function (event) {
     if (event.target.id() == document.getElementById("nodeList").value) {
-        document.getElementById("fixedNodeX").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
-        document.getElementById("fixedNodeY").value = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
+        document.getElementById("fixedNodeX").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("x"));
+        document.getElementById("fixedNodeY").weight = Math.round(cy.getElementById(document.getElementById("nodeList").value).position("y"));
     }
 });
 

@@ -73,6 +73,7 @@
     "cmgm": "github:iVis-at-Bilkent/cmgm#main",
     "cose-base": "^2.2.0",
     "cytoscape": "^3.23.0",
+    "cytoscape-automove": "^1.10.3",
     "cytoscape-bubblesets": "^3.2.0",
     "cytoscape-complexity-management": "github:iVis-at-Bilkent/cytoscape.js-complexity-management.git#main",
     "cytoscape-fcose": "^2.2.0",

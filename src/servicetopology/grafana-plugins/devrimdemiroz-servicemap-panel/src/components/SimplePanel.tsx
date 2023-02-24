@@ -1,26 +1,23 @@
 import React, {PureComponent} from 'react';
 import {PanelProps} from '@grafana/data';
-import {getTemplateSrv} from '@grafana/runtime';
+import {FetchResponse, getBackendSrv} from '@grafana/runtime';
 import './style.css';
-import cytoscape, {NodeSingular} from "cytoscape";
+import cytoscape from "cytoscape";
 import layoutUtilities from 'cytoscape-layout-utilities';
 import fcose from 'cytoscape-fcose';
 import BubbleSets from 'cytoscape-bubblesets';
 import cola from 'cytoscape-cola';
+import automove from 'cytoscape-automove';
 
-import {
-    addHallignConstraint,
-    addRelativeConstraint,
-    addVallignConstraint, colaOptions,
-    layoutOptions,
-    resetConstraints
-} from "./layout";
+import {addHallignConstraint, colaOptions, layoutOptions, resetConstraints} from "./layout";
 import {cyStyle} from "./style";
 
 
 // @ts-ignore
 import complexityManagement from "cytoscape-complexity-management";
+import {Edge, Operation, Service} from "./Schema";
 
+cytoscape.use( automove );
 cytoscape.use(BubbleSets);
 cytoscape.use(fcose);
 cytoscape.use(layoutUtilities);
@@ -40,93 +37,8 @@ export function round2(value) {
     return Math.round((value + Number.EPSILON) * 100) / 100
 }
 
-class Operation {
-    name: any;
-    spanStatus: any;
-    spanKind: any;
-    id: string;
 
-    constructor(serie: any) {
-        this.service = serie.fields[1].labels.service_name;
-        this.name = serie.fields[1].labels.span_name.replace(/(\/|\s|\.)/g, "_");
-        this.spanKind = serie.fields[1].labels.span_kind.replace(/SPAN_KIND_(.*)/g, "$1");
-        this.spanStatus = serie.fields[1].labels.status_code.replace(/STATUS_CODE_(.*)/g, "$1");
-        this.id = this.service + "_" + this.name + "_" + this.spanKind;
-
-        // if exists add to operationId
-        this.httpMethod = serie.fields[1].labels.http_method;
-        if (this.httpMethod !== undefined) {
-            this.id += "_" + this.httpMethod;
-        }
-
-        this.httpStatusCode = serie.fields[1].labels.http_status_code;
-        // if exists add to operationId
-        this.status = this.spanStatus;
-        if (this.httpStatusCode !== undefined) {
-            this.status +=
-                "_" + this.httpStatusCode;
-        }
-
-        this.statusId = this.id + "_" + this.status;
-
-        let value = serie.fields[1].values.get(0);
-        // round the value to 2 decimals after the dot
-        this.value = round2(value);
-    }
-
-    value: number;
-    statusId: string;
-    status: string;
-    httpMethod: string;
-    httpStatusCode: any;
-    service: any;
-
-}
-
-class Service {
-    name: string;
-    id: string;
-
-    constructor(serie: any) {
-        this.name = serie.fields[1].labels.service_name;
-        this.id = this.name;
-        this.value = round2(serie.fields[1].values.get(0));
-
-    }
-
-    value: number;
-}
-
-class Edge {
-    name: string;
-    id: string;
-    source: string;
-    target: string;
-
-    value: number;
-    type: string;
-    label: string;
-    failed_value: number;//default 0
-
-
-
-    constructor(edge: any) {
-//        var edge = edge.data;
-        console.log("Edge", edge);
-        this.source = edge.labels.client;
-        this.target = edge.labels.server;
-        this.value=round2(edge.values.get(0));
-        this.failed_value=0;//default 0
-        this.label = this.getLabel();
-
-    }
-    getLabel(){
-        return this.value.toString()+" / "+this.failed_value.toString();
-    }
-}
-
-
-    export class SimplePanel extends PureComponent<PanelProps, PanelState> {
+export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     ref: any;
     cy: any | undefined;
     cyVisible: cytoscape.Core | undefined;
@@ -176,8 +88,81 @@ class Edge {
         this.cy.on('dblclick', 'node', (event: any) => {
             const node = event.target;
             console.log("node.data()", node.data(), node);
-            //this.instance.collapseNodes(this.cy.nodes(':selected'));
-            this.instance.collapseAllNodes();
+            this.setOperationEdges(node.data());
+        });
+    }
+
+    setOperationEdges(operationStatusNode: any) {
+        console.log("operationStatusNode", operationStatusNode);
+
+        let service = operationStatusNode.service;
+        let operation = operationStatusNode.operation;
+        let statusCode = operationStatusNode.httpStatusCode;
+        let error = operationStatusNode.spanStatus === "ERROR";
+        const {from, to} = this.props.data.timeRange;
+
+        const start = from.valueOf() * 1000;
+        const end = to.valueOf() * 1000;
+        // Construct the Jaeger query URL
+        const jaegerUrl = `api/datasources/proxy/2/api/traces?service=${service}&operation=${operation}&tags={"http.status_code":"${statusCode}","error":"${error}"}&limit=1&start=${start}&end=${end}&lookback=custom`;
+        console.log("jaegerUrl", jaegerUrl);
+        // Make the Jaeger query request to the data source
+        return getBackendSrv()
+            .datasourceRequest({
+                url: jaegerUrl,
+                method: 'GET',
+                requestId: 'my-request-id',
+            })
+            .then((response) => {
+                // Extract the trace ID from the response
+                const traceId = response.data.data[0].traceID;
+
+                // Construct the Jaeger trace URL
+                const traceUrl = `api/datasources/proxy/2/api/traces/${traceId}`;
+
+                // Make the Jaeger trace request to the data source
+                return getBackendSrv()
+                    .datasourceRequest({
+                        url: traceUrl,
+                        method: 'GET',
+                        requestId: 'my-request-id',
+                    })
+                    .then((response) => {
+                        return this.processTrace(response);
+                    });
+            });
+    }
+
+    private processTrace(response: FetchResponse<any>) {
+        lastValueFrom(response).then((response) => {
+
+
+            let trace = response.data.data[0];
+            // Process the trace data
+            console.log("trace", trace);
+            const spans = trace.spans;
+            // extract edges  from spans like loadgenerator_HTTP_POST_CLIENT_POST_ERROR_500 --> "frontend_HTTP_POST_SERVER_POST_ERROR_500
+            const edges = spans.map(span => {
+                // use parentid child reference spanid to create edges
+                span.serviceName = trace.processes[span.processID].serviceName;
+
+                // type Edge
+                let edge: Edge;
+
+                if (span.references.length > 0) {
+                    const parentSpan = spans.find(s => s.spanID === span.references[0].spanID);
+                    console.log("parentSpan", parentSpan);
+                    edge = new Edge();
+                    edge.source = nameSpanEdgeId(parentSpan);
+                    edge.target = nameSpanEdgeId(span);
+                    edge.id = `${edge.source}-${edge.target}`;
+                    edge.type = "span";
+                    this.addSpanEdge(edge);
+                    return edge;
+                }
+            });
+            console.log("span edges added = ", edges);
+            return spans;
         });
     }
 
@@ -223,18 +208,18 @@ class Edge {
         this.setServiceNodes();
 
         this.setServiceEdges();
-         resetConstraints();
-         this.setOperationNodes();
+        // resetConstraints();
+        this.setOperationNodes();
         // this.correlateOperations();
         // this.calculateConstraints();
         //
-        // this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
-        // this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
+        this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
+        this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
 
         // this.cy.fit();
         console.log("this.cy", this.cy);
         let layout = this.cy.layout({
-            ...layoutOptions,
+            ...colaOptions,
             stop: () => {
                 //this.initializer(this.cy);
             }
@@ -250,9 +235,8 @@ class Edge {
 
         this.calculateConstraints();
         this.cy.resize();
-        this.cy.fit();
         layoutOptions.randomize = false;
-        let layout = this.cy.layout({...layoutOptions});
+        let layout = this.cy.layout({...colaOptions});
         layout.run();
 
 
@@ -268,6 +252,8 @@ class Edge {
             service = new Service(serie);
             this.addServiceCompound(service);
             this.addServiceNode(service);
+            this.addConnectorNodes(service,"client");
+
 
         });
 
@@ -291,17 +277,17 @@ class Edge {
             for (let i = 1; i < edgesLength; i++) {
                 // use Edge class to create an edge
                 let edge: Edge;
-                edge = new Edge(serie.fields[i]);
+                edge = Edge.create(serie.fields[i]);
                 edge.id = 'service-' + edge.source + '-' + edge.target;
                 edge.type = 'service';
-                edge.failed_value = 0;
+                edge.failed_weight = 0;
                 // if edge is undefined create it
                 if (this.cy.getElementById(edge.id).length === 0) {
                     this.addServiceEdge(edge);
 
                 } else {
-                    // if edge exists update the value and label
-                    this.cy.getElementById(edge.id).data('value', edge.value);
+                    // if edge exists update the weight and label
+                    this.cy.getElementById(edge.id).data('weight', edge.weight);
                     this.cy.getElementById(edge.id).data('label', edge.getLabel());
 
                 }
@@ -319,49 +305,64 @@ class Edge {
                 for (let i = 1; i < edgesLength; i++) {
                     // use Edge class to create an edge
                     let edge: Edge;
-                    edge = new Edge(serie.fields[i]);
+                    edge = Edge.create(serie.fields[i]);
                     edge.id = 'service-' + edge.source + '-' + edge.target;
                     edge.type = 'service';
-                    edge.failed_value = edge.value;
-                    edge.value = 0;//this one is failed
+                    edge.failed_weight = edge.weight;
+                    edge.weight = 0;//this one is failed
 
                     // if edge is undefined create it
                     if (this.cy.getElementById(edge.id).length === 0) {
                         this.addServiceEdge(edge);
 
                     } else {
-                        // if edge exists update the value and label
-                        this.cy.getElementById(edge.id).data('failed_value', edge.failed_value);
+                        // if edge exists update the weight and label
+                        this.cy.getElementById(edge.id).data('failed_weight', edge.failed_weight);
                         this.cy.getElementById(edge.id).data('label', edge.getLabel());
                         console.log("edge", edge);
 
                     }
 
                 }
-            // TODO: query is instant for the moment, needs to be average on selected time range
-            // TODO: traces_service_graph_request_failed_total is not available yet
+                // TODO: query is instant for the moment, needs to be average on selected time range
+                // TODO: traces_service_graph_request_failed_total is not available yet
 
-
-        });
-    });
-    }
-
-        private addServiceEdge(edge: Edge) {
-            this.cy.add({
-                data: {
-                    id: edge.id,
-                    label: edge.label,
-                    edgeType: edge.type,
-                    source: edge.source,
-                    target: edge.target,
-                    value: edge.value,
-                    failed_value: edge.failed_value,
-                }
 
             });
-        }
+        });
+    }
 
-        private setOperationNodes() {
+    private addServiceEdge(edge: Edge) {
+        this.cy.add({
+            data: {
+                id: edge.id,
+                label: edge.label,
+                edgeType: edge.type,
+                source: edge.source,
+                target: edge.target,
+                weight: edge.weight,
+                failed_weight: edge.failed_weight,
+            }
+
+        });
+
+    }
+
+    private addSpanEdge(edge: Edge) {
+        this.cy.add({
+            data: {
+                id: edge.id,
+                label: "",
+                edgeType: edge.type,
+                source: edge.source,
+                target: edge.target,
+                weight: 0,//will get set later by metrics
+            }
+
+        });
+    }
+
+    private setOperationNodes() {
         const {data} = this.props;
         // TODO: A hash map to store the operation nodes would be better, parenting(compound) can be then used
         // for now sticking with hierarchical approach
@@ -381,17 +382,17 @@ class Edge {
                 if (this.cy.getElementById(operation.statusId).length === 0) {
                     this.addOperationStatusNode(operation);
                 } else {
-                    // if serie node exists and status node exists update the value
-                    this.cy.getElementById(operation.statusId).data('value', operation.value);
+                    // if serie node exists and status node exists update the weight
+                    this.cy.getElementById(operation.statusId).data('weight', operation.weight);
                 }
             }
-            // once finished , itreate status nodes and sum up the values into serie node
+            // once finished , itreate status nodes and sum up the weight into serie node
             const operationStatusNodes = this.cy.nodes().filter("node[nodeType = 'operationStatus'][parent = '" + operation.id + "-compound" + "']");
-            let operationValue = 0;
+            let operationWeight = 0;
             operationStatusNodes.forEach((operationStatusNode: any) => {
-                operationValue += operationStatusNode.data('value');
+                operationWeight += operationStatusNode.data('weight');
             });
-            this.cy.getElementById(operation.id).data('value', operationValue);
+            this.cy.getElementById(operation.id).data('weight', operationWeight);
 
         });
 
@@ -402,12 +403,52 @@ class Edge {
         this.cy.add({
             data: {
                 id: service.id,
-                label: service.value.toString(),
+                label: service.weight.toString(),
                 nodeType: "service",
                 parent: service.id + "-compound",
-                value: service.value
+                weight: service.weight
             }
         });
+    }
+    private addConnectorNodes(service: Service, spanKind: string) {
+         this.cy.add({
+            data: {
+                id: service.id + "-in",
+                label: "in",
+                nodeType: "connector-in",
+                parent: service.id +"-compound",
+            }
+        });
+         this.cy.add({
+            data: {
+                id: service.id+"-out",
+                label: "out",
+                nodeType: "connector-out",
+                parent: service.id + "-compound",
+            }
+        } );
+        // //add both connectors to the service node
+        this.cy.add({
+            data: {
+                id: service.id+"-in-edge",
+                label: "",
+                edgeType: "connector-in",
+                source: service.id,
+                target: service.id+"-in",
+
+
+            }
+        }) ;
+        this.cy.add({
+            data: {
+                id: service.id+"-out-edge",
+                label: "",
+                edgeType: "connector-out",
+                source: service.id+"-out",
+                target: service.id,
+            }
+        } );
+
     }
 
     private addServiceCompound(service: Service) {
@@ -416,9 +457,10 @@ class Edge {
                 id: service.id + "-compound",
                 label: service.name,
                 nodeType: "serviceCompound",
-                value: service.value
+                weight: service.weight
             }
         });
+
     }
 
     private addOperationStatusNode(operation: Operation) {
@@ -429,9 +471,31 @@ class Edge {
                 nodeType: "operationStatus",
                 spanStatus: operation.spanStatus,
                 httpStatusCode: operation.httpStatusCode,
-                value: operation.value,
+                weight: operation.weight,
                 parent: operation.id + "-compound",
+                service: operation.service,
             }
+        });
+        let target;
+        let source;
+        if (operation.spanKind === "SERVER") {
+            source = operation.id;
+            target = operation.statusId;
+        } else {
+            source = operation.statusId;
+            target = operation.id;
+        }
+        this.cy.add({
+            data: {
+                id: "edge-" + operation.statusId,
+                label: "",
+                edgeType: "span",
+                spanStatus: operation.spanStatus,
+                source: source,
+                target: target,
+                weight: 0,//will get set later by metrics
+            }
+
         });
     }
 
@@ -442,7 +506,7 @@ class Edge {
                 label: operation.name,
                 nodeType: "operation-compound",
                 service: operation.service,
-                parent: operation.service + "-compound",
+                parent: operation.service +"-compound",
                 spanKind: operation.spanKind,
             }
         });
@@ -459,47 +523,29 @@ class Edge {
                 httpMethod: operation.httpMethod,
                 service: operation.service,
                 parent: operation.id + "-compound",
-                value: 0,
+                weight: 0,
             }
         });
-    }
-
-    private correlateOperations() {
-        // correlate operations in different services with same name ,spanStatus and if exist http status code
-        // where one operation has spanKind client other as server. create edge from client one to server.
-
-        const clientOperations = this.cy.nodes().filter("node[nodeType = 'operation'][spanKind = 'CLIENT']");
-        console.log("clientOperations", clientOperations);
-        // iterate over the collections of client operations
-        clientOperations.forEach((clientOperation: any) => {
-            //console.log("clientOperation", clientOperation.data());
-            // get the matching server operations
-            const serverOperations = this.cy.nodes().filter("node[nodeType = 'operation'][spanKind = 'SERVER'][name = '" + clientOperation.data('name') + "']");
-            // console.log("serverOperations", serverOperations.length," list=", serverOperations);
-            // if there are matching operations
-            if (serverOperations.length === 1) {
-                let clientOperationValue = round2(clientOperation.data('value'));
-                // create an edge from client to server
-                let serverOperationsValue = round2(serverOperations[0].data('value'));
-                this.cy.add({
-                    data: {
-                        id: clientOperation.data('id') + "_" + serverOperations[0].data('id'),
-                        source: clientOperation.data('id'),
-                        target: serverOperations[0].data('id'),
-                        edgeType: "operation",
-                        label: clientOperationValue + " / " + serverOperationsValue.toFixed(2),
-                        value: (clientOperationValue + serverOperationsValue) / 2
-                    }
-                });
-                // values to be decimal 2
-                addHallignConstraint([clientOperation.data('id'), serverOperations[0].data('id')]);
-
-            } else if (serverOperations.length > 1) {
-                console.log("More than one Match! ...serverOperations", serverOperations.length, " list=", serverOperations);
+        let source;
+        let target;
+        if (operation.spanKind === "CLIENT") {
+            source = operation.id;
+            target = operation.service+"-out";
+        } else {
+            source = operation.service+"-in";
+            target = operation.id;
+        }
+        this.cy.add({
+            data: {
+                id: "edge-" + operation.id,
+                label: "",
+                edgeType: "operation",
+                source: source,
+                target: target,
+                weight: 0,//will get set later by metrics
             }
+
         });
-
-
     }
 
     initializer(cy: any) {
@@ -601,3 +647,23 @@ class Edge {
         });
     }
 }
+
+
+function nameSpanEdgeId(span: span) {
+    // find service name with process id reference processes in trace
+
+    let spanKind = (span.tags.find(t => t.key === 'span.kind').value).toUpperCase();
+    let operationId = `${span.serviceName}_${span.operationName.replace(/(\/|\s|\.)/g, "_")}_${spanKind}`;
+    if (span.tags.find(t => t.key === 'http.method')) {
+        operationId = `${operationId}_${span.tags.find(t => t.key === 'http.method').value}`;
+    }
+    let error = span.tags.find(t => t.key === 'otel.status_code');
+    operationId = error ? `${operationId}_${error.value}` : operationId;
+    if (span.tags.find(t => t.key === 'http.status_code')) {
+        operationId = `${operationId}_${span.tags.find(t => t.key === 'http.status_code').value}`;
+    }
+    span.operationId = operationId;
+    console.log("operationId", operationId);
+    return operationId;
+}
+

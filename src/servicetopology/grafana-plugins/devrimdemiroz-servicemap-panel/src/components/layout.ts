@@ -8,7 +8,7 @@ export let layoutOptions = {
     // - "draft" only applies spectral layout
     // - "default" improves the quality with incremental layout (fast cooling rate)
     // - "proof" improves the quality with incremental layout (slow cooling rate)
-    quality: "default",
+    quality: "proof",
     // Use random node positions at beginning of layout
     // if this is set to false, then quality option must be "proof"
     randomize: true,
@@ -38,7 +38,7 @@ export let layoutOptions = {
     // Sample size to construct distance matrix
     sampleSize: 25,
     // Separation amount between nodes
-    nodeSeparation: 75,
+    nodeSeparation: 50,
     // Power iteration tolerance
     piTol: 0.0000001,
 
@@ -48,9 +48,9 @@ export let layoutOptions = {
     nodeRepulsion: node => 4500,
     // nodeRepulsion: 4000,
     // Ideal edge (non nested) length
-    idealEdgeLength: edge => 75,
+    idealEdgeLength: edge => 50,
     // Divisor to compute edge forces
-    edgeElasticity: edge => 0,
+    edgeElasticity: edge => 0.1,
      //edgeElasticity: 1, // Devrim note: Change works for good
     // Nesting factor (multiplier) to compute ideal edge length for nested edges
     nestingFactor: 1,
@@ -72,7 +72,7 @@ export let layoutOptions = {
 
 
     // Gravity force (constant)
-    gravity: 0.25,
+    gravity: 1.25,
     // Gravity range (constant) for compounds
     gravityRangeCompound: 1.5,
     // Gravity force (constant) for compounds
@@ -122,7 +122,7 @@ export let colaOptions = {
     handleDisconnected: false, // if true, avoids disconnected components from overlapping
     convergenceThreshold: 0.01, // when the alpha value (system energy) falls below this value, the layout stops
     nodeSpacing: function( node ){ return 1; }, // extra spacing around nodes
-    flow: undefined, // use DAG/tree flow layout if specified, e.g. { axis: 'y', minSeparation: 30 }
+    flow: true, // use DAG/tree flow layout if specified, e.g. { axis: 'y', minSeparation: 30 }
     alignment: undefined, // relative alignment constraints on nodes, e.g. {vertical: [[{node: node1, offset: 0}, {node: node2, offset: 5}]], horizontal: [[{node: node3}, {node: node4}], [{node: node5}, {node: node6}]]}
     gapInequalities: undefined, // list of inequality constraints for the gap between the nodes, e.g. [{"axis":"y", "left":node1, "right":node2, "gap":25}]
     centerGraph: true, // adjusts the node positions initially to center the graph (pass false if you want to start the layout from the current position)
@@ -130,7 +130,7 @@ export let colaOptions = {
 
     // different methods of specifying edge length
     // each can be a constant numerical value or a function like `function( edge ){ return 2; }`
-    edgeLength: undefined, // sets edge length directly in simulation
+    edgeLength: function( edge ){ return 45; }, // sets edge length directly in simulation
     edgeSymDiffLength: undefined, // symmetric diff edge length in simulation
     edgeJaccardLength: undefined, // jaccard edge length in simulation
 

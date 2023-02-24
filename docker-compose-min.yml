@@ -127,7 +127,6 @@ services:
       - WEB_OTEL_SERVICE_NAME=frontend-web
     depends_on:
       - otelcol
-      - quoteservice
     logging: *logging
 
   # Frontend Proxy (Envoy)
@@ -190,31 +189,6 @@ services:
       - frontend
     logging: *logging
 
-  # Quote service
-  quoteservice:
-    image: ${IMAGE_NAME}:${IMAGE_VERSION}-quoteservice
-    container_name: quote-service
-    build:
-      context: ./
-      dockerfile: ./src/quoteservice/Dockerfile
-      cache_from:
-        - ${IMAGE_NAME}:${IMAGE_VERSION}-quoteservice
-    deploy:
-      resources:
-        limits:
-          memory: 30M
-    restart: unless-stopped
-    ports:
-      - "${QUOTE_SERVICE_PORT}"
-    environment:
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://${OTEL_COLLECTOR_HOST}:4318/v1/traces
-      - OTEL_PHP_AUTOLOAD_ENABLED=true
-      - QUOTE_SERVICE_PORT
-      - OTEL_RESOURCE_ATTRIBUTES
-      - OTEL_SERVICE_NAME=quoteservice
-    depends_on:
-      - otelcol
-    logging: *logging
 
   # Cart service
   cartservice:
