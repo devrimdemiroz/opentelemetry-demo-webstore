@@ -13,7 +13,7 @@ explore the topological capabilities and limitations of the spanmetrics and serv
 #### Gallery of images from the
 [Shahmaran](https://tractatus.one/shahmaran-20a9f1678) blog post.
 
-![OctopusMultiBrainIOCircilationSys](src/servicetopology/footsteps/OctopusMultiBrainIOCircilationSys 2023-02-25.png)
+![OctopusMultiBrainIOCircilationSys](src/servicetopology/footsteps/OctopusMultiBrainIOCircilationSys2023-02-25.png)
 
 [footstep snapshots here here](src/servicetopology/footsteps/)
 ##### A quick look behind the curtain

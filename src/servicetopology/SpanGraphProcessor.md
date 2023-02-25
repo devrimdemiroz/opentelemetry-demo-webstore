@@ -16,7 +16,7 @@ A graph of your spans,  Connecting the dots, Revealing dark spots!
 
 # I. Introduction
 
-![OctopusMultiBrainIOCircilationSys](footsteps/OctopusMultiBrainIOCircilationSys 2023-02-25.png)
+![OctopusMultiBrainIOCircilationSys](footsteps/OctopusMultiBrainIOCircilationSys2023-02-25.png)
 
 Modern software systems are increasingly complex, often comprising many interconnected components that span multiple machines and networks. As a result, it can be challenging to understand the overall structure of such systems, let alone monitor their performance and diagnose problems. While metrics and traces are commonly used to measure and analyze system behavior, they can be difficult to visualize in a way that captures the system's underlying topology and temporal dynamics. In response to this challenge, we propose a research intention to develop a method for extracting topology from metrics and traces and visualizing it in a meaningful and informative way. By doing so, we aim to provide system operators and developers with a more effective and efficient way to understand system behavior and diagnose issues, potentially saving time and resources while improving system performance and reliability.
 
@@ -80,7 +80,8 @@ The collected metric and trace data needs to be processed to extract the relevan
 We will also use the OpenTelemetry Collector to enrich the span data with additional contextual information such as service and operation names, error codes, and other relevant metadata. This will help in constructing a more detailed and accurate topology graph.
 
 ## C. Topology Extraction
-![Explore Data](footsteps/2023-02-25 preview1.png)
+
+![Explore Data](footsteps/2023-02-25preview1.png)
 
 Once the metric and trace data has been processed, we can extract the topology information using various techniques. We will use a combination of aggregation, clustering, and span folding to extract the relevant topology information from the metric and trace data.
 
@@ -88,7 +89,7 @@ Aggregation involves grouping similar nodes together based on their attributes a
 
 ## D. Topology Visualization
 
-![OctopusMultiBrainIOCircilationSys](footsteps/OctopusMultiBrainIOCircilationSys 2023-02-25.png)
+![OctopusMultiBrainIOCircilationSys](footsteps/OctopusMultiBrainIOCircilationSys2023-02-25.png)
 The extracted topology information can be visualized using graph visualization tools such as Cytoscape. Cytoscape is an open-source platform for visualizing complex networks and can be used to create interactive and customizable topology graphs.
 
 The topology graph can be further refined by applying various layout algorithms and filtering techniques. The graph can be explored and interacted with to gain insights into the system's architecture and behavior.
