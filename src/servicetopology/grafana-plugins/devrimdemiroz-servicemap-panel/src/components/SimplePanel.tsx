@@ -94,7 +94,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     setOperationEdges(operationStatusNode: any) {
         console.log("operationStatusNode", operationStatusNode);
-
+        return operationStatusNode;
         let service = operationStatusNode.service;
         let operation = operationStatusNode.operation;
         let statusCode = operationStatusNode.httpStatusCode;
@@ -207,7 +207,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     private initGraph() {
         this.setServiceNodes();
 
-        this.setServiceEdges();
+        this.setServiceLevelEdges();
         // resetConstraints();
         this.setOperationNodes();
         // this.correlateOperations();
@@ -219,7 +219,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         // this.cy.fit();
         console.log("this.cy", this.cy);
         let layout = this.cy.layout({
-            ...layoutOptions,
+            ...colaOptions,
             stop: () => {
                 //this.initializer(this.cy);
             }
@@ -237,7 +237,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.cy.resize();
         layoutOptions.randomize = false;
         layoutOptions.quality = "default";
-        let layout = this.cy.layout({...layoutOptions});
+        let layout = this.cy.layout({...colaOptions});
         layout.run();
 
 
@@ -263,9 +263,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     }
 
 
-    private setServiceEdges() {
+    private setServiceLevelEdges() {
         const {data} = this.props;
-        console.log("data", data);
         // get series with refId ServiceGraphEdges
         data.series.filter((series: any) => series.refId === "service_graph_request_total").forEach((serie: any) => {
             // if serie is undefined return
@@ -377,14 +376,14 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             if (this.cy.getElementById(operation.id).length === 0) {
                 this.addOperationCompound(operation);
                 this.addOperationNode(operation);
-                this.addOperationStatusNode(operation);
+                this.addOperationSpanNode(operation);
             } else {
                 // if serie node exists but if the status node does not exist create it
-                if (this.cy.getElementById(operation.statusId).length === 0) {
-                    this.addOperationStatusNode(operation);
+                if (this.cy.getElementById(operation.spanStatusId).length === 0) {
+                    this.addOperationSpanNode(operation);
                 } else {
                     // if serie node exists and status node exists update the weight
-                    this.cy.getElementById(operation.statusId).data('weight', operation.weight);
+                    this.cy.getElementById(operation.spanStatusId).data('weight', operation.weight);
                 }
             }
             // once finished , itreate status nodes and sum up the weight into serie node
@@ -413,6 +412,19 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
         });
     }
+
+    private addServiceCompound(service: Service) {
+        this.cy.add({
+            data: {
+                id: service.id + "-compound",
+                label: service.name,
+                nodeType: "serviceCompound",
+                weight: service.weight
+            }
+        });
+
+    }
+
     private addConnectorNodes(service: Service) {
         this.addConnectorNode(service, "in");
         this.addConnectorNode(service, "out");
@@ -436,24 +448,17 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.props.data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total_span_kind")
             .filter((serie: any) => serie.fields[1].labels.service_name ===  service.name && serie.fields[1].labels.span_kind === span_kind)
             .forEach((serie: any) => {
-            console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
-            if (serie.length === 1) {
-                console.log(serie.fields[1].values);
-                weight = round2(serie.fields[1].values.buffer[0]);
-                console.log("service_name=",service.name,",-",direction,  ",weight=", weight);
-                return;
-            } else {
-                console.log("spanmetrics_calls_total_span_kind query returned more than one result",serie);
-            }
+                console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
+                if (serie.length === 1) {
+                    console.log(serie.fields[1].values);
+                    weight = round2(serie.fields[1].values.buffer[0]);
+                    console.log("service_name=",service.name,",-",direction,  ",weight=", weight);
+                    return;
+                } else {
+                    console.log("spanmetrics_calls_total_span_kind query returned more than one result",serie);
+                }
 
-        });
-        if (weight === 0) {
-        //return;// no need to create
-        }
-
-
-
-
+            });
 
         this.cy.add({
             data: {
@@ -465,7 +470,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
         });
         if (span_kind === "SPAN_KIND_INTERNAL") {
-           // return;// no need to create edge
+            // return;// no need to create edge
         }
         this.cy.add({
             data: {
@@ -474,29 +479,19 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 edgeType: "connector-"+direction,
                 source: service.id,
                 target: service.id+"-"+direction,
+                weight: weight
 
 
             }
         }) ;
     }
 
-    private addServiceCompound(service: Service) {
+
+    private addOperationSpanNode(operation: Operation) {
         this.cy.add({
             data: {
-                id: service.id + "-compound",
-                label: service.name,
-                nodeType: "serviceCompound",
-                weight: service.weight
-            }
-        });
-
-    }
-
-    private addOperationStatusNode(operation: Operation) {
-        this.cy.add({
-            data: {
-                id: operation.statusId,
-                label: operation.status, // ERROR_500 or UNSET or similar
+                id: operation.spanStatusId,
+                label: operation.weight, // ERROR_500 or UNSET or similar
                 nodeType: "operationStatus",
                 spanStatus: operation.spanStatus,
                 httpStatusCode: operation.httpStatusCode,
@@ -505,27 +500,37 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 service: operation.service,
             }
         });
+
+
+        this.addOperationEdge(operation);// a.k.a. operation-span edge
+    }
+
+    private addOperationEdge(operation: Operation) {
         let target;
         let source;
         if (operation.spanKind === "SERVER") {
             source = operation.id;
-            target = operation.statusId;
+            target = operation.spanStatusId;
         } else if (operation.spanKind === "CLIENT") {
-            source = operation.statusId;
+            source = operation.spanStatusId;
             target = operation.id;
         } else {
             source = operation.id;
-            target = operation.statusId;
+            target = operation.spanStatusId;
         }
+
+
         this.cy.add({
             data: {
-                id: "edge-" + operation.statusId,
-                label: "",
-                edgeType: "span",
+                id: "edge-" + operation.spanStatusId,
+                label: operation.status,
+                edgeType: "operation-span",
                 spanStatus: operation.spanStatus,
                 source: source,
                 target: target,
-                weight: 0,//will get set later by metrics
+                // get span node weight and assign it to edge
+
+                weight: operation.weight,
             }
 
         });
@@ -578,57 +583,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 edgeType: "operation",
                 source: source,
                 target: target,
-                weight: 0,//will get set later by metrics
+                weight: operation.weight,
             }
 
         });
     }
 
-    initializer(cy: any) {
-        if (this.cyVisible === undefined || this.cyInvisible === undefined) {
-            console.log("cy stuff is undefined");
-            return;
-        }
-        this.cyVisible.remove(this.cyVisible.elements());
-
-        this.cyInvisible.remove(this.cyInvisible.elements());
-        // iterate over this.instance.getCompMgrInstance().visibleGraphManager.nodesMap.values()
-        for (const nodeItem of this.instance.getCompMgrInstance().visibleGraphManager.nodesMap.values()) {
-            this.cyVisible.add({
-                data: {
-                    id: nodeItem.ID,
-                    parent: this.instance.getCompMgrInstance().visibleGraphManager.rootGraph === nodeItem.owner ? null : nodeItem.owner.parent.ID
-                }, position: cy.getElementById(nodeItem.ID).position()
-            });
-        }
-        // iterate over this.instance.getCompMgrInstance().visibleGraphManager.edgesMap.values()
-        for (const edgeItem of this.instance.getCompMgrInstance().visibleGraphManager.edgesMap.values()) {
-            this.cyVisible.add({data: {id: edgeItem.ID, source: edgeItem.source.ID, target: edgeItem.target.ID}});
-        }
-        // iterate over this.instance.getCompMgrInstance().invisibleGraphManager.nodesMap.values()
-        for (const nodeItem of this.instance.getCompMgrInstance().invisibleGraphManager.nodesMap.values()) {
-            this.cyInvisible.add({
-                data: {
-                    id: nodeItem.ID,
-                    label: nodeItem.ID + (nodeItem.isFiltered ? "(f)" : "") + (nodeItem.isHidden ? "(h)" : "") + (nodeItem.isCollapsed ? "(c)" : "") + (nodeItem.isVisible ? "" : "(i)"),
-                    parent: this.instance.getCompMgrInstance().visibleGraphManager.rootGraph === nodeItem.owner ? null : nodeItem.owner.parent.ID
-                }, position: cy.getElementById(nodeItem.ID).position()
-            });
-        }
-        // iterate over this.instance.getCompMgrInstance().invisibleGraphManager.edgesMap.values()
-        for (const edgeItem of this.instance.getCompMgrInstance().invisibleGraphManager.edgesMap.values()) {
-            this.cyInvisible.add({
-                data: {
-                    id: edgeItem.ID,
-                    label: edgeItem.ID + (edgeItem.isFiltered ? "(f)" : "") + (edgeItem.isHidden ? "(h)" : "") + (edgeItem.isVisible ? "" : "(i)"),
-                    source: edgeItem.source.ID,
-                    target: edgeItem.target.ID
-                }
-            });
-        }
-
-
-    }
 
     private calculateConstraints() {
         resetConstraints();
@@ -637,24 +597,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     }
 
-    //
-    // private relativeAllignSpanKinds() {
-    //     // relative allignment for spanKind group compounds: SERVER left and CLIENT right
-    //     // find services containing both spanKind SERVER and CLIENT
-    //     const services = this.cy.nodes().filter("node[nodeType = 'service']");
-    //     services.forEach((service: any) => {
-    //         const spanKindGroups = service.children();
-    //         const serverGroup = spanKindGroups.filter("node[label = 'SERVER']");
-    //         const clientGroup = spanKindGroups.filter("node[label = 'CLIENT']");
-    //         if (serverGroup.length === 1 && clientGroup.length === 1) {
-    //             addRelativeConstraint(serverGroup.data('id'), clientGroup.data('id'));
-    //             let vallign = [];
-    //             vallign.push(serverGroup.data('id'));
-    //             vallign.push(clientGroup.data('id'));
-    //             addVallignConstraint(vallign);
-    //         }
-    //     });
-    // }
 
     private vAllignOperations() {
         //

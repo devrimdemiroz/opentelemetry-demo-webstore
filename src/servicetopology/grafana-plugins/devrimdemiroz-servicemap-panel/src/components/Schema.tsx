@@ -27,7 +27,7 @@ export class Operation {
                 "_" + this.httpStatusCode;
         }
 
-        this.statusId = this.id + "_" + this.status;
+        this.spanStatusId = this.id + "_" + this.status;
 
         let value = serie.fields[1].values.get(0);
         // round the value to 2 decimals after the dot
@@ -35,7 +35,7 @@ export class Operation {
     }
 
     weight: number;
-    statusId: string;
+    spanStatusId: string;
     status: string;
     httpMethod: string;
     httpStatusCode: any;

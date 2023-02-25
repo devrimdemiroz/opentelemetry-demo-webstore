@@ -14,7 +14,10 @@ export const cyStyle = [
             //  "background-opacity": 0.3,
             "text-wrap": "ellipsis",
             "label": "data(label)",
-        },
+            // minimum size enough to represent 99,99
+            "width": 4 * 20,
+
+        }
     },
 
     {
@@ -31,27 +34,61 @@ export const cyStyle = [
         }
 
     },
+
     {
         selector: 'node[nodeType = "service"]',
         style: {
             "background-color": "white",
-            "border-color": colors['COMPOUND'],
+            "border-color": colors['SERVICE_HIGHWAY'],
+            "border-opacity": 0.5,
             "text-valign": "center", // default
             "text-halign": "center", // default
             "font-size": 7,
             "color": "black",
+            "border-width": function (ele) {
+                return nodeSize(ele) / 5;
+            },
             "width": function (ele) {
                 return nodeSize(ele);
-            } ,
+            },
             "height": function (ele) {
                 return nodeSize(ele);
-            } ,
+            },
         }
     },
+
+    {
+        selector: 'node[nodeType *= "connector"]',
+        style: {
+            "border-color": function (ele) {
+                // if spankind SERVER, then color is colors['SERVER']
+                return ele.data('label') === 'in' ? colors['SERVER'] : colors['CLIENT']
+
+                // if spankind CLIENT, then color is colors['CLIENT']
+            },
+            "text-valign": "center",
+            "text-halign": "center",
+            "background-color": "white",
+            "width": function (ele) {
+                return nodeSize(ele);
+            },
+            "height": function (ele) {
+                return nodeSize(ele);
+            },
+            "label": "data(weight)",
+        }
+    },
+
     {
         selector: 'node[nodeType = "operation"]',
         style: {
-            "background-color": "white",
+            "border-color": function (ele) {
+                // if spankind SERVER, then color is colors['SERVER']
+                return ele.data('spanKind') === 'SERVER' ? colors['SERVER'] : colors['CLIENT']
+
+                // if spankind CLIENT, then color is colors['CLIENT']
+            },
+            "opacity": 0.8,
             "text-valign": "center",
             "text-halign": "center",
             "text-wrap": "ellipsis",
@@ -59,57 +96,11 @@ export const cyStyle = [
 
             "width": function (ele) {
                 return nodeSize(ele);
-            } ,
+            },
             "height": function (ele) {
                 return nodeSize(ele);
-            } ,
+            },
 
-        }
-    },
-    {
-        selector: 'node[nodeType *= "connector"]',
-        style: {
-            "border-color": colors['10'],
-            "text-valign": "center",
-            "text-halign": "center",
-            "background-color": "white",
-            "width": function (ele) {
-                return nodeSize(ele);
-            } ,
-            "height": function (ele) {
-                return nodeSize(ele);
-            } ,
-            "label": "data(weight)",
-            "border-color": colors['COMPOUND'],
-        }
-    }
-    ,
-    {
-        selector: 'node[spanStatus = "ERROR"]',
-        style: {
-            "color": colors['ERROR'],
-            "border-color": colors['ERROR'],
-            "text-valign": "top",
-            "width": function (ele) {
-                return nodeSize(ele);
-            } ,
-            "height": function (ele) {
-                return nodeSize(ele);
-            } ,
-        }
-    },
-    {
-        selector: 'node[spanStatus = "UNSET"]',
-        style: {
-            "color": colors['UNSET'],
-            "border-color": colors['UNSET'],
-            "text-valign": "top",
-            "width": function (ele) {
-                return nodeSize(ele);
-            } ,
-            "height": function (ele) {
-                return nodeSize(ele);
-            } ,
         }
     },
 
@@ -127,12 +118,48 @@ export const cyStyle = [
             "background-opacity": 0.3,
         }
     },
+
+    {
+        selector: 'node[spanStatus = "ERROR"]',
+        style: {
+            "color": colors['ERROR'],
+            "border-color": colors['ERROR'],
+            "text-valign": "center ",
+            "text-halign": "center",
+            "width": function (ele) {
+                return nodeSize(ele);
+            },
+            "height": function (ele) {
+                return nodeSize(ele);
+            },
+        }
+    },
+    {
+        selector: 'node[spanStatus = "UNSET"]',
+        style: {
+            "color": colors['UNSET'],
+            "border-color": colors['UNSET'],
+            "text-valign": "center ",
+            "text-halign": "center",
+
+
+            "width": function (ele) {
+                return nodeSize(ele);
+            },
+            "height": function (ele) {
+                return nodeSize(ele);
+            },
+        }
+    },
+
     // edges
 
     { // default
         selector: 'edge',
         style: {
-            "curve-style": "bezier",
+            "curve-style": "segments",
+            "line-cap": "round",
+
             "target-arrow-shape": "vee",// options are 'tee' 'triangle' 'triangle-tee' 'triangle-cross' 'triangle-backcurve' 'vee' 'square' 'circle' 'diamond' 'none'
             "text-rotation": "autorotate",
             "text-margin-y": -15,
@@ -145,28 +172,106 @@ export const cyStyle = [
     {// service to service
         selector: 'edge[edgeType = "service"]',
         style: {
-            //edge color
-            "line-color": colors['COMPOUND'],
+            //edge color SERVICE_HIGHWAY
+            "line-color": colors['SERVICE_HIGHWAY'],
+            "width": function (ele) {
+                // find target node edge connected to,
+                return ele.data("weight") * 20;
+            },
+            "target-arrow-shape": "none",
+            "opacity": 0.5,
         }
     },
     {// service in/out
         selector: 'edge[edgeType *= "connector"]',
         style: {
-            // no target arrow
-            "target-arrow-shape": "vee",
-            // thin line
-            "width": 3,
             //edge color
-            "line-color": colors['COMPOUND'],
+            "line-color": function (ele) {
+                // if edgetype connector-in, then color is colors SERVER  , out CLIENT, internal INTERNAL
+                //edgeType: 'connector-out'
+                if (ele.data('edgeType') === 'connector-in') {
+                    return colors['SERVER']
+                } else if (ele.data('edgeType') === 'connector-out') {
+                    return colors['CLIENT']
+                } else {
+                    return colors['4']
+                }
+
+            },
+            "width": function (ele) {
+                // find target node edge connected to,
+                return ele.data("weight") * 20;
+            },
+            // arrow target circle
+            "target-arrow-shape": "none",
+
+        }
+    },
+    // if spanstus is error on edge, change color to colors['ERROR'] and make the edge line based on weight but very thin
+    {
+        //, edgeType: "span", spanStatus: "ERROR"
+        selector: 'edge[edgeType = "operation-span"]',
+        style: {
+            "line-color": function (ele) {
+                // if [spanStatus = "ERROR"] then color is colors['ERROR']
+                return ele.data('spanStatus') === 'ERROR' ? colors['ERROR'] : colors['UNSET'];
+            },
+            "width": function (ele) {
+                return ele.data("weight") * 10;
+            },
+            // arrow target circle
+            "target-arrow-shape": "none",
+
+        }
+    }, // similar for UNSET
+    {
+        //, edgeType: "span", spanStatus: "UNSET"
+        selector: 'edge[edgeType = "operation-span"][spanStatus = "UNSET"]',
+        style: {
+            "line-color": colors['UNSET'],
+            "width": function (ele) {
+                return ele.data("weight") * 10;
+            },
+            // arrow target circle
+            "target-arrow-shape": "none",
+            //"curve-style": "straight-triangle",
+
+
+        }
+    },
+    // edge type operation-span
+    {
+        selector: 'edge[edgeType = "operation"]',
+        style: {
+            "line-color": function (ele) {
+                // if 'source'  contains 'in', then color is colors['SERVER']
+                return ele.data('source').includes('in') ? colors['SERVER'] : colors['CLIENT'];
+            },
+
+            "target-arrow-shape": "none",
+            "width": function (ele) {
+                return ele.data("weight") * 40;
+            },
+            "opacity": 0.8,
+            "border-width": function (ele) {
+                return ele.data("weight") * 5;
+            },
+            "border-opacity": 0.5,
+
         }
     }
 
 ];
 
 export const nodeSize = function (ele) {
+    // node size minimum 5 characters wide font size 7
+    // min weitght 1
+
+
     let weight = ele.data("weight");
     if (weight) {
-        return weight * 40;
+
+        return weight * 30;
     }
-    return 10;
+    return 20;
 }
