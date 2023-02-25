@@ -16,6 +16,8 @@ A graph of your spans,  Connecting the dots, Revealing dark spots!
 
 # I. Introduction
 
+![OctopusMultiBrainIOCircilationSys](footsteps/OctopusMultiBrainIOCircilationSys 2023-02-25.png)
+
 Modern software systems are increasingly complex, often comprising many interconnected components that span multiple machines and networks. As a result, it can be challenging to understand the overall structure of such systems, let alone monitor their performance and diagnose problems. While metrics and traces are commonly used to measure and analyze system behavior, they can be difficult to visualize in a way that captures the system's underlying topology and temporal dynamics. In response to this challenge, we propose a research intention to develop a method for extracting topology from metrics and traces and visualizing it in a meaningful and informative way. By doing so, we aim to provide system operators and developers with a more effective and efficient way to understand system behavior and diagnose issues, potentially saving time and resources while improving system performance and reliability.
 
 The key research questions we seek to address include: (1) How can topology be extracted from metrics and traces in a time-efficient manner? (2) How can this topology be visualized in a way that is both accurate and comprehensible? By answering these questions, we hope to make a significant contribution to the field of software engineering and systems monitoring, and provide a valuable tool for system operators, developers, and researchers.
@@ -34,8 +36,8 @@ The OpenTelemetry Collector is a powerful tool for processing, filtering, and ex
 Overall, our approach is unique in its focus on extracting topology information from telemetry data and representing it visually. By doing so, we aim to provide a more intuitive and comprehensive view of distributed systems for better observability and troubleshooting.
 
 
-
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
         A[Application/Service] -- Metrics --> B(Receivers)
         A -- Traces --> B
@@ -65,15 +67,20 @@ flowchart TD
 
 ## A. Data Collection
 
+![Data Collection](footsteps/preview1.png)
+
 We collect metrics and traces using Prometheus and OpenTelemetry, respectively. Prometheus is a widely-used time-series database that provides a rich set of metrics for various services and applications. OpenTelemetry is an open-source observability framework that provides a vendor-agnostic and standard way of collecting telemetry data. By using Prometheus and OpenTelemetry together, we can collect and correlate both metric and trace data for constructing the topology graph.
 
 ## B. Data Processing
+
+![Data Processing](footsteps/23FebPrewiewCola.png)
 
 The collected metric and trace data needs to be processed to extract the relevant topology information. To reduce the number of traces, we will build a "spangraph processor" on top of OpenTelemetry Collector. This processor will analyze the span data and attach topology information to the span metrics, which can be used to construct subgraphs.
 
 We will also use the OpenTelemetry Collector to enrich the span data with additional contextual information such as service and operation names, error codes, and other relevant metadata. This will help in constructing a more detailed and accurate topology graph.
 
 ## C. Topology Extraction
+![Explore Data](footsteps/2023-02-25 preview1.png)
 
 Once the metric and trace data has been processed, we can extract the topology information using various techniques. We will use a combination of aggregation, clustering, and span folding to extract the relevant topology information from the metric and trace data.
 
@@ -81,6 +88,7 @@ Aggregation involves grouping similar nodes together based on their attributes a
 
 ## D. Topology Visualization
 
+![OctopusMultiBrainIOCircilationSys](footsteps/OctopusMultiBrainIOCircilationSys 2023-02-25.png)
 The extracted topology information can be visualized using graph visualization tools such as Cytoscape. Cytoscape is an open-source platform for visualizing complex networks and can be used to create interactive and customizable topology graphs.
 
 The topology graph can be further refined by applying various layout algorithms and filtering techniques. The graph can be explored and interacted with to gain insights into the system's architecture and behavior.
@@ -97,6 +105,9 @@ This methodology provides a scalable and efficient way to extract and visualize 
 Here are some potential pros and cons for each approach:
 
 ### _Putting edge information on metrics:_
+
+Edges are first class citizens. If a metric is a node, then an edge is a metric too, vice versa!
+
 
 #### Pros:
 
