@@ -8,7 +8,7 @@ export let layoutOptions = {
     // - "draft" only applies spectral layout
     // - "default" improves the quality with incremental layout (fast cooling rate)
     // - "proof" improves the quality with incremental layout (slow cooling rate)
-    quality: "proof",
+    quality: "default",
     // Use random node positions at beginning of layout
     // if this is set to false, then quality option must be "proof"
     randomize: true,
@@ -38,19 +38,19 @@ export let layoutOptions = {
     // Sample size to construct distance matrix
     sampleSize: 25,
     // Separation amount between nodes
-    nodeSeparation: 50,
+    nodeSeparation: 40,
     // Power iteration tolerance
     piTol: 0.0000001,
 
     /* incremental layout options */
 
     // Node repulsion (non overlapping) multiplier
-    nodeRepulsion: node => 4500,
+    nodeRepulsion: node => 4000,
     // nodeRepulsion: 4000,
     // Ideal edge (non nested) length
-    idealEdgeLength: edge => 50,
+    idealEdgeLength: edge => 40,
     // Divisor to compute edge forces
-    edgeElasticity: edge => 0.1,
+    edgeElasticity: edge => 0,
      //edgeElasticity: 1, // Devrim note: Change works for good
     // Nesting factor (multiplier) to compute ideal edge length for nested edges
     nestingFactor: 1,
@@ -72,11 +72,11 @@ export let layoutOptions = {
 
 
     // Gravity force (constant)
-    gravity: 1.25,
+    gravity: 2.25,
     // Gravity range (constant) for compounds
-    gravityRangeCompound: 1.5,
+    gravityRangeCompound: 12.5,
     // Gravity force (constant) for compounds
-    gravityCompound: 1.0,
+    gravityCompound: 1.5,
     // Gravity range (constant)
     gravityRange: 3.8,
     // Initial cooling factor for incremental layout

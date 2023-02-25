@@ -219,7 +219,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         // this.cy.fit();
         console.log("this.cy", this.cy);
         let layout = this.cy.layout({
-            ...colaOptions,
+            ...layoutOptions,
             stop: () => {
                 //this.initializer(this.cy);
             }
@@ -236,7 +236,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.calculateConstraints();
         this.cy.resize();
         layoutOptions.randomize = false;
-        let layout = this.cy.layout({...colaOptions});
+        layoutOptions.quality = "default";
+        let layout = this.cy.layout({...layoutOptions});
         layout.run();
 
 
@@ -252,7 +253,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             service = new Service(serie);
             this.addServiceCompound(service);
             this.addServiceNode(service);
-            this.addConnectorNodes(service,"client");
+            this.addConnectorNodes(service);
 
 
         });
@@ -396,6 +397,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
         });
 
+
+
     }
 
 
@@ -410,45 +413,71 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
         });
     }
-    private addConnectorNodes(service: Service, spanKind: string) {
-         this.cy.add({
-            data: {
-                id: service.id + "-in",
-                label: "in",
-                nodeType: "connector-in",
-                parent: service.id +"-compound",
+    private addConnectorNodes(service: Service) {
+        this.addConnectorNode(service, "in");
+        this.addConnectorNode(service, "out");
+        this.addConnectorNode(service, "internal");
+
+    }
+
+    private addConnectorNode(service: Service, direction: string) {
+
+        // find the related serie in this.props.data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total_span_kind") if exists and get value as weight
+        // if not exists set weight to 0 {service_name="frontend", span_kind="SPAN_KIND_INTERNAL"}
+        let span_kind;
+        if (direction === "in") {
+            span_kind = "SPAN_KIND_SERVER";
+        } else if (direction === "out") {
+            span_kind = "SPAN_KIND_CLIENT";
+        } else {
+            span_kind = "SPAN_KIND_INTERNAL";
+        }// skips SPAN_KIND_INTERNAL
+        let weight = 0;
+        this.props.data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total_span_kind")
+            .filter((serie: any) => serie.fields[1].labels.service_name ===  service.name && serie.fields[1].labels.span_kind === span_kind)
+            .forEach((serie: any) => {
+            console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
+            if (serie.length === 1) {
+                console.log(serie.fields[1].values);
+                weight = round2(serie.fields[1].values.buffer[0]);
+                console.log("service_name=",service.name,",-",direction,  ",weight=", weight);
+                return;
+            } else {
+                console.log("spanmetrics_calls_total_span_kind query returned more than one result",serie);
             }
+
         });
-         this.cy.add({
-            data: {
-                id: service.id+"-out",
-                label: "out",
-                nodeType: "connector-out",
-                parent: service.id + "-compound",
-            }
-        } );
-        // //add both connectors to the service node
+        if (weight === 0) {
+        //return;// no need to create
+        }
+
+
+
+
+
         this.cy.add({
             data: {
-                id: service.id+"-in-edge",
+                id: service.id + "-" + direction,
+                label: direction,
+                nodeType: "connector-" + direction,
+                parent: service.id + "-compound",
+                weight: weight
+            }
+        });
+        if (span_kind === "SPAN_KIND_INTERNAL") {
+           // return;// no need to create edge
+        }
+        this.cy.add({
+            data: {
+                id: service.id+"-"+direction+"-edge",
                 label: "",
-                edgeType: "connector-in",
+                edgeType: "connector-"+direction,
                 source: service.id,
-                target: service.id+"-in",
+                target: service.id+"-"+direction,
 
 
             }
         }) ;
-        this.cy.add({
-            data: {
-                id: service.id+"-out-edge",
-                label: "",
-                edgeType: "connector-out",
-                source: service.id+"-out",
-                target: service.id,
-            }
-        } );
-
     }
 
     private addServiceCompound(service: Service) {
@@ -481,9 +510,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         if (operation.spanKind === "SERVER") {
             source = operation.id;
             target = operation.statusId;
-        } else {
+        } else if (operation.spanKind === "CLIENT") {
             source = operation.statusId;
             target = operation.id;
+        } else {
+            source = operation.id;
+            target = operation.statusId;
         }
         this.cy.add({
             data: {
@@ -531,8 +563,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         if (operation.spanKind === "CLIENT") {
             source = operation.id;
             target = operation.service+"-out";
-        } else {
+        } else if (operation.spanKind === "SERVER") {
             source = operation.service+"-in";
+            target = operation.id;
+        } else {
+            // still create edge , but do not connect to in/out
+            source = operation.service+"-internal";
             target = operation.id;
         }
         this.cy.add({
