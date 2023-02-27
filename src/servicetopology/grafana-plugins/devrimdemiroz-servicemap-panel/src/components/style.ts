@@ -6,16 +6,21 @@ export const cyStyle = [
         style: {
             "background-color": "white",
             "border-color": "black",
-            "border-width": 1,
-            "border-style": "solid",
-            "font-size": 7,
+            "font-size": function (ele) {
+                return nodeSize(ele) / 3;
+            },
             "color": "black",
             //'compound-sizing-wrt-labels': 'include',
             //  "background-opacity": 0.3,
             "text-wrap": "ellipsis",
             "label": "data(label)",
             // minimum size enough to represent 99,99
-            "width": 4 * 20,
+            // minimum node witdh
+            "min-width": 100,
+            "border-width": function (ele) {
+                return nodeSize(ele) / 5;
+            },
+            "border-opacity": 0.5,
 
         }
     },
@@ -23,13 +28,29 @@ export const cyStyle = [
     {
         selector: ':compound',
         style: {
-            "background-color": colors['4'],
-            //"background-opacity": 0.1,
+            "background-color": function (ele) {
+                // if compound is a service, get colors according to service name if defined in colors, otherwise use default color
+                if (ele.data('nodeType') === 'serviceCompound') {
+                    // colors[ele.data('label')] if defined
+                    if (colors[ele.data('label')]) {
+                        return colors[ele.data('label')];
+                    }
+                }
+                return colors['gray'];
+            },
+            "background-opacity": 0.1,
             "text-valign": "bottom",
             "text-margin-y": "10px",
-            "text-wrap": "wrap",// options
+            "text-max-width": function (ele) {
+                // compound node width ?
+                return nodeSize(ele) * 7;
+            },
+            "text-wrap": "ellipsis",
             "border-opacity": 0,
             "shape": "round-rectangle",
+            "font-size": function (ele) {
+                return nodeSize(ele) / 2;
+            },
 
         }
 
@@ -39,7 +60,10 @@ export const cyStyle = [
         selector: 'node[nodeType = "service"]',
         style: {
             "background-color": "white",
-            "border-color": colors['SERVICE_HIGHWAY'],
+            "border-color": function (ele) {
+                // if compound is a service, get colors according to service name if defined in colors, otherwise use default color
+                return colors[ele.data('id')] ? colors[ele.data('id')] : colors['SERVICE_HIGHWAY']
+            },
             "border-opacity": 0.5,
             "text-valign": "center", // default
             "text-halign": "center", // default
@@ -61,11 +85,13 @@ export const cyStyle = [
         selector: 'node[nodeType *= "connector"]',
         style: {
             "border-color": function (ele) {
-                // if spankind SERVER, then color is colors['SERVER']
                 return ele.data('label') === 'in' ? colors['SERVER'] : colors['CLIENT']
 
-                // if spankind CLIENT, then color is colors['CLIENT']
             },
+            "border-width": function (ele) {
+                return nodeSize(ele) / 5;
+            },
+            "border-opacity": 0.5,
             "text-valign": "center",
             "text-halign": "center",
             "background-color": "white",
@@ -88,6 +114,11 @@ export const cyStyle = [
 
                 // if spankind CLIENT, then color is colors['CLIENT']
             },
+
+            "border-width": function (ele) {
+                return nodeSize(ele) / 5;
+            },
+            "border-opacity": 0.5,
             "opacity": 0.8,
             "text-valign": "center",
             "text-halign": "center",

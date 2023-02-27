@@ -18,17 +18,26 @@ export const colors = {
     "8": "#5BBCD6",
     "9": "#ECCBAE",
     "11": "#D69C4E",
-    "SERVICE_HIGHWAY":"#446455",
+    // gray
+    "SERVICE_HIGHWAY": "#999999",
     "14": "#F2AD00",
     "15": "#F98400",
     "16": "#5BBCD6",
     "17": "#ECCBAE",
-    "18": "#046C9A",
     "19": "#D69C4E",
     "20": "#ABDDDE",
-    "21": "#446455",
     "22": "#F2AD00",
-    "23": "#F98400",
+
+    "frontend": "#F98400",
+    "TypeScript": "#F98400",
+
+    "loadgenerator": "#046C9A",
+    "Python": "#046C9A",
+
+    "cartservice": "#446455",
+    ".NET": "#446455",
+
+
     "24": "#5BBCD6",
     "25": "#ECCBAE",
 
