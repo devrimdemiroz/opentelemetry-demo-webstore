@@ -134,7 +134,11 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     }
 
     private processTrace(response: FetchResponse<any>) {
-        lastValueFrom(response).then((response) => {
+        console.log("processTrace", response);
+        return getBackendSrv()
+            .datasourceRequest
+        (response).then((response) => {
+            console.log("response", response);
 
 
             let trace = response.data.data[0];
@@ -219,7 +223,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         // this.cy.fit();
         console.log("this.cy", this.cy);
         let layout = this.cy.layout({
-            ...colaOptions,
+            ...layoutOptions,
             stop: () => {
                 //this.initializer(this.cy);
             }

@@ -8,11 +8,10 @@ export const colors = {
     "ERROR": "#9B110E",
     "COMPOUND": "#FDDDA0",
     "UNSET": "#74A089",
-
-    "INTERNAL": "#ABDDDE",
+    "INTERNAL": "#d5c5c5",
+    "4": "#d5c5c5",
     "3": "#F8AFA8",
     // very light grey
-    "4": "#F2F2F2",
     "6": "#F2AD00",
     "7": "#F98400",
     "8": "#5BBCD6",
@@ -29,6 +28,7 @@ export const colors = {
     "22": "#F2AD00",
 
     "frontend": "#F98400",
+    "frontend-web": "#F98400",
     "TypeScript": "#F98400",
 
     "loadgenerator": "#046C9A",
@@ -36,6 +36,14 @@ export const colors = {
 
     "cartservice": "#446455",
     ".NET": "#446455",
+
+    "frontend-proxy": "#de8787",
+    "C++": "#de8787",
+
+
+
+    "featureflagservice": "#a83ca0",
+    "Erlang": "#a83ca0",
 
 
     "24": "#5BBCD6",
