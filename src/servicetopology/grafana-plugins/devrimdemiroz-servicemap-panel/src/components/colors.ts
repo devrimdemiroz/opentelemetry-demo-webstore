@@ -20,7 +20,7 @@ export const colors = {
     // gray
     "SERVICE_HIGHWAY": "#999999",
     "14": "#F2AD00",
-    "15": "#F98400",
+    "span": "#F98400",
     "16": "#5BBCD6",
     "17": "#ECCBAE",
     "19": "#D69C4E",
@@ -30,6 +30,10 @@ export const colors = {
     "frontend": "#F98400",
     "frontend-web": "#F98400",
     "TypeScript": "#F98400",
+
+    // dark brown
+    "adservice": "#624a2a",
+    "Java": "#624a2a",
 
     "loadgenerator": "#046C9A",
     "Python": "#046C9A",

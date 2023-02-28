@@ -29,6 +29,17 @@ function getColorConnector(ele) {
     }
 }
 
+function getServiceColor(ele) {
+    // if compound is a service, get colors according to service name if defined in colors, otherwise use default color
+    if (ele.data('nodeType') === 'serviceCompound') {
+        // colors[ele.data('label')] if defined
+        if (colors[ele.data('label')]) {
+            return colors[ele.data('label')];
+        }
+    }
+    return colors['gray'];
+}
+
 export const cyStyle = [
     {
         selector: 'node',
@@ -65,18 +76,15 @@ export const cyStyle = [
         selector: ':compound',
         style: {
             "background-color": function (ele) {
-                // if compound is a service, get colors according to service name if defined in colors, otherwise use default color
-                if (ele.data('nodeType') === 'serviceCompound') {
-                    // colors[ele.data('label')] if defined
-                    if (colors[ele.data('label')]) {
-                        return colors[ele.data('label')];
-                    }
-                }
-                return colors['gray'];
+                return getServiceColor(ele);
             },
             "background-opacity": 0.1,
-            "text-valign": "bottom",
-            "text-margin-y": "10px",
+            "text-margin-y": function (ele) {
+                if (ele.data('nodeType') === 'serviceCompound') {
+                    return -(nodeSize(ele));
+                }
+                return nodeSize(ele);
+            },
             "text-max-width": function (ele) {
                 // compound node width ?
                 return nodeSize(ele) * 7;
@@ -85,10 +93,41 @@ export const cyStyle = [
             "border-opacity": 0,
             "shape": "round-rectangle",
             "font-size": function (ele) {
-                return nodeSize(ele) * 0.7 ;
-            }
-        }
+                return nodeSize(ele) * 0.7;
+            },
+            "color": function (ele) {
+                return getServiceColor(ele);
+            },
+            "text-valign": function (ele) {
+                if (ele.data('nodeType') === 'serviceCompound') {
+                    return 'bottom';
+                }
+                return 'bottom';
+            },
+        } // moon crescent
 
+    },
+    {
+        selector: '.cy-expand-collapse-collapsed-node',
+        style: {
+            'label': function (ele) {
+                // 'data(weight)'+ newline + 'data(label)',
+                // multiline label
+                let newLabel = ele.data('weight');
+                newLabel += '\n';
+                newLabel += ele.data('label');
+                return newLabel;
+
+
+            },
+            "background-color": "white",
+            "border-color": function (ele) {
+                return getServiceColor(ele);
+            },
+            "text-wrap": "wrap",
+            'text-valign': 'center',
+            'text-halign': 'center',
+        }
     },
 
     {
@@ -126,17 +165,17 @@ export const cyStyle = [
 
             },
             "border-width": function (ele) {
-                return nodeSize(ele) / 3;
+                return nodeSize(ele) / 5;
             },
             "border-opacity": 0.5,
             "text-valign": "center",
             "text-halign": "center",
             "background-color": "white",
             "width": function (ele) {
-                return nodeSize(ele) * 0.6;
+                return nodeSize(ele) * 0.9;
             },
             "height": function (ele) {
-                return nodeSize(ele) * 0.6;
+                return nodeSize(ele) * 0.9;
             },
             "label": "data(weight)",
         }
@@ -294,6 +333,17 @@ export const cyStyle = [
 
         },
     },
+    {
+        selector: 'edge[edgeType = "span"]',
+        style: {
+            "line-color": colors['span'],
+
+            // arrow target circle
+            "target-arrow-shape": "none",
+
+
+        },
+    },
     // edge type operation-span
     {
         selector: 'edge[edgeType = "operation"]',
@@ -318,7 +368,7 @@ export const nodeSize = function (ele) {
     let weight = ele.data("weight");
     if (weight) {
 
-        return weight * 40;
+        return weight * 46;
     }
     return 20;
 }
@@ -327,11 +377,12 @@ export const edgeWidth = function (ele) {
     // get source and target node if present
     let sourceWeight = ele.source().data("weight");
     let targetWeight = ele.target().data("weight");
-    let avgWeight;
-    if (sourceWeight && targetWeight) {
-        avgWeight = (sourceWeight + (targetWeight )) / 2;
-        return avgWeight * 20;
+    if (targetWeight < sourceWeight) {
+        return targetWeight * 50;
+    } else {
+        return sourceWeight * 50;
     }
+
 
     let weight = ele.data("weight");
     if (weight) {

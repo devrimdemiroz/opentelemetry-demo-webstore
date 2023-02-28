@@ -78,6 +78,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.cy.on('click', 'node', (event: any) => {
             const node = event.target;
             console.log("node.data()", node.data());
+            console.log("node.classes()", node.classes());
         });
 
         this.cy.on('click', 'edge', (event: any) => {
@@ -87,18 +88,17 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
         this.cy.on('dblclick', 'node', (event: any) => {
             const node = event.target;
-            console.log("node.data()", node.data(), node);
-            this.setOperationEdges(node.data());
+            console.log("dblclick node.data()", node.data(), node);
+            this.getTraceOnNode(node.data());
         });
+
     }
 
-    setOperationEdges(operationStatusNode: any) {
-        console.log("operationStatusNode", operationStatusNode);
-        return operationStatusNode;
-        let service = operationStatusNode.service;
-        let operation = operationStatusNode.operation;
-        let statusCode = operationStatusNode.httpStatusCode;
-        let error = operationStatusNode.spanStatus === "ERROR";
+    getTraceOnNode(operationSpanStatusNode: any) {
+        let service = operationSpanStatusNode.service;
+        let operation = operationSpanStatusNode.spanName;
+        let statusCode = operationSpanStatusNode.httpStatusCode;
+        let error = operationSpanStatusNode.spanStatus === "ERROR";
         const {from, to} = this.props.data.timeRange;
 
         const start = from.valueOf() * 1000;
@@ -114,9 +114,10 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 requestId: 'my-request-id',
             })
             .then((response) => {
+                console.log("response", response);
                 // Extract the trace ID from the response
                 const traceId = response.data.data[0].traceID;
-
+                console.log("traceId", traceId);
                 // Construct the Jaeger trace URL
                 const traceUrl = `api/datasources/proxy/2/api/traces/${traceId}`;
 
@@ -135,39 +136,60 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     private processTrace(response: FetchResponse<any>) {
         console.log("processTrace", response);
-        return getBackendSrv()
-            .datasourceRequest
-        (response).then((response) => {
-            console.log("response", response);
+        let trace = response.data.data[0];
+        // Process the trace data
+        console.log("trace", trace);
+        const spans = trace.spans;
 
+        // reverse iteration to find parent span
+        for (let i = spans.length - 1; i >= 0; i--) {
+            const span = spans[i];
+            // use parentid child reference spanid to create edges
+            console.log(trace.processes[span.processID].serviceName);
+            span.serviceName = trace.processes[span.processID].serviceName;
+            // type Edge
+            let edge: Edge;
+            if (span.references.length > 0) {
+                const parentSpan = spans.find(s => s.spanID === span.references[0].spanID);
+                parentSpan.serviceName = trace.processes[parentSpan.processID].serviceName;
+                console.log("parentSpan", parentSpan);
+                edge = new Edge();
+                edge.source = nameSpanEdgeId(span);
+                edge.target = nameSpanEdgeId(parentSpan);
+                edge.id = `${edge.source}-${edge.target}`;
+                edge.type = "span";
+                this.addSpanEdge(edge);
+                console.log("Added edge=", edge);
+            }
+        }
+        // // extract edges  from spans like loadgenerator_HTTP_POST_CLIENT_POST_ERROR_500 --> "frontend_HTTP_POST_SERVER_POST_ERROR_500
+        // const edges = spans.map(span => {
+        //     // use parentid child reference spanid to create edges
+        //     console.log(trace.processes[span.processID].serviceName);
+        //     span.serviceName = trace.processes[span.processID].serviceName;
+        //
+        //
+        //     // type Edge
+        //     let edge: Edge;
+        //
+        //     if (span.references.length > 0) {
+        //         const parentSpan = spans.find(s => s.spanID === span.references[0].spanID);
+        //         console.log("parentSpan", parentSpan);
+        //         edge = new Edge();
+        //         edge.source = nameSpanEdgeId(span);
+        //         edge.target = nameSpanEdgeId(parentSpan);
+        //         edge.id = `${edge.source}-${edge.target}`;
+        //         edge.type = "span";
+        //         this.addSpanEdge(edge);
+        //         return edge;
+        //     } else {
+        //         console.log("no parent span found for span", span);
+        //         return undefined;
+        //     }
+        // });
+        // console.log("span edges added = ", edges);
+        return null;
 
-            let trace = response.data.data[0];
-            // Process the trace data
-            console.log("trace", trace);
-            const spans = trace.spans;
-            // extract edges  from spans like loadgenerator_HTTP_POST_CLIENT_POST_ERROR_500 --> "frontend_HTTP_POST_SERVER_POST_ERROR_500
-            const edges = spans.map(span => {
-                // use parentid child reference spanid to create edges
-                span.serviceName = trace.processes[span.processID].serviceName;
-
-                // type Edge
-                let edge: Edge;
-
-                if (span.references.length > 0) {
-                    const parentSpan = spans.find(s => s.spanID === span.references[0].spanID);
-                    console.log("parentSpan", parentSpan);
-                    edge = new Edge();
-                    edge.source = nameSpanEdgeId(parentSpan);
-                    edge.target = nameSpanEdgeId(span);
-                    edge.id = `${edge.source}-${edge.target}`;
-                    edge.type = "span";
-                    this.addSpanEdge(edge);
-                    return edge;
-                }
-            });
-            console.log("span edges added = ", edges);
-            return spans;
-        });
     }
 
     componentDidMount() {
@@ -239,6 +261,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
         this.calculateConstraints();
         this.cy.resize();
+        this.cy.fit();
         layoutOptions.randomize = false;
         layoutOptions.quality = "default";
         let layout = this.cy.layout({...colaOptions});
@@ -249,7 +272,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     private setServiceNodes() {
         const {data} = this.props;
-        console.log("data", data);
         // get series with refId ServiceGraphEdges
         data.series.filter((services: any) => services.refId === "service_calls_total").forEach((serie: any) => {
 
@@ -275,7 +297,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             if (serie === undefined) {
                 return;
             }
-            console.log("edges", serie);
 
             const edgesLength = serie.fields.length;
             for (let i = 1; i < edgesLength; i++) {
@@ -303,7 +324,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 if (serie === undefined) {
                     return;
                 }
-                console.log("edges", serie);
 
                 const edgesLength = serie.fields.length;
                 for (let i = 1; i < edgesLength; i++) {
@@ -323,7 +343,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                         // if edge exists update the weight and label
                         this.cy.getElementById(edge.id).data('failed_weight', edge.failed_weight);
                         this.cy.getElementById(edge.id).data('label', edge.getLabel());
-                        console.log("edge", edge);
 
                     }
 
@@ -447,22 +466,26 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             span_kind = "SPAN_KIND_CLIENT";
         } else {
             span_kind = "SPAN_KIND_INTERNAL";
-        }// skips SPAN_KIND_INTERNAL
+        }
         let weight = 0;
         this.props.data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total_span_kind")
             .filter((serie: any) => serie.fields[1].labels.service_name ===  service.name && serie.fields[1].labels.span_kind === span_kind)
             .forEach((serie: any) => {
-                console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
+                //console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
                 if (serie.length === 1) {
-                    console.log(serie.fields[1].values);
                     weight = round2(serie.fields[1].values.buffer[0]);
-                    console.log("service_name=",service.name,",-",direction,  ",weight=", weight);
+                    console.log("service_name=", service.name, ",-", direction, ",weight=", weight);
                     return;
                 } else {
-                    console.log("spanmetrics_calls_total_span_kind query returned more than one result",serie);
+                    console.log("spanmetrics_calls_total_span_kind query returned more than one result", serie);
                 }
 
             });
+        if (weight === 0) {
+            // no traffic observed for this direction
+            console.log("no traffic observed for this direction", service.name, direction);
+            //return;
+        }
 
         this.cy.add({
             data: {
@@ -473,21 +496,24 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 weight: weight
             }
         });
-        if (span_kind === "SPAN_KIND_INTERNAL") {
-            // return;// no need to create edge
+
+        try {
+            this.cy.add({
+                data: {
+                    id: service.id + "-" + direction + "-edge",
+                    label: "",
+                    edgeType: "connector-" + direction,
+                    // if direction is in
+                    target: service.id,
+                    source: service.id + "-" + direction,
+                    weight: weight
+
+
+                }
+            });
+        } catch (e) {
+            console.log("error", e);
         }
-        this.cy.add({
-            data: {
-                id: service.id+"-"+direction+"-edge",
-                label: "",
-                edgeType: "connector-"+direction,
-                source: service.id,
-                target: service.id+"-"+direction,
-                weight: weight
-
-
-            }
-        }) ;
     }
 
 
@@ -502,6 +528,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 weight: operation.weight,
                 parent: operation.id + "-compound",
                 service: operation.service,
+                spanName: operation.spanName,
             }
         });
 
@@ -645,7 +672,6 @@ function nameSpanEdgeId(span: span) {
         operationId = `${operationId}_${span.tags.find(t => t.key === 'http.status_code').value}`;
     }
     span.operationId = operationId;
-    console.log("operationId", operationId);
     return operationId;
 }
 

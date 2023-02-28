@@ -5,9 +5,11 @@ export class Operation {
     spanStatus: any;
     spanKind: any;
     id: string;
+    spanName: string;
 
     constructor(serie: any) {
         this.service = serie.fields[1].labels.service_name;
+        this.spanName = serie.fields[1].labels.span_name;
         this.name = serie.fields[1].labels.span_name.replace(/(\/|\s|\.)/g, "_");
         this.spanKind = serie.fields[1].labels.span_kind.replace(/SPAN_KIND_(.*)/g, "$1");
         this.spanStatus = serie.fields[1].labels.status_code.replace(/STATUS_CODE_(.*)/g, "$1");

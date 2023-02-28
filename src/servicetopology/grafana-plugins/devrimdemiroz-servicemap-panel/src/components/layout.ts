@@ -1,4 +1,5 @@
 import constraints from "./constraints";
+
 export let layoutOptions = {
     name: 'fcose',
 
@@ -208,5 +209,4 @@ export const resetConstraints = () => {
     if (constraints.fixedNodeConstraint) {
         layoutOptions.fixedNodeConstraint = constraints.fixedNodeConstraint;
     }
-    console.log("layoutOptions=",layoutOptions);
 };
