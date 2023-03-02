@@ -8,8 +8,10 @@ import fcose from 'cytoscape-fcose';
 import BubbleSets from 'cytoscape-bubblesets';
 import cola from 'cytoscape-cola';
 import automove from 'cytoscape-automove';
+import 'tippy.js/dist/tippy.css';
+import popper from 'cytoscape-popper';
 
-import {addHallignConstraint, colaOptions, layoutOptions, resetConstraints} from "./layout";
+import {colaOptions, layoutOptions, resetConstraints} from "./layout";
 import {cyStyle} from "./style";
 
 
@@ -17,7 +19,12 @@ import {cyStyle} from "./style";
 import complexityManagement from "cytoscape-complexity-management";
 import {Edge, Operation, Service} from "./Schema";
 
-cytoscape.use( automove );
+import tippy, {createSingleton} from 'tippy.js';
+import content from "*.svg";
+
+
+cytoscape.use(popper);
+cytoscape.use(automove);
 cytoscape.use(BubbleSets);
 cytoscape.use(fcose);
 cytoscape.use(layoutUtilities);
@@ -37,6 +44,93 @@ export function round2(value) {
     return Math.round((value + Number.EPSILON) * 100) / 100
 }
 
+export function makeTippy(ele, text) {
+    let ref = ele.popperRef();
+
+    const tippyInstances = tippy('button');
+    createSingleton(tippyInstances, {
+
+        // transparency backdrops
+        // The props in the current `tippyInstance` will override the ones above
+        overrides: ['placement', 'theme'],
+        delay: 1000,
+        moveTransition: 'transform 0.2s ease-out',
+    });
+
+    // Since tippy constructor requires DOM element/elements, create a placeholder
+    let dummyDomEle = document.createElement('div');
+
+    let tip = tippy(dummyDomEle, {
+        appendTo: document.body,
+        arrow: true, // mandatory
+        // dom element inside the tippy:
+        content: function () {
+            // function can be better for performance
+            // set new text as  ele.json(); as object as yaml text
+            // replacer to format json like yaml
+            let div = document.createElement('div'), eleJson = JSON.stringify(ele.data(), null, 2), cardDetails = "",
+                cardId = "";
+            JSON.parse(eleJson, (key, value) => {
+                //console.log("key", key, "value", value.toString());
+                if (key === 'id') {
+                    // highlight id
+                    cardId += "<b>" + key + ": " + value + "</b>";
+                    // link to cardDetails subTip
+                    cardId += ` <button class='tooltip-button' id="cardId" > _> details</button> <br/>`;
+                    return cardId;
+                }
+                // stash the rest under cardDetails
+                cardDetails += "<b>" + key + ": " + value + "</b><br/>";
+
+            });
+            // and classes of ele
+            cardDetails += "classes: " + ele.classes() + "<br/>";
+            // create sub tippy for cardDetails and set this tippy as parent, opens on click
+            // use button from parent tippy to open subTip
+            // let subTip = tippy( dummyDomEle, {
+            //     appendTo: 'parent',
+            //     arrow: true, // mandatory
+            //     // dom element inside the tippy:
+            //     content: function () {
+            //         // function can be better for performance
+            //         // set new text as  ele.json(); as object as yaml text
+            //         // replacer to format json like yaml
+            //         let div = document.createElement('div');
+            //         div.innerHTML = cardDetails;
+            //         return div;
+            //     },
+            //     // your own preferences:
+            //     getReferenceClientRect: ref.getBoundingClientRect,
+            //     hideOnClick: true,
+            //     interactive: true,
+            //     // click on button to open subTip
+            //     trigger: 'click',
+            // });
+            // target tip button
+            // let tipButton = div.querySelector('.tooltip-button');
+            // // set subTip as parent of tipButton
+            // // enable subTip
+            //
+            // subTip.enable();
+            // create button to open subTip in tip
+
+            div.innerHTML = cardId;
+
+            return div;
+        },
+        // your own preferences:
+        getReferenceClientRect: ref.getBoundingClientRect,
+        hideOnClick: true,
+        interactive: true,
+        placement: 'right',
+
+        // if interactive:
+        sticky: true,
+        trigger: 'manual' // or append dummyDomEle to document.body
+    });
+
+    return tip;
+};
 
 export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     ref: any;
@@ -79,6 +173,19 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             const node = event.target;
             console.log("node.data()", node.data());
             console.log("node.classes()", node.classes());
+            let tip = makeTippy(node, node.data());
+            tip.show();
+            tip.popper.querySelector('#cardId').addEventListener('click', () => {
+                //tippy.hideAll(); // hide any other tooltips that might be open
+                //getReferenceClientRect
+                tippy(tip.popper, {
+                    appendTo: 'parent',
+                    arrow: true, // mandatory
+                    // dom element inside the tippy:
+                    content: "content",
+                }).show();
+
+            });
         });
 
         this.cy.on('click', 'edge', (event: any) => {
@@ -154,40 +261,83 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 parentSpan.serviceName = trace.processes[parentSpan.processID].serviceName;
                 console.log("parentSpan", parentSpan);
                 edge = new Edge();
-                edge.source = nameSpanEdgeId(span);
-                edge.target = nameSpanEdgeId(parentSpan);
+                edge.source = nameSpanEdgeId(parentSpan);
+                edge.target = nameSpanEdgeId(span);
                 edge.id = `${edge.source}-${edge.target}`;
                 edge.type = "span";
-                this.addSpanEdge(edge);
+                console.log(edge.source, "-->", edge.target);
+                // find the path from source to target by visiting parent nodes
+                // highlight the path nodes and edges
+                console.log("edge=", edge);
+                // get  operation node for the statusspan node
+                let span_Name = span.operationName.replace(/(\/|\s|\.)/g, "_");
+
+                let operationId = "";
+                this.cy.nodes().filter((node: any) => {
+                    return node.data().nodeType === "operation"
+                        && node.data().name === span_Name
+                        && node.data().service === span.serviceName;
+                }).forEach((operationNode: any) => {
+                    operationId = operationNode.id();
+                    console.log("--> operationNode=", operationNode.data());
+                });
+                let dijkstra = this.cy.elements().dijkstra({
+                    root: `#${operationId}`,
+                    weight: function (edge) {
+                        return 1;
+                    }
+                });
+                let path = dijkstra.pathTo(`#${edge.target}`);
+                console.log("...... path=", path.data());
+                // shift first node  to end inside path, initiator would be operation not statusspan
+                path.nodes().shift();
+                path.nodes().push(path.nodes().shift());
+                console.log("shifted path=", path.data());
+
+
+                // draw path by adding edges over existing edges as sidelanes
+                let pathCount = 0;
+                path.nodes().forEach((node: any) => {
+                    pathCount++;
+                    if (node.isNode()) {
+                        console.log(pathCount + " countdown, node=", node.data());
+                        // if the element is create edge to next node
+                        if (pathCount === path.length) {
+                            return;
+                        }
+                        let targetId = path.nodes()[pathCount + 1].id();
+                        console.log("target=", targetId)
+                        if (targetId === undefined) {
+                            console.log("target is undefined")
+                            return;
+                        }
+                        try {
+                            this.cy.add({
+                                group: "edges",
+                                data: {
+                                    id: `${node.data().id}-span-${targetId}`,
+                                    source: node.data().id,
+                                    label: node.data().id,
+                                    target: targetId,
+                                    type: "tracePath"
+
+                                }
+                            }).addClass("tracePath");
+                        } catch (e) {
+                            console.log("error", e);
+                        }
+
+                    }
+                });
+
+
+                //this.addSpanEdge(edge);
                 console.log("Added edge=", edge);
+            } else {
+                console.log("Root? No parent span found for span=", span);
             }
         }
-        // // extract edges  from spans like loadgenerator_HTTP_POST_CLIENT_POST_ERROR_500 --> "frontend_HTTP_POST_SERVER_POST_ERROR_500
-        // const edges = spans.map(span => {
-        //     // use parentid child reference spanid to create edges
-        //     console.log(trace.processes[span.processID].serviceName);
-        //     span.serviceName = trace.processes[span.processID].serviceName;
-        //
-        //
-        //     // type Edge
-        //     let edge: Edge;
-        //
-        //     if (span.references.length > 0) {
-        //         const parentSpan = spans.find(s => s.spanID === span.references[0].spanID);
-        //         console.log("parentSpan", parentSpan);
-        //         edge = new Edge();
-        //         edge.source = nameSpanEdgeId(span);
-        //         edge.target = nameSpanEdgeId(parentSpan);
-        //         edge.id = `${edge.source}-${edge.target}`;
-        //         edge.type = "span";
-        //         this.addSpanEdge(edge);
-        //         return edge;
-        //     } else {
-        //         console.log("no parent span found for span", span);
-        //         return undefined;
-        //     }
-        // });
-        // console.log("span edges added = ", edges);
+
         return null;
 
     }
@@ -226,7 +376,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         console.log("instance", this.instance);
         this.initListeners();
 
-
     }
 
 
@@ -239,15 +388,16 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         // this.correlateOperations();
         // this.calculateConstraints();
         //
-        this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
-        this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
+
 
         // this.cy.fit();
         console.log("this.cy", this.cy);
         let layout = this.cy.layout({
             ...layoutOptions,
             stop: () => {
-                //this.initializer(this.cy);
+                this.instance.collapseNodes(this.cy.nodes('[id="cartservice-compound"]'));
+                this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
+                this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
             }
         });
 
@@ -371,19 +521,19 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     }
 
-    private addSpanEdge(edge: Edge) {
-        this.cy.add({
-            data: {
-                id: edge.id,
-                label: "",
-                edgeType: edge.type,
-                source: edge.source,
-                target: edge.target,
-                weight: 0,//will get set later by metrics
-            }
-
-        });
-    }
+    // private addSpanEdge(edge: Edge) {
+    //     this.cy.add({
+    //         data: {
+    //             id: edge.id,
+    //             label: "",
+    //             edgeType: edge.type,
+    //             source: edge.source,
+    //             target: edge.target,
+    //             weight: 0,//will get set later by metrics
+    //         }
+    //
+    //     });
+    // }
 
     private setOperationNodes() {
         const {data} = this.props;
@@ -418,7 +568,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             this.cy.getElementById(operation.id).data('weight', operationWeight);
 
         });
-
 
 
     }
@@ -469,7 +618,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         }
         let weight = 0;
         this.props.data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total_span_kind")
-            .filter((serie: any) => serie.fields[1].labels.service_name ===  service.name && serie.fields[1].labels.span_kind === span_kind)
+            .filter((serie: any) => serie.fields[1].labels.service_name === service.name && serie.fields[1].labels.span_kind === span_kind)
             .forEach((serie: any) => {
                 //console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
                 if (serie.length === 1) {
@@ -574,7 +723,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 label: operation.name,
                 nodeType: "operation-compound",
                 service: operation.service,
-                parent: operation.service +"-compound",
+                parent: operation.service + "-compound",
                 spanKind: operation.spanKind,
             }
         });
@@ -598,13 +747,13 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         let target;
         if (operation.spanKind === "CLIENT") {
             source = operation.id;
-            target = operation.service+"-out";
+            target = operation.service + "-out";
         } else if (operation.spanKind === "SERVER") {
-            source = operation.service+"-in";
+            source = operation.service + "-in";
             target = operation.id;
         } else {
             // still create edge , but do not connect to in/out
-            source = operation.service+"-internal";
+            source = operation.service + "-internal";
             target = operation.id;
         }
         this.cy.add({
@@ -635,30 +784,30 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     }
 
-    private hAllignOperations() {
-        // horizintally allign operations that have same service and spanKind
-        // get all operation nodes
-        const operations = this.cy.nodes().filter("node[nodeType = 'operation']");
-        // iterate over the operations
-        operations.forEach((operation: any) => {
-            // find the matching operation in other services
-            const matchingOperations = operations.filter("node[parent = '" + operation.data('parent') + "'][spanKind = '" + operation.data('spanKind') + "'][id != '" + operation.data('id') + "']");
-            // if there are matching operations
-            if (matchingOperations.length > 0) {
-                // iterate over the matching operations
-                let hallign = [];
-
-                matchingOperations.forEach((matchingOperation: any) => {
-                    hallign.push(matchingOperation.data('id'));
-                });
-                addHallignConstraint(hallign);
-            }
-        });
-    }
+    // private hAllignOperations() {
+    //     // horizintally allign operations that have same service and spanKind
+    //     // get all operation nodes
+    //     const operations = this.cy.nodes().filter("node[nodeType = 'operation']");
+    //     // iterate over the operations
+    //     operations.forEach((operation: any) => {
+    //         // find the matching operation in other services
+    //         const matchingOperations = operations.filter("node[parent = '" + operation.data('parent') + "'][spanKind = '" + operation.data('spanKind') + "'][id != '" + operation.data('id') + "']");
+    //         // if there are matching operations
+    //         if (matchingOperations.length > 0) {
+    //             // iterate over the matching operations
+    //             let hallign = [];
+    //
+    //             matchingOperations.forEach((matchingOperation: any) => {
+    //                 hallign.push(matchingOperation.data('id'));
+    //             });
+    //             addHallignConstraint(hallign);
+    //         }
+    //     });
+    // }
 }
 
 
-function nameSpanEdgeId(span: span) {
+function nameSpanEdgeId(span: any) {
     // find service name with process id reference processes in trace
 
     let spanKind = (span.tags.find(t => t.key === 'span.kind').value).toUpperCase();

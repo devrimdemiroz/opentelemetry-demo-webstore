@@ -6,6 +6,19 @@ export const colors = {
     // a color for combination of CLIENT and SERVER
     "13": "#F2AD00",
     "ERROR": "#9B110E",
+    // lighter red than ERROR
+    "highlighted": "#F98400",
+
+    "15": "#F98400",
+    "20": "#ABDDDE",
+    // blue in Royal2
+    "21": "#F2AD00",
+    "22": "#F98400",
+    "23": "#5BBCD6",
+    "24": "#ECCBAE",
+    "25": "#D69C4E",
+    "26": "#ABDDDE",
+    "27": "#F2AD00",
     "COMPOUND": "#FDDDA0",
     "UNSET": "#74A089",
     "INTERNAL": "#d5c5c5",
@@ -16,16 +29,14 @@ export const colors = {
     "7": "#F98400",
     "8": "#5BBCD6",
     "9": "#ECCBAE",
-    "11": "#D69C4E",
+    "11": "#f2f2f2",
     // gray
     "SERVICE_HIGHWAY": "#999999",
     "14": "#F2AD00",
     "span": "#F98400",
-    "16": "#5BBCD6",
+    "electro": "#5BBCD6",
     "17": "#ECCBAE",
     "19": "#D69C4E",
-    "20": "#ABDDDE",
-    "22": "#F2AD00",
 
     "frontend": "#F98400",
     "frontend-web": "#F98400",
@@ -50,7 +61,5 @@ export const colors = {
     "Erlang": "#a83ca0",
 
 
-    "24": "#5BBCD6",
-    "25": "#ECCBAE",
 
 };

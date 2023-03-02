@@ -37,7 +37,7 @@ function getServiceColor(ele) {
             return colors[ele.data('label')];
         }
     }
-    return colors['gray'];
+    return "gray";
 }
 
 export const cyStyle = [
@@ -51,12 +51,9 @@ export const cyStyle = [
             },
             "color": "black",
             //'compound-sizing-wrt-labels': 'include',
-            //  "background-opacity": 0.3,
+            "background-opacity": 0.8,
             "text-wrap": "ellipsis",
             "label": "data(label)",
-            // minimum size enough to represent 99,99
-            // minimum node witdh
-            "min-width": 100,
             "border-width": function (ele) {
                 return nodeSize(ele) / 4;
             },
@@ -354,7 +351,20 @@ export const cyStyle = [
             },
 
 
+        }
+    },
+    // Dynamic styles
 
+    {
+        selector: '.tracePath',
+        style: {
+            "background-color": colors['highlighted'],
+            "line-color": "black",
+            "transition-property": "background-color, line-color, target-arrow-color",
+            "width": function (ele) {
+                // find target node edge connected to,
+                return edgeWidth(ele) / 4;
+            }
         }
     }
 

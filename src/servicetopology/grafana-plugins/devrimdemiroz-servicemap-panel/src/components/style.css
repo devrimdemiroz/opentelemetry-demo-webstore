@@ -106,13 +106,82 @@ h1 {
 }
 
 #min-weight-node, #min-weight-edge, #max-weight-node, #max-weight-edge {
-  width: 50px;
-  text-align: center;
+    width: 50px;
+    text-align: center;
 }
 
-.accordion-body{
-  padding: 0.5rem 1.0rem;
+.accordion-body {
+    padding: 0.5rem 1.0rem;
 }
-hr{
-  margin: 0.2rem 0rem;
+
+hr {
+    margin: 0.2rem 0rem;
+}
+
+.tippy-popper {
+    transition: none !important;
+}
+
+.tooltip-button {
+    background-color: transparent;
+    border: none;
+    color: #5BBCD6;
+    padding: 1px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 0px;
+    cursor: pointer;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    opacity: 0.7;
+}
+
+.tooltip::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent;
+}
+
+.tooltip[data-tippy-placement="top"]::before {
+    top: 100%;
+    bottom: auto;
+    border-color: #333 transparent transparent transparent;
+}
+
+.tippy-popper .tippy-content .tooltip,
+.tippy-tooltip {
+
+    color: black;
+
+    background-color: white;
+
+}
+
+
+element.style {
+}
+
+*, :after, :before {
+    box-sizing: inherit;
+}
+
+user agent stylesheet
+div {
+    display: block;
+}
+
+.tippy-box {
+    opacity: 0.7;
 }
