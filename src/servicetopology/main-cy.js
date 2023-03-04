@@ -1,12 +1,18 @@
+
 document.addEventListener('DOMContentLoaded', onLoaded);
 function onLoaded() {
+    tippy('.tooltip', {
+        placement: 'top', // Set the tooltip placement to top
+        arrow: true, // Show an arrow on the tooltip
+        arrowType: 'sharp', // Use a sharp arrow
+        animation: 'fade', // Use a fade animation
+        theme: 'dark', // Use a dark theme
+        duration: [200, 200], // Set the animation duration
+        distance: 10 // Set the distance between the tooltip and the element
+    });
     let instance;
-    const cyVisible = window.cyVisible = cytoscape({
-
-    });
-    const cyInvisible = window.cyInvisible = cytoscape({
-
-    });
+    const cyVisible = window.cyVisible = cytoscape({});
+    const cyInvisible = window.cyInvisible = cytoscape({});
     const cy = window.cy = cytoscape({
         ready: function () {
             instance = window.instance = this.complexityManagement();
