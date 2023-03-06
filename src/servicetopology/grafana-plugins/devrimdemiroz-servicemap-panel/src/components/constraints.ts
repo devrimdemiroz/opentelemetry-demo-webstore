@@ -2,17 +2,17 @@ let constraints = {
     fixedNodeConstraint: [{
         nodeId: "loadgenerator",
         position: {
-                x: -900,
-                y: 250
-            }
+            x: -900,
+            y: 250
         }
+    }
     ],
     alignmentConstraint: {
-        //horizontal: [[ "loadgenerator", "frontend" ],],
-        horizontal: [[  ],],
-        vertical: [[  ]]
+        horizontal: [["loadgenerator", "frontend"],],
+        //horizontal: [[  ],],
+        vertical: [[]]
     },
-   // relativePlacementConstraint: [{ left: "loadgenerator", right: "frontend", gap: 10 }],
-    relativePlacementConstraint: [],
+    relativePlacementConstraint: [{left: "loadgenerator", right: "frontend", gap: 10}],
+    //relativePlacementConstraint: [],
 };
 export default constraints;

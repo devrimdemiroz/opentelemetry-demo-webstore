@@ -187,7 +187,7 @@ export const cyStyle = [
 
 
             "border-opacity": 0.5,
-            "opacity": 0.5,
+            "opacity": 0.9,
             "text-valign": "center",
             "text-halign": "center",
             "text-wrap": "ellipsis",
@@ -253,7 +253,7 @@ export const cyStyle = [
     { // default
         selector: 'edge',
         style: {
-            "curve-style": "segments",
+            "curve-style": "haystack",//options: haystack, bezier, unbundled-bezier, segments, haystack straight - the default curve
             "line-cap": "round",
             "opacity": 0.5,
 
@@ -330,17 +330,17 @@ export const cyStyle = [
 
         },
     },
-    {
-        selector: 'edge[edgeType = "span"]',
-        style: {
-            "line-color": colors['span'],
-
-            // arrow target circle
-            "target-arrow-shape": "none",
-
-
-        },
-    },
+    // {
+    //     selector: 'edge[edgeType = "span"]',
+    //     style: {
+    //         "line-color": colors['span'],
+    //
+    //         // arrow target circle
+    //         "target-arrow-shape": "none",
+    //
+    //
+    //     },
+    // },
     // edge type operation-span
     {
         selector: 'edge[edgeType = "operation"]',
@@ -354,17 +354,102 @@ export const cyStyle = [
         }
     },
     // Dynamic styles
+    {
+        selector: '.ucmNode',
+        style: {
+            //"border-color": "black",
+            "border-opacity": 0.9,
+            "border-width": function (ele) {
+                return nodeSize(ele) * 0.3;
+            },
+            "width": function (ele) {
+                return nodeSize(ele) * 1.1;
+            },
+            "height": function (ele) {
+                return nodeSize(ele) * 1.1;
+            },
+
+
+        }
+    },
+    {
+        selector: '.ucmFirstNode',
+        style: {
+            "border-color": "black",
+            "border-style": "solid",
+
+        }
+    },
 
     {
-        selector: '.tracePath',
+        selector: '.ucmPath',
         style: {
+            // "curve-style": "unbundled-bezier",// options: haystack, bezier, unbundled-bezier, segments, haystack
+            "mid-target-arrow-shape": "triangle", // options:
             "background-color": colors['highlighted'],
             "line-color": "black",
             "transition-property": "background-color, line-color, target-arrow-color",
             "width": function (ele) {
                 // find target node edge connected to,
-                return edgeWidth(ele) / 4;
-            }
+                return edgeWidth(ele) * 0.2;
+            },
+
+            "line-cap": "round",
+            "opacity": 1,
+
+            "text-rotation": "autorotate",
+            "text-margin-y": -15,
+            // "text-margin-x": -10,
+            "font-size": function (ele) {
+                return edgeWidth(ele) * 0.7;
+            },
+            "label": "data(label)",
+
+            "border-width": function (ele) {
+                return edgeWidth(ele) * 0.7;
+            },
+            "border-opacity": 0.5,
+            "arrow-scale": 1.3,
+            "mid-target-arrow-color": "black",
+            "z-index": "999",
+            "inside-to-node": "true",
+        }
+    },
+    {
+        selector: '.ucmLastEdge',
+        style: {
+            "target-arrow-shape": "tee", // options:
+        }
+    },
+    {
+        selector: '.traditionalPath',
+        style: {
+            "background-color": "black",
+            "line-color": "black",
+            "target-arrow-shape": "vee",//
+            "curve-style": "straight",
+            "line-cap": "butt",// options: butt, round, square
+
+            "text-rotation": "autorotate",
+            "text-margin-y": -15,
+            // "text-margin-x": -10,
+            "font-size": function (ele) {
+                return edgeWidth(ele) * 0.7;
+            },
+            "label": function (ele) {
+                return ele.data('label') + " ms";
+            },
+            "width": function (ele) {
+                // find target node edge connected to,
+                return edgeWidth(ele) / 5;
+            },
+            "border-width": function (ele) {
+                return edgeWidth(ele) / 5;
+            },
+            "border-opacity": 0,
+            "mid-target-arrow-shape": "none", // options:
+            "arrow-scale": 1,
+            "target-arrow-color": "black",
         }
     }
 

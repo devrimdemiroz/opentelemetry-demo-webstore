@@ -46,13 +46,13 @@ export let layoutOptions = {
     /* incremental layout options */
 
     // Node repulsion (non overlapping) multiplier
-    nodeRepulsion: node => 4000,
-    // nodeRepulsion: 4000,
+    //nodeRepulsion: node => 4000,
+    nodeRepulsion: 4000,
     // Ideal edge (non nested) length
     idealEdgeLength: edge => 40,
     // Divisor to compute edge forces
     edgeElasticity: edge => 0,
-     //edgeElasticity: 1, // Devrim note: Change works for good
+    //edgeElasticity: 1, // Devrim note: Change works for good
     // Nesting factor (multiplier) to compute ideal edge length for nested edges
     nestingFactor: 1,
     // Maximum number of iterations to perform - this is a suggested value and might be adjusted by the algorithm as required

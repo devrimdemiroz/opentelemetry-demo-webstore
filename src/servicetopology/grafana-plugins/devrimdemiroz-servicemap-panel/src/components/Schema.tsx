@@ -70,13 +70,35 @@ export class Edge {
     type: string;
     label: string;
     failed_weight: number;//default 0
+    // classes: string[] = [];
+    classes: string[] = [];
+    source_operationId: string;
+    target_operationId: string;
 
+    addClass(className: string) {
+        this.classes.push(className);
+    }
 
     constructor() {
 
 
     }
 
+
+    join(cy) {
+        return cy.add({
+            data: {
+                id: this.id,
+                label: this.label,
+                edgeType: this.type,
+                source: this.source,
+                target: this.target,
+                weight: this.weight,
+                classes: this.classes,
+            }
+
+        });
+    }
 
     getLabel() {
         return this.weight.toString() + " / " + this.failed_weight.toString();

@@ -6,7 +6,6 @@ import layoutUtilities from 'cytoscape-layout-utilities';
 import fcose from 'cytoscape-fcose';
 import BubbleSets from 'cytoscape-bubblesets';
 import cola from 'cytoscape-cola';
-import automove from 'cytoscape-automove';
 import 'tippy.js/dist/tippy.css';
 import popper from 'cytoscape-popper';
 
@@ -17,17 +16,16 @@ import {cyStyle} from "./style";
 // @ts-ignore
 import complexityManagement from "cytoscape-complexity-management";
 import {Edge, Operation, Service} from "./Schema";
-import {makeTippy} from "./Tippies";
-import {getTraceOnNode} from "./Trace";
+import {Tippies} from "./Tippies";
+import {getTraceOnNode, Trace} from "./Trace";
 
 
 cytoscape.use(popper);
-cytoscape.use(automove);
-cytoscape.use(BubbleSets);
 cytoscape.use(fcose);
 cytoscape.use(layoutUtilities);
 cytoscape.use(complexityManagement);
 cytoscape.use(cola);
+cytoscape.use(BubbleSets);
 
 
 interface PanelState {
@@ -44,12 +42,14 @@ export function round2(value) {
 
 
 
+
 export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     ref: any;
     cy: any | undefined;
     cyVisible: cytoscape.Core | undefined;
     cyInvisible: cytoscape.Core | undefined;
     instance: any | undefined;
+    tippies: any | undefined;
 
 
     constructor(props: PanelProps) {
@@ -86,7 +86,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             console.log("node.data()", node.data());
             console.log("node.classes()", node.classes());
 
-            let tip = makeTippy(node, this.props);
+            let tip = this.tippies.makeNodeTippy(node, this.props);
             tip.show();
 
         });
@@ -94,6 +94,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.cy.on('click', 'edge', (event: any) => {
             const edge = event.target;
             console.log("edge.data()", edge.data());
+            let tip = this.tippies.makeEdgeTippy(edge, this.props);
+            tip.show();
         });
 
         this.cy.on('dblclick', 'node', (event: any) => {
@@ -137,6 +139,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             this.initGraph();
         });
 
+        this.tippies = new Tippies(this);
+
         console.log("instance", this.instance);
         this.initListeners();
 
@@ -147,33 +151,40 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.setServiceNodes();
 
         this.setServiceLevelEdges();
-        // resetConstraints();
         this.setOperationNodes();
-        // this.correlateOperations();
-        // this.calculateConstraints();
-        //
 
 
         // this.cy.fit();
-        console.log("this.cy", this.cy);
+        //console.log("this.cy", this.cy);
         let layout = this.cy.layout({
             ...layoutOptions,
             stop: () => {
-                // this.instance.collapseNodes(this.cy.nodes('[id="cartservice-compound"]'));
+                //this.instance.collapseNodes(this.cy.nodes('[id="cartservice-compound"]'));
                 this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
                 this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
+                //this.testUcm();
+
             }
         });
-
+        resetConstraints();
         layout.run();
 
 
     }
 
+    private testUcm() {
+        let node = this.cy.getElementById("loadgenerator_HTTP_GET_CLIENT_GET_ERROR_500");
+        let tracePromise = getTraceOnNode(node.data(), this);
+
+        tracePromise.then((value: Trace) => {
+            let trace: Trace;
+            trace = value;
+            trace.appendUcmFull();
+        });
+    }
+
     private updateGraph() {
         console.log("updateGraph");
-
-        this.calculateConstraints();
         this.cy.resize();
         this.cy.fit();
         layoutOptions.randomize = false;
@@ -285,19 +296,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     }
 
-    // private addSpanEdge(edge: Edge) {
-    //     this.cy.add({
-    //         data: {
-    //             id: edge.id,
-    //             label: "",
-    //             edgeType: edge.type,
-    //             source: edge.source,
-    //             target: edge.target,
-    //             weight: 0,//will get set later by metrics
-    //         }
-    //
-    //     });
-    // }
 
     private setOperationNodes() {
         const {data} = this.props;
@@ -317,7 +315,10 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             } else {
                 // if serie node exists but if the status node does not exist create it
                 if (this.cy.getElementById(operation.spanStatusId).length === 0) {
-                    this.addOperationSpanNode(operation);
+                    // if operation value is 0 do not add it
+                    if (operation.weight > 0) {
+                        this.addOperationSpanNode(operation);
+                    }
                 } else {
                     // if serie node exists and status node exists update the weight
                     this.cy.getElementById(operation.spanStatusId).data('weight', operation.weight);
@@ -534,40 +535,11 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     }
 
 
-    private calculateConstraints() {
-        resetConstraints();
-        this.vAllignOperations();
-        //this.hAllignOperations();
-
-    }
 
 
-    private vAllignOperations() {
-        //
 
 
-    }
 
-    // private hAllignOperations() {
-    //     // horizintally allign operations that have same service and spanKind
-    //     // get all operation nodes
-    //     const operations = this.cy.nodes().filter("node[nodeType = 'operation']");
-    //     // iterate over the operations
-    //     operations.forEach((operation: any) => {
-    //         // find the matching operation in other services
-    //         const matchingOperations = operations.filter("node[parent = '" + operation.data('parent') + "'][spanKind = '" + operation.data('spanKind') + "'][id != '" + operation.data('id') + "']");
-    //         // if there are matching operations
-    //         if (matchingOperations.length > 0) {
-    //             // iterate over the matching operations
-    //             let hallign = [];
-    //
-    //             matchingOperations.forEach((matchingOperation: any) => {
-    //                 hallign.push(matchingOperation.data('id'));
-    //             });
-    //             addHallignConstraint(hallign);
-    //         }
-    //     });
-    // }
 }
 
 
