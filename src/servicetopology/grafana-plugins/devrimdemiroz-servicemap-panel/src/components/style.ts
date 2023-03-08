@@ -210,7 +210,7 @@ export const cyStyle = [
                 // if spankind SERVER, then color is colors['SERVER']
                 return getColorSpanKind(ele);
             },
-            "background-opacity": 0.3,
+            "background-opacity": 0.2,
         }
     },
 
@@ -253,7 +253,7 @@ export const cyStyle = [
     { // default
         selector: 'edge',
         style: {
-            "curve-style": "haystack",//options: haystack, bezier, unbundled-bezier, segments, haystack straight - the default curve
+            "curve-style": "haystack",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
             "line-cap": "round",
             "opacity": 0.5,
 
@@ -267,7 +267,7 @@ export const cyStyle = [
             "color": "gray",
             "width": function (ele) {
                 // find target node edge connected to,
-                return edgeWidth(ele)  +  0.6;
+                return edgeWidth(ele);
             },
             "border-width": function (ele) {
                 return edgeWidth(ele) /2;
@@ -286,6 +286,7 @@ export const cyStyle = [
         style: {
             //edge color SERVICE_HIGHWAY
             "line-color": colors['SERVICE_HIGHWAY'],
+            "opacity": 0.6,
 
         }
     },
@@ -301,7 +302,7 @@ export const cyStyle = [
             },
             "width": function (ele) {
                 // find target node edge connected to,
-                return edgeWidth(ele)  +  0.4;
+                return edgeWidth(ele);
             },
             "border-width": function (ele) {
                 return edgeWidth(ele) /3;
@@ -325,7 +326,7 @@ export const cyStyle = [
             // arrow target circle
             "target-arrow-shape": "none",
             "mid-target-arrow-shape": "none", // options:
-            "curve-style": "straight-triangle",
+            "curve-style": "haystack",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
 
 
         },

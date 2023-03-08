@@ -188,7 +188,7 @@ export class Trace {
         // get source operation node by source edge id
         this.cy.getElementById(edge.source_operationId).addClass("ucmNode");
         this.cy.getElementById(edge.target_operationId).addClass("ucmNode");
-        this.cy.getElementById(edge.source).connectedEdges().remove();
+        // this.cy.getElementById(edge.source).connectedEdges().remove();
 
         // find the path from source to target by visiting parent nodes
         let dijkstra = this.cy.elements().dijkstra({
@@ -200,6 +200,19 @@ export class Trace {
         let path = dijkstra.pathTo(`#${edge.target}`);
         // walk the path and add the edges, add ucmNode class to visited nodes
         console.log("path", path);
+        const bbStyle = {
+            virtualEdges: false,
+            style: {
+                fill: 'gray',
+                stroke: 'black',
+                throttle: 11,
+                interactive: true,
+
+            }
+        };
+        const bb = this.cy.bubbleSets();
+        bb.addPath(path.nodes(), path.edges(), null, bbStyle);
+
         let prevNode = null;
         path.forEach((ele: any) => {
             if (ele.isEdge()) {
@@ -227,7 +240,7 @@ export class Trace {
             prevNode = node;
         });
 
-        this.cy.add({
+        let lastEdge = this.cy.add({
             group: "edges",
             data: {
                 id: `${edge.target}-span-${edge.source}`,
@@ -238,6 +251,7 @@ export class Trace {
 
             }
         }).addClass("ucmPath").addClass("ucmLastEdge");
+        bb.addPath(this.cy.getElementById(edge.source), lastEdge, null, bbStyle);
 
 
     }
