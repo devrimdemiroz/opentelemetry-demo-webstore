@@ -1,13 +1,115 @@
 export const colors = {
+    // CARTO Earth diverging tones https://carto.com/carto-colors/
+    //#A16928,#bd925a,#d6bd8d,#edeac2,#b5c8b8,#79a7ac,#2887a1
+    // a color for combination of CLIENT and SERVER
+    // "SERVER": "#A16928",
+    "2": "#bd925a",
+    "SERVER": "#d6bd8d",
+    "INTERNAL": "#edeac2",
+    "4": "#b5c8b8",
+    "CLIENT": "#79a7ac",
+    "6": "#2887a1",
+
+    // Carto geyzer diverging
+    // #008080,#70a494,#b4c8a8,#f6edbd,#edbb8a,#de8a5a,#ca562c
+    "50": "#008080",
+    "51": "#70a494",
+    "UNSET": "#b4c8a8",
+    "53": "#f6edbd",
+    "54": "#edbb8a",
+    "57": "#de8a5a",
+    "ERROR": "#ca562c",
+
+
+    // CARTO Sequential Teal
+    //#d1eeea,#a8dbd9,#85c4c9,#68abb8,#4f90a6,#3b738f,#2a5674
+    "8": "#d1eeea",
+    "9": "#a8dbd9",
+    "10": "#85c4c9",
+    "span": "#68abb8",
+    "SERVICE_HIGHWAY": "#4f90a6",
+    "13": "#3b738f",
+    "14": "#2a5674",
+    // CARTO Qualitative Antique
+    // #855C75,#D9AF6B,#AF6458,#736F4C,#526A83,#625377,#68855C,#9C9C5E,#A06177,#8C785D,#467378,#7C7C7C
+    "15": "#855C75",
+    "frontend": "#D9AF6B",
+    "frontend-proxy": "#AF6458",
+    "18": "#736F4C",
+    "loadgenerator": "#526A83",
+    "20": "#625377",
+    "cartservice": "#68855C",
+    "22": "#9C9C5E",
+    "featureflagservice": "#A06177",
+    "adservice": "#8C785D",
+    "25": "#467378",
+    "26": "#7C7C7C",
+    // CARTO Army Rose
+    // #798234,#a3ad62,#d0d3a2,#fdfbe4,#f0c6c3,#df91a3,#d46780
+    "27": "#798234",
+    //"UNSET": "#798234",
+    "28": "#a3ad62",
+    "29": "#d0d3a2",
+    "30": "#fdfbe4",
+    "31": "#f0c6c3",
+    "32": "#df91a3",
+    "33": "#d46780",
+    //"ERROR": "#d46780",
+    // Carto qualitative pastel colors
+    // #66C5CC,#F6CF71,#F89C74,#DCB0F2,#87C55F,#9EB9F3,#FE88B1,#C9DB74,#8BE0A4,#B497E7,#D3B484,#B3B3B3
+    "electro": "#66C5CC",
+    "35": "#F6CF71",
+    "highlighted": "#F89C74",
+    "37": "#DCB0F2",
+    "38": "#87C55F",
+    "39": "#9EB9F3",
+    "40": "#FE88B1",
+    "41": "#C9DB74",
+    "42": "#8BE0A4",
+    "43": "#B497E7",
+    "44": "#D3B484",
+    "gray": "#B3B3B3",
+
+
     // from https://github.com/karthik/wesanderson
     //Royal2
+    /*
     "CLIENT": "#899DA4",
     "SERVER": "#F5CDB4",
-    // a color for combination of CLIENT and SERVER
-    "13": "#F2AD00",
     "ERROR": "#9B110E",
+    "UNSET": "#74A089",
+    "COMPOUND": "#FDDDA0",
+    "INTERNAL": "#d5c5c5",
+    "SERVICE_HIGHWAY": "#999999",
+    "span": "#F98400",
+    "electro": "#5BBCD6",
+    "14": "#F2AD00",
+    "4": "#d5c5c5",
+
+    "13": "#F2AD00",
     // lighter red than ERROR
     "highlighted": "#F98400",
+
+    "frontend": "#F98400",
+    "frontend-web": "#F98400",
+    "TypeScript": "#F98400",
+
+    // dark brown
+
+    "Java": "#624a2a",
+
+
+    "Python": "#046C9A",
+
+    ".NET": "#446455",
+
+    "C++": "#de8787",
+
+
+
+    "Erlang": "#a83ca0",
+
+
 
     "15": "#F98400",
     "20": "#ABDDDE",
@@ -19,10 +121,6 @@ export const colors = {
     "25": "#D69C4E",
     "26": "#ABDDDE",
     "27": "#F2AD00",
-    "COMPOUND": "#FDDDA0",
-    "UNSET": "#74A089",
-    "INTERNAL": "#d5c5c5",
-    "4": "#d5c5c5",
     "3": "#F8AFA8",
     // very light grey
     "6": "#F2AD00",
@@ -31,35 +129,9 @@ export const colors = {
     "9": "#ECCBAE",
     "11": "#f2f2f2",
     // gray
-    "SERVICE_HIGHWAY": "#999999",
-    "14": "#F2AD00",
-    "span": "#F98400",
-    "electro": "#5BBCD6",
     "17": "#ECCBAE",
     "19": "#D69C4E",
 
-    "frontend": "#F98400",
-    "frontend-web": "#F98400",
-    "TypeScript": "#F98400",
 
-    // dark brown
-    "adservice": "#624a2a",
-    "Java": "#624a2a",
-
-    "loadgenerator": "#046C9A",
-    "Python": "#046C9A",
-
-    "cartservice": "#446455",
-    ".NET": "#446455",
-
-    "frontend-proxy": "#de8787",
-    "C++": "#de8787",
-
-
-
-    "featureflagservice": "#a83ca0",
-    "Erlang": "#a83ca0",
-
-
-
+*/
 };

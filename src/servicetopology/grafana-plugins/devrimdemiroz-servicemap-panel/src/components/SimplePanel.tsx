@@ -18,7 +18,10 @@ import complexityManagement from "cytoscape-complexity-management";
 import {Edge, Operation, Service} from "./Schema";
 import {Tippies} from "./Tippies";
 import {getTraceOnNode, Trace} from "./Trace";
+import cxtmenu from 'cytoscape-cxtmenu';
+import cxtmenu_defaults from "./cxtmenu";
 
+cytoscape.use(cxtmenu);
 
 cytoscape.use(popper);
 cytoscape.use(fcose);
@@ -50,6 +53,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     cyInvisible: cytoscape.Core | undefined;
     instance: any | undefined;
     tippies: any | undefined;
+    cxtmenu: any;
 
 
     constructor(props: PanelProps) {
@@ -144,6 +148,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         console.log("instance", this.instance);
         this.initListeners();
 
+        this.cxtmenu = this.cy.cxtmenu(cxtmenu_defaults);
+
     }
 
 
@@ -153,9 +159,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.setServiceLevelEdges();
         this.setOperationNodes();
 
-
-        // this.cy.fit();
-        //console.log("this.cy", this.cy);
         let layout = this.cy.layout({
             ...layoutOptions,
             stop: () => {
@@ -288,8 +291,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 id: edge.id,
                 label: edge.label,
                 edgeType: edge.type,
-                source: edge.source,
-                target: edge.target,
+                source: edge.source + "-out",
+                target: edge.target + "-in",
                 weight: edge.weight,
                 failed_weight: edge.failed_weight,
             }
@@ -413,23 +416,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
         });
 
-        try {
-            this.cy.add({
-                data: {
-                    id: service.id + "-" + direction + "-edge",
-                    label: "",
-                    edgeType: "connector-" + direction,
-                    // if direction is in
-                    target: service.id,
-                    source: service.id + "-" + direction,
-                    weight: weight
 
-
-                }
-            });
-        } catch (e) {
-            console.log("error", e);
-        }
     }
 
 
@@ -450,6 +437,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
 
         this.addOperationEdge(operation);// a.k.a. operation-span edge
+
     }
 
     private addOperationEdge(operation: Operation) {

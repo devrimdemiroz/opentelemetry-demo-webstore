@@ -172,7 +172,7 @@ services:
       resources:
         limits:
           memory: 120M
-    restart: unless-stopped
+    restart: always
     ports:
       - "${LOCUST_WEB_PORT}"
     environment:
@@ -297,7 +297,7 @@ services:
 
   # OpenTelemetry Collector
   otelcol:
-    image: otel/opentelemetry-collector-contrib:0.71.0
+    image: otel/opentelemetry-collector-contrib:0.72.0
     container_name: otel-col
     deploy:
       resources:
