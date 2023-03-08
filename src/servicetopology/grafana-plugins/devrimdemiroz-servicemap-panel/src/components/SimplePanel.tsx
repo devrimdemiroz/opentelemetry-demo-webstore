@@ -263,6 +263,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                     // if edge is undefined create it
                     if (this.cy.getElementById(edge.id).length === 0) {
                         this.addServiceEdge(edge);
+                        // also add a failed edge
+
 
                     } else {
                         // if edge exists update the weight and label

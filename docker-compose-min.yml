@@ -172,7 +172,7 @@ services:
       resources:
         limits:
           memory: 120M
-    restart: always
+    restart: unless-stopped
     ports:
       - "${LOCUST_WEB_PORT}"
     environment:
@@ -229,7 +229,7 @@ services:
       resources:
         limits:
           memory: 200M
-    restart: always
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=ffs
       - POSTGRES_DB=ffs
@@ -297,14 +297,14 @@ services:
 
   # OpenTelemetry Collector
   otelcol:
-    image: otel/opentelemetry-collector-contrib:0.70.0
+    image: otel/opentelemetry-collector-contrib:0.71.0
     container_name: otel-col
     deploy:
       resources:
         limits:
           memory: 100M
     restart: unless-stopped
-    command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
+    command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ,"--feature-gates=service.connectors"]
     volumes:
       - ./src/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
       - ./src/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
