@@ -16,12 +16,23 @@ receivers:
   otlp:
     protocols:
       grpc:
+        endpoint: 0.0.0.0:4317
       http:
+        endpoint: 0.0.0.0:4318
         cors:
           allowed_origins:
             - "http://*"
             - "https://*"
+
+  otlp/dummy:
+    protocols:
+      grpc:
+        endpoint: "localhost:12345"
 exporters:
+  otlp/jaeger:
+    endpoint: "jaeger:4317"
+    tls:
+      insecure: true
   otlp:
     endpoint: "localhost:4317"
     tls:
@@ -32,39 +43,62 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
     enable_open_metrics: true
-connectors:
+processors:
+  batch:
+    send_batch_size: 1000
+    timeout: 5s
+  memory_limiter:
+    check_interval: 2s
+    limit_mib: 1800
+    spike_limit_mib: 500
   spanmetrics:
-      histogram:
-        explicit:
-          buckets: [ 100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms ]
-      dimensions:
+    metrics_exporter: 'otlp'
+    latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms]
+    dimensions_cache_size: 1500
+    dimensions:
         - name: http.method
           default: GET
         - name: http.status_code
-      dimensions_cache_size: 1000
-      aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
-processors:
-  batch:
-  spanmetrics:
-  transform:
-    metric_statements:
-      - context: metric
-        statements:
-          - set(description, "Measures the duration of inbound HTTP requests") where name == "http.server.duration"
+
+  servicegraph:
+    metrics_exporter: 'otlp' # Exporter to send metrics to
+    latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms] # Buckets for latency histogram
+    dimensions: [cluster, namespace] # Additional dimensions (labels) to be added to the metrics extracted from the resource and span attributes
+    store:
+      ttl: 2s
+      max_items: 200
+  attributes/spanname:
+    actions:
+      - key: span_name
+        from_attribute: span_name
+        action: upsert
+  metricstransform:
+    transforms:
+      - include: calls_total
+        action: update
+        new_name: traces_spanmetrics_calls_total
+        operations:
+          - action: update_label
+            label: operation
+            new_label: span.name
+      - include: latency
+        action: update
+        new_name: traces_spanmetrics_latency
 
 service:
   pipelines:
-    traces/spanmetrics:
-      receivers: [otlp]
-      exporters: [spanmetrics]
-    metrics/spanmetrics:
-      receivers: [spanmetrics]
-      exporters: [prometheus]
     traces:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [otlp]
+      processors: [ spanmetrics,batch]
+      exporters: [otlp/jaeger]
+    traces/servicegraph:
+      receivers: [ otlp ]
+      processors: [ servicegraph]
+      exporters: [ logging ]
+    metrics/spanmetrics:
+      receivers: [ otlp/dummy ]
+      exporters: [ otlp ]
     metrics:
       receivers: [otlp]
-      processors: [transform, batch]
+      processors: [memory_limiter,metricstransform,batch]
       exporters: [prometheus]
