@@ -1,6 +1,5 @@
 export const colors = {
     // CARTO Earth diverging tones https://carto.com/carto-colors/
-    //#A16928,#bd925a,#d6bd8d,#edeac2,#b5c8b8,#79a7ac,#2887a1
     // a color for combination of CLIENT and SERVER
     // "SERVER": "#A16928",
     "2": "#bd925a",
@@ -11,7 +10,6 @@ export const colors = {
     "6": "#2887a1",
 
     // Carto geyzer diverging
-    // #008080,#70a494,#b4c8a8,#f6edbd,#edbb8a,#de8a5a,#ca562c
     "50": "#008080",
     "51": "#70a494",
     "UNSET": "#b4c8a8",
@@ -22,7 +20,6 @@ export const colors = {
 
 
     // CARTO Sequential Teal
-    //#d1eeea,#a8dbd9,#85c4c9,#68abb8,#4f90a6,#3b738f,#2a5674
     "8": "#d1eeea",
     "9": "#a8dbd9",
     "10": "#85c4c9",
@@ -30,8 +27,8 @@ export const colors = {
     "SERVICE_HIGHWAY": "#4f90a6",
     "13": "#3b738f",
     "14": "#2a5674",
+
     // CARTO Qualitative Antique
-    // #855C75,#D9AF6B,#AF6458,#736F4C,#526A83,#625377,#68855C,#9C9C5E,#A06177,#8C785D,#467378,#7C7C7C
     "15": "#855C75",
     "frontend": "#D9AF6B",
     "frontend-proxy": "#AF6458",
@@ -44,8 +41,8 @@ export const colors = {
     "adservice": "#8C785D",
     "25": "#467378",
     "26": "#7C7C7C",
+
     // CARTO Army Rose
-    // #798234,#a3ad62,#d0d3a2,#fdfbe4,#f0c6c3,#df91a3,#d46780
     "27": "#798234",
     //"UNSET": "#798234",
     "28": "#a3ad62",
@@ -55,8 +52,8 @@ export const colors = {
     "32": "#df91a3",
     "33": "#d46780",
     //"ERROR": "#d46780",
+
     // Carto qualitative pastel colors
-    // #66C5CC,#F6CF71,#F89C74,#DCB0F2,#87C55F,#9EB9F3,#FE88B1,#C9DB74,#8BE0A4,#B497E7,#D3B484,#B3B3B3
     "electro": "#66C5CC",
     "35": "#F6CF71",
     "highlighted": "#F89C74",
@@ -135,3 +132,41 @@ export const colors = {
 
 */
 };
+
+export function colorSpanKind(ele) {
+    if (ele.data('spanKind') === 'SERVER') {
+        return colors['SERVER']
+    } else if (ele.data('spanKind') === 'CLIENT') {
+        return colors['CLIENT']
+    } else {
+        return colors['INTERNAL']
+    }
+}
+
+export function colorStatus(ele) {
+    if (ele.data('spanStatus') === 'ERROR') {
+        return colors['ERROR'];
+    } else if (ele.data('spanStatus') === 'UNSET') {
+        return colors['UNSET'];
+    }
+    return "";
+}
+
+export function colorConnector(ele) {
+    if (ele.data('edgeType') === 'connector-in') {
+        return colors['SERVER']
+    } else if (ele.data('edgeType') === 'connector-out') {
+        return colors['CLIENT']
+    } else {
+        return colors['INTERNAL']
+    }
+}
+
+export function colorService(ele) {
+    // if compound is a service, get colors according to service name if defined in colors, otherwise use default color
+
+    if (colors[ele.data('label')]) {
+        return colors[ele.data('label')];
+    }
+    return "gray";
+}

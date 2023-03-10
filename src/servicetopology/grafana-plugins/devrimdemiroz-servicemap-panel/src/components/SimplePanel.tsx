@@ -17,9 +17,12 @@ import {cyStyle} from "./style";
 import complexityManagement from "cytoscape-complexity-management";
 import {Edge, Operation, Service} from "./Schema";
 import {Tippies} from "./Tippies";
-import {getTraceOnNode, Trace} from "./Trace";
+import {getTraceOnNode} from "./Trace";
 import cxtmenu from 'cytoscape-cxtmenu';
 import cxtmenu_defaults from "./cxtmenu";
+import automove from 'cytoscape-automove';
+
+cytoscape.use( automove );
 
 cytoscape.use(cxtmenu);
 
@@ -156,16 +159,15 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     private initGraph() {
         this.setServiceNodes();
 
-        this.setServiceLevelEdges();
+        this.setService2ServiceEdges();
         this.setOperationNodes();
 
         let layout = this.cy.layout({
             ...layoutOptions,
             stop: () => {
                 //this.instance.collapseNodes(this.cy.nodes('[id="cartservice-compound"]'));
-                this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
-                this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
-                //this.testUcm();
+                //this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
+//                this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
 
             }
         });
@@ -175,16 +177,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     }
 
-    private testUcm() {
-        let node = this.cy.getElementById("loadgenerator_HTTP_GET_CLIENT_GET_ERROR_500");
-        let tracePromise = getTraceOnNode(node.data(), this);
-
-        tracePromise.then((value: Trace) => {
-            let trace: Trace;
-            trace = value;
-            trace.appendUcmFull();
-        });
-    }
 
     private updateGraph() {
         console.log("updateGraph");
@@ -217,7 +209,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
     }
 
 
-    private setServiceLevelEdges() {
+    private setService2ServiceEdges() {
         const {data} = this.props;
         // get series with refId ServiceGraphEdges
         data.series.filter((series: any) => series.refId === "service_graph_request_total").forEach((serie: any) => {
@@ -353,6 +345,44 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 weight: service.weight
             }
         });
+        // and add a service label node attached to the service node connected just to show service name
+        this.cy.add({
+            data: {
+                id: service.id + "-label",
+                label: service.name,
+                type: "label-node",
+                parent: service.id + "-compound",
+                service: service.id,
+                weight: service.weight
+            }
+        }).addClass("label-node");
+        // connect to service node
+        let connectedNodes=this.cy.add({
+            data: {
+                id: service.id + "-label-edge",
+                label: "",
+                source: service.id + "-label",
+                target: service.id,
+                service: service.id,
+                parent: service.id + "-compound",
+            }
+        }).addClass("label-edge").connectedNodes();
+        connectedNodes.layoutPositions(this.cy.layout({
+            name: 'grid',
+            rows: 1,
+            cols: 1,
+            position: function (node: any) {
+                return {row: 0, col: 0};
+            } // put all nodes in one row with one column
+
+        }), true)
+
+        console.log("auto-move=",connectedNodes);
+        this.cy.automove({
+            nodesMatching: connectedNodes,
+            reposition: 'drag',
+            dragWith: connectedNodes
+        });
     }
 
     private addServiceCompound(service: Service) {
@@ -360,10 +390,11 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             data: {
                 id: service.id + "-compound",
                 label: service.name,
-                nodeType: "serviceCompound",
+                nodeType: "service-compound",
                 weight: service.weight
             }
         });
+
 
     }
 
@@ -393,18 +424,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 //console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
                 if (serie.length === 1) {
                     weight = round2(serie.fields[1].values.buffer[0]);
-                    console.log("service_name=", service.name, ",-", direction, ",weight=", weight);
                     return;
                 } else {
                     console.log("spanmetrics_calls_total_span_kind query returned more than one result", serie);
                 }
 
             });
-        if (weight === 0) {
-            // no traffic observed for this direction
-            console.log("no traffic observed for this direction", service.name, direction);
-            //return;
-        }
 
         this.cy.add({
             data: {

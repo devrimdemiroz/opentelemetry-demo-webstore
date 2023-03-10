@@ -60,7 +60,7 @@ export class Tippies {
             trigger: 'manual' // or append dummyDomEle to document.body
         });
         tip.show();
-        attachDetails(tip, cardDetails);
+        this.attachDetails(tip, cardDetails);
         // @ts-ignore
         this.attachTrace(tip, ele, this.panel);
 

@@ -1,47 +1,63 @@
-import {colors} from "./colors";
+import {colorConnector, colors, colorService, colorSpanKind, colorStatus} from "./colors";
 
-function getColorSpanKind(ele) {
-    if (ele.data('spanKind') === 'SERVER') {
-        return colors['SERVER']
-    } else if (ele.data('spanKind') === 'CLIENT' ) {
-        return colors['CLIENT']
-    } else {
-        return colors['INTERNAL']
-    }
+
+function default_for_compound_nodes() {
+    return  {
+        selector: ':compound',
+        style: {
+            "background-color": function (ele) {
+                return colorService(ele);
+            },
+            "background-opacity": 0.1,
+            "text-margin-y": function (ele) {
+                return nodeSize(ele);
+            },
+            "text-max-width": function (ele) {
+                // compound node width ?
+                return nodeSize(ele) * 7;
+            },
+            "text-wrap": "ellipsis",
+            "border-opacity": 0,
+            "shape": "round-rectangle",
+            "font-size": function (ele) {
+                return nodeSize(ele) * 0.7;
+            },
+            "color": function (ele) {
+                return colorService(ele);
+            },
+            "text-valign": "bottom",
+        } // moon crescent
+
+    };
 }
 
-function getColorStatus(ele) {
-    if (ele.data('spanStatus') === 'ERROR') {
-        return colors['ERROR'];
-    } else if (ele.data('spanStatus') === 'UNSET') {
-        return colors['UNSET'];
-    }
-    return "";
-}
+function compound_nodes_when_collapsed() {
+    return {
+        selector: '.cy-expand-collapse-collapsed-node',
+        style: {
+            'label': function (ele) {
+                // 'data(weight)'+ newline + 'data(label)',
+                // multiline label
+                let newLabel = ele.data('weight');
+                newLabel += '\n';
+                newLabel += ele.data('label');
+                return newLabel;
 
-function getColorConnector(ele) {
-    if (ele.data('edgeType') === 'connector-in') {
-        return colors['SERVER']
-    } else if (ele.data('edgeType') === 'connector-out') {
-        return colors['CLIENT']
-    } else {
-        return colors['INTERNAL']
-    }
-}
 
-function getServiceColor(ele) {
-    // if compound is a service, get colors according to service name if defined in colors, otherwise use default color
-    if (ele.data('nodeType') === 'serviceCompound') {
-        // colors[ele.data('label')] if defined
-        if (colors[ele.data('label')]) {
-            return colors[ele.data('label')];
+            },
+            "background-color": "white",
+            "border-color": function (ele) {
+                return colorService(ele);
+            },
+            "text-wrap": "wrap",
+            'text-valign': 'center',
+            'text-halign': 'center',
         }
-    }
-    return "gray";
+    };
 }
 
-export const cyStyle = [
-    {
+function default_for_nodes() {
+    return {
         selector: 'node',
         style: {
             "background-color": "white",
@@ -49,8 +65,7 @@ export const cyStyle = [
             "font-size": function (ele) {
                 return nodeSize(ele) / 3;
             },
-            "color": "black",
-            //'compound-sizing-wrt-labels': 'include',
+            "color": "black", // default color
             "background-opacity": 0.8,
             "text-wrap": "ellipsis",
             "label": "data(label)",
@@ -67,67 +82,36 @@ export const cyStyle = [
 
 
         }
-    },
+    };
+}
 
-    {
-        selector: ':compound',
+function service_node_attached_label_nodes() {
+    return { // node type label rectangle with invisible border and invisible/transparent background
+        // font with same compound color size according to node size
+        selector: '.label-node',
         style: {
-            "background-color": function (ele) {
-                return getServiceColor(ele);
-            },
-            "background-opacity": 0.1,
-            "text-margin-y": function (ele) {
-                if (ele.data('nodeType') === 'serviceCompound') {
-                    return -(nodeSize(ele));
-                }
-                return nodeSize(ele);
-            },
-            "text-max-width": function (ele) {
-                // compound node width ?
-                return nodeSize(ele) * 7;
-            },
-            "text-wrap": "ellipsis",
+            "opacity": 1,
+            "background-opacity": 0,
             "border-opacity": 0,
-            "shape": "round-rectangle",
             "font-size": function (ele) {
-                return nodeSize(ele) * 0.7;
+                let fontSize = nodeSize(ele) * 0.7;
+                if (fontSize < 10) {
+                    fontSize = 10;
+                }
+                return fontSize;
             },
             "color": function (ele) {
-                return getServiceColor(ele);
+                return colorService(ele);
             },
-            "text-valign": function (ele) {
-                if (ele.data('nodeType') === 'serviceCompound') {
-                    return 'bottom';
-                }
-                return 'bottom';
-            },
-        } // moon crescent
+            "text-valign": "center",
 
-    },
-    {
-        selector: '.cy-expand-collapse-collapsed-node',
-        style: {
-            'label': function (ele) {
-                // 'data(weight)'+ newline + 'data(label)',
-                // multiline label
-                let newLabel = ele.data('weight');
-                newLabel += '\n';
-                newLabel += ele.data('label');
-                return newLabel;
-
-
-            },
-            "background-color": "white",
-            "border-color": function (ele) {
-                return getServiceColor(ele);
-            },
-            "text-wrap": "wrap",
-            'text-valign': 'center',
-            'text-halign': 'center',
         }
-    },
 
-    {
+    };
+}
+
+function service_nodes() {
+    return {
         selector: 'node[nodeType = "service"]',
         style: {
             "background-color": "white",
@@ -139,14 +123,15 @@ export const cyStyle = [
             },
             "border-opacity": 0.5,
             "text-valign": "center", // default
-            "text-halign": "center", // default
             "color": "black",
 
 
         }
-    },
+    };
+}
 
-    {
+function hub_nodes() {
+    return {
         selector: 'node[nodeType *= "connector"]',
         style: {
             "border-color": function (ele) {
@@ -155,7 +140,7 @@ export const cyStyle = [
                     return colors['SERVER']
                 } else if (ele.data('nodeType') === 'connector-out') {
                     return colors['CLIENT']
-                } else  {
+                } else {
                     return colors['INTERNAL']
                 }
                 return colors['gray'];
@@ -176,13 +161,15 @@ export const cyStyle = [
             },
             "label": "data(weight)",
         }
-    },
+    };
+}
 
-    {
+function operation_nodes() {
+    return {
         selector: 'node[nodeType = "operation"]',
         style: {
             "border-color": function (ele) {
-                return getColorSpanKind(ele);
+                return colorSpanKind(ele);
             },
 
 
@@ -201,21 +188,34 @@ export const cyStyle = [
             },
 
         }
-    },
+    };
+}
 
-    {
+function operation_compound_nodes() {
+    return {
         selector: 'node[nodeType = "operation-compound"]',
         style: {
             "background-color": function (ele) {
-                // if spankind SERVER, then color is colors['SERVER']
-                return getColorSpanKind(ele);
+                return colorSpanKind(ele);
             },
             "background-opacity": 0.2,
         }
-    },
+    };
+}
 
+function service_compound_nodes() {
+    return {
+        selector: 'node[nodeType = "service-compound"]',
+        style: {
+            // make label invisible
+            "label": "",
 
-    {
+        }
+    };
+}
+
+function spanLeaf_error_nodes() {
+    return {
         selector: 'node[spanStatus = "ERROR"]',
         style: {
             "color": colors['ERROR'],
@@ -229,8 +229,11 @@ export const cyStyle = [
                 return nodeSize(ele);
             },
         }
-    },
-    {
+    };
+}
+
+function spanLeaf_unset_nodes() {
+    return {
         selector: 'node[spanStatus = "UNSET"]',
         style: {
             "color": colors['UNSET'],
@@ -246,11 +249,11 @@ export const cyStyle = [
                 return nodeSize(ele);
             },
         }
-    },
+    };
+}
 
-    // edges
-
-    { // default
+function default_for_edges() {
+    return { // default
         selector: 'edge',
         style: {
             "curve-style": "haystack",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
@@ -270,7 +273,7 @@ export const cyStyle = [
                 return edgeWidth(ele);
             },
             "border-width": function (ele) {
-                return edgeWidth(ele) /2;
+                return edgeWidth(ele) / 2;
             },
             "border-opacity": 0.5,
             "mid-target-arrow-shape": "vee", // options:
@@ -280,8 +283,11 @@ export const cyStyle = [
 
 
         }
-    },
-    {// service to service
+    };
+}
+
+function service2service_edges() {
+    return {// service to service
         selector: 'edge[edgeType = "service"]',
         style: {
             //edge color SERVICE_HIGHWAY
@@ -289,15 +295,18 @@ export const cyStyle = [
             "opacity": 0.6,
 
         }
-    },
-    {// service in/out
+    };
+}
+
+function service2hubs_edges() {
+    return {// service in/out
         selector: 'edge[edgeType *= "connector"]',
         style: {
             //edge color
             "line-color": function (ele) {
                 // if edgetype connector-in, then color is colors SERVER  , out CLIENT, internal INTERNAL
                 //edgeType: 'connector-out'
-                return getColorConnector(ele);
+                return colorConnector(ele);
 
             },
             "width": function (ele) {
@@ -305,7 +314,7 @@ export const cyStyle = [
                 return edgeWidth(ele);
             },
             "border-width": function (ele) {
-                return edgeWidth(ele) /3;
+                return edgeWidth(ele) / 3;
             },
 
             // arrow target circle
@@ -313,14 +322,16 @@ export const cyStyle = [
 
 
         }
-    },
-    // if spanstus is error on edge, change color to colors['ERROR'] and make the edge line based on weight but very thin
-    {
+    };
+}
+
+function operations2spanLeafs_edges() {
+    return {
         //, edgeType: "span", spanStatus: "ERROR" or UNSET
         selector: 'edge[edgeType = "operation-span"]',
         style: {
             "line-color": function (ele) {
-                return getColorStatus(ele);
+                return colorStatus(ele);
             },
 
             // arrow target circle
@@ -330,20 +341,11 @@ export const cyStyle = [
 
 
         },
-    },
-    // {
-    //     selector: 'edge[edgeType = "span"]',
-    //     style: {
-    //         "line-color": colors['span'],
-    //
-    //         // arrow target circle
-    //         "target-arrow-shape": "none",
-    //
-    //
-    //     },
-    // },
-    // edge type operation-span
-    {
+    };
+}
+
+function hubs2operations_edges() {
+    return {
         selector: 'edge[edgeType = "operation"]',
         style: {
             "line-color": function (ele) {
@@ -353,7 +355,41 @@ export const cyStyle = [
 
 
         }
-    },
+    };
+}
+
+function service_node_attached_label_edges() {
+    return {
+        selector: '.label-edge',
+        style: {
+            "curve-style": "segments",
+            "width": 1,
+
+        }
+    };
+}
+
+export const cyStyle = [
+    default_for_nodes(),
+
+    default_for_compound_nodes(),
+    compound_nodes_when_collapsed(),
+
+    default_for_edges(),
+
+    service_compound_nodes(),
+    service_nodes(),
+            service_node_attached_label_edges(),
+            service_node_attached_label_nodes(),
+    service2service_edges(),// SERVICE_HIGHWAY
+            service2hubs_edges(),
+                hub_nodes(),
+                    hubs2operations_edges(),
+                        operation_compound_nodes(),
+                        operation_nodes(),
+                            operations2spanLeafs_edges(),
+                                // TODO: unify for span leaf nodes
+                                spanLeaf_error_nodes(), spanLeaf_unset_nodes(),
     // Dynamic styles
     {
         selector: '.ucmNode',
@@ -457,33 +493,28 @@ export const cyStyle = [
 ];
 
 export const nodeSize = function (ele) {
-    // node size minimum 5 characters wide font size 7
-    // min weitght 1
-
-
-    let weight = ele.data("weight");
-    if (weight) {
-
-        return weight * 46;
-    }
-    return 20;
-}
-
-export const edgeWidth = function (ele) {
-    // get source and target node if present
-    let sourceWeight = ele.source().data("weight");
-    let targetWeight = ele.target().data("weight");
-    if (targetWeight < sourceWeight) {
-        return targetWeight * 50;
-    } else {
-        return sourceWeight * 50;
-    }
-
-
-    let weight = ele.data("weight");
-    if (weight) {
-
-        return weight * 15;
+    if (ele.data("weight")) {
+        return ele.data("weight") * 50;
     }
     return 10;
 }
+
+export const edgeWidth = function (ele) {
+    if (ele.source().data("weight") && ele.target().data("weight")){
+
+        let sourceWeight = ele.source().data("weight");
+        let targetWeight = ele.target().data("weight");
+        if (targetWeight < sourceWeight) {
+            return targetWeight * 50;
+        } else {
+            return sourceWeight * 50;
+        }
+    }
+
+    if (ele.data("weight")) {
+        return ele.data("weight") * 15;
+    }
+    return 1;
+}
+
+
