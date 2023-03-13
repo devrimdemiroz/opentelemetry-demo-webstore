@@ -29,18 +29,21 @@ export const colors = {
     "14": "#2a5674",
 
     // CARTO Qualitative Antique
-    "15": "#855C75",
+    "productcatalogservice": "#855C75",
     "frontend": "#D9AF6B",
+    "checkoutservice": "#D9AF6B",
     "frontend-proxy": "#AF6458",
-    "18": "#736F4C",
+    "paymentservice": "#736F4C",
     "loadgenerator": "#526A83",
-    "20": "#625377",
+    "quoteservice": "#625377",
     "cartservice": "#68855C",
-    "22": "#9C9C5E",
+    "shippingservice": "#9C9C5E",
+    "currencyservice": "#9C9C5E",
     "featureflagservice": "#A06177",
     "adservice": "#8C785D",
-    "25": "#467378",
-    "26": "#7C7C7C",
+    "frontend-web": "#467378",
+    "emailservice": "#467378",
+    "recommendationservice": "#7C7C7C",
 
     // CARTO Army Rose
     "27": "#798234",

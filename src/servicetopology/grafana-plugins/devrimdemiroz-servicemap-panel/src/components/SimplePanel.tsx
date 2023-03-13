@@ -9,7 +9,7 @@ import cola from 'cytoscape-cola';
 import 'tippy.js/dist/tippy.css';
 import popper from 'cytoscape-popper';
 
-import {colaOptions, layoutOptions, resetConstraints} from "./layout";
+import {addRelativeConstraint, addVallignConstraint, colaOptions, layoutOptions, resetConstraints} from "./layout";
 import {cyStyle} from "./style";
 
 
@@ -161,15 +161,16 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
 
     private initGraph() {
+       // resetConstraints();
 
         this.setServiceNodes();
         this.setService2ServiceEdges();
-        this.setOperationNodes();
+        //this.setOperationNodes();
 
         let layout = this.cy.layout({
             ...layoutOptions,
-            stop: () => {
 
+            stop: () => {
 
                 //this.instance.collapseNodes(this.cy.nodes('[id="cartservice-compound"]'));
                 //this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
@@ -177,7 +178,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
             }
         });
-        resetConstraints();
 
         layout.run();
 
@@ -189,11 +189,10 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         console.log("updateGraph");
         this.cy.resize();
         this.cy.fit();
-        let layout = this.cy.layout({...colaOptions});
-        //layout.run();
+        // let layout = this.cy.layout({...colaOptions});
+        // layout.run();
         layoutOptions.randomize = false;
-        layout = this.cy.layout({...layoutOptions});
-        layout.run();
+          this.cy.layout({...colaOptions}).run();
 
 
     }
@@ -298,6 +297,9 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
 
         });
+       // addRelativeConstraint(edge.source + "-out",  edge.target + "-in");// left right
+
+
 
     }
 
@@ -352,7 +354,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 parent: service.id + "-compound",
                 weight: service.weight
             }
-        });
+        }).addClass("service-node");
         // and add a service label node attached to the service node connected just to show service name
         this.cy.add({
             data: {
@@ -454,11 +456,11 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
             }
         }).addClass("service2hubs_edges").connectedNodes();
-        //
+
         // if (direction === "in") {
-        //     addRelativeConstraint(hub.id,service.id);// left right
+        //     addRelativeConstraint(service.id + "-" + direction,service.id);// left right
         // } else if (direction === "out") {
-        //     addRelativeConstraint(service.id,hub.id);// left right
+        //     addRelativeConstraint(service.id,service.id + "-" + direction);// left right
         // }
 
     }

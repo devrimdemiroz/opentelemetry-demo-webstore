@@ -181,12 +181,17 @@ export const addHallignConstraint = ( alignArray ) =>{
 };
 
 export const addRelativeConstraint = ( node1,node2 ) =>{
+    if(layoutOptions.alignmentConstraint === undefined){
+
+        layoutOptions.alignmentConstraint = {};
+    }
 
     if(layoutOptions.relativePlacementConstraint){
         layoutOptions.relativePlacementConstraint.push({left: node1, right: node2, gap: 10});
     } else {
         layoutOptions.relativePlacementConstraint = [{left: node1, right: node2, gap: 10}];
     }
+    console.log("relative left right added nodes=",node1,",",node2 ,", layout=", layoutOptions.relativePlacementConstraint);
 };
 
 export const resetConstraints = () => {
