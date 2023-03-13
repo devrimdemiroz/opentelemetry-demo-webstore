@@ -293,7 +293,7 @@ function service2service_edges() {
             //edge color SERVICE_HIGHWAY
             "line-color": colors['SERVICE_HIGHWAY'],
             "opacity": 0.6,
-            "curve-style": "straight",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
+            "curve-style": "haystack",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
         }
     };
 }
@@ -320,7 +320,7 @@ function service2hubs_edges() {
 
             // arrow target circle
             "target-arrow-shape": "none",
-            "mid-target-arrow-shape": "none",
+            //  "mid-target-arrow-shape": "vee",
 
 
         }
@@ -354,7 +354,7 @@ function hubs2operations_edges() {
                 // if 'source'  contains 'in', then color is colors['SERVER']
                 return ele.data('source').includes('in') ? colors['SERVER'] : colors['CLIENT'];
             },
-            "curve-style": "bezier",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
+            "curve-style": "segments",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
 
 
         }
@@ -495,28 +495,39 @@ export const cyStyle = [
 ];
 
 export const nodeSize = function (ele) {
+// a logaritmic scale
+    let weight = 1;
     if (ele.data("weight")) {
-        return ele.data("weight") * 50;
+        // like let weight = math.log(ele.data("weight")) * 7;
+        weight = ele.data("weight") * 30;
+
+
     }
-    return 10;
+
+    return weight;
 }
 
 export const edgeWidth = function (ele) {
+    let calculatedWeight = 1;
     if (ele.source().data("weight") && ele.target().data("weight")){
 
         let sourceWeight = ele.source().data("weight");
         let targetWeight = ele.target().data("weight");
+
         if (targetWeight < sourceWeight) {
-            return targetWeight * 50;
+            calculatedWeight = targetWeight;
+
         } else {
-            return sourceWeight * 50;
+            calculatedWeight = sourceWeight;
         }
+
+    } else if (ele.data("weight")) {
+        calculatedWeight = ele.data("weight");
+    } else {
+        return 1;
     }
 
-    if (ele.data("weight")) {
-        return ele.data("weight") * 15;
-    }
-    return 1;
+    return calculatedWeight * 20;
 }
 
 

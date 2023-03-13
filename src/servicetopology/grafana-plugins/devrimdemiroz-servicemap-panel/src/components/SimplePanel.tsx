@@ -9,7 +9,7 @@ import cola from 'cytoscape-cola';
 import 'tippy.js/dist/tippy.css';
 import popper from 'cytoscape-popper';
 
-import {addRelativeConstraint, addVallignConstraint, colaOptions, layoutOptions, resetConstraints} from "./layout";
+import {layoutOptions, place_left2right, read_file_constraints} from "./layout";
 import {cyStyle} from "./style";
 
 
@@ -161,11 +161,11 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
 
     private initGraph() {
-       // resetConstraints();
 
         this.setServiceNodes();
         this.setService2ServiceEdges();
-        //this.setOperationNodes();
+        read_file_constraints();
+        this.setOperationNodes();
 
         let layout = this.cy.layout({
             ...layoutOptions,
@@ -178,7 +178,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
             }
         });
-
         layout.run();
 
 
@@ -192,7 +191,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         // let layout = this.cy.layout({...colaOptions});
         // layout.run();
         layoutOptions.randomize = false;
-          this.cy.layout({...colaOptions}).run();
+        this.cy.layout({...layoutOptions}).run();
 
 
     }
@@ -297,7 +296,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
 
         });
-       // addRelativeConstraint(edge.source + "-out",  edge.target + "-in");// left right
+        // place_left2right(edge.source + "-out",  edge.target + "-in");// left right
 
 
 
@@ -428,12 +427,16 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 if (serie.length === 1) {
                     weight = round2(serie.fields[1].values.buffer[0]);
                     return;
-                } else {
-                    console.log("spanmetrics_calls_total_span_kind query returned more than one result", serie);
                 }
+                console.log("spanmetrics_calls_total_span_kind query returned more than one result", serie);
+
+                weight = 0;
 
             });
 
+        // if (weight === 0) {
+        //     return;
+        // }
         this.cy.add({
             data: {
                 id: service.id + "-" + direction,
@@ -449,19 +452,19 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             data: {
                 id: service.id + "-" + direction + "-edge",
                 label: "",
-                source: service.id + "-" + direction,
-                target: service.id,
+                source: direction === "in" ? service.id + "-" + direction : service.id,
+                target: direction === "in" ? service.id : service.id + "-" + direction,
                 service: service.id,
                 parent: service.id + "-compound",
 
             }
-        }).addClass("service2hubs_edges").connectedNodes();
+        }).addClass("service2hubs_edges");
 
-        // if (direction === "in") {
-        //     addRelativeConstraint(service.id + "-" + direction,service.id);// left right
-        // } else if (direction === "out") {
-        //     addRelativeConstraint(service.id,service.id + "-" + direction);// left right
-        // }
+        if (direction === "in") {
+            place_left2right(service.id + "-" + direction, service.id);// left right
+        } else if (direction === "out") {
+            place_left2right(service.id, service.id + "-" + direction);// left right
+        }
 
     }
 

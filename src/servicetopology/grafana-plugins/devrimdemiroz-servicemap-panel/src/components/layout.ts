@@ -161,18 +161,53 @@ export const addVallignConstraint = ( valignArray ) =>{
 
 };
 
-export const addHallignConstraint = ( alignArray ) =>{
 
-    if(layoutOptions.alignmentConstraint){
-        if(layoutOptions.alignmentConstraint.horizontal){
+function relative_placements() {
+    if (layoutOptions.relativePlacementConstraint === undefined) {
+        layoutOptions.relativePlacementConstraint = [];
+    }
+    return layoutOptions.relativePlacementConstraint;
+}
+
+export const place_left2right = (node1, node2) => {
+    let relativePlacementConstraint = relative_placements();
+
+    if (relativePlacementConstraint) {
+        relativePlacementConstraint.push({left: node1, right: node2, gap: 10});
+    } else {
+        relativePlacementConstraint = [{left: node1, right: node2, gap: 10}];
+    }
+    console.log("relative left right added nodes=", node1, ",", node2, ", relativePlacementConstraint=", relativePlacementConstraint);
+};
+
+function getAllignmentConstraints() {
+    if (layoutOptions.alignmentConstraint === undefined) {
+        layoutOptions.alignmentConstraint = {
+            horizontal: undefined,
+            vertical: undefined
+        };
+    }
+    return layoutOptions.alignmentConstraint;
+}
+
+export function horizontalConstraint(horizontal: any) {
+    if (getAllignmentConstraints().horizontal == undefined) {
+        getAllignmentConstraints().horizontal = horizontal;
+    } else {
+        getAllignmentConstraints().horizontal.push(horizontal);
+    }
+}
+
+export const align_horizontal = (alignArray) => {
+
+    if (layoutOptions.alignmentConstraint) {
+        if (layoutOptions.alignmentConstraint.horizontal) {
             // check if the constraint is already added
             layoutOptions.alignmentConstraint.horizontal.push(alignArray);
-        }
-        else{
+        } else {
             layoutOptions.alignmentConstraint.horizontal = [alignArray];
         }
-    }
-    else{
+    } else {
         layoutOptions.alignmentConstraint = {};
         layoutOptions.alignmentConstraint.horizontal = [alignArray];
     }
@@ -180,40 +215,29 @@ export const addHallignConstraint = ( alignArray ) =>{
 
 };
 
-export const addRelativeConstraint = ( node1,node2 ) =>{
-    if(layoutOptions.alignmentConstraint === undefined){
 
-        layoutOptions.alignmentConstraint = {};
+export const read_file_constraints = () => {
+
+
+    if (constraints.relativePlacementConstraint) {
+        let relativePlacementConstraint;
+        relativePlacementConstraint = relative_placements();
+        // constraints.relativePlacementConstraint add to getRelativePlacementConstraints() array
+        constraints.relativePlacementConstraint.forEach((constraint) => {
+            console.log("read_file_constraints: constraint=", constraint);
+            relativePlacementConstraint.push(constraint);
+        });
     }
 
-    if(layoutOptions.relativePlacementConstraint){
-        layoutOptions.relativePlacementConstraint.push({left: node1, right: node2, gap: 10});
-    } else {
-        layoutOptions.relativePlacementConstraint = [{left: node1, right: node2, gap: 10}];
-    }
-    console.log("relative left right added nodes=",node1,",",node2 ,", layout=", layoutOptions.relativePlacementConstraint);
-};
 
-export const resetConstraints = () => {
-    if (constraints.alignmentConstraint){
-        layoutOptions.alignmentConstraint = {};
+    // if (constraints.fixedNodeConstraint) {
+    //     layoutOptions.fixedNodeConstraint = constraints.fixedNodeConstraint;
+    // }
+    if (constraints.alignmentConstraint) {
 
         if (constraints.alignmentConstraint.horizontal) {
-
-            layoutOptions.alignmentConstraint.horizontal = constraints.alignmentConstraint.horizontal;
+            horizontalConstraint(constraints.alignmentConstraint.horizontal);
         }
-        if (constraints.alignmentConstraint.vertical) {
 
-            layoutOptions.alignmentConstraint.vertical = constraints.alignmentConstraint.vertical;
-        }
-    }
-
-
-    if(constraints.relativePlacementConstraint){
-
-        layoutOptions.relativePlacementConstraint = constraints.relativePlacementConstraint;
-    }
-    if (constraints.fixedNodeConstraint) {
-        layoutOptions.fixedNodeConstraint = constraints.fixedNodeConstraint;
     }
 };
