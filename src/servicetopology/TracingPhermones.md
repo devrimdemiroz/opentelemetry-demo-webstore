@@ -30,10 +30,9 @@ OpenTelemetry is a vendor-neutral, open-source project that provides a framework
 
 Using distributed tracing with OpenTelemetry, agents or requests can capture trace IDs and span IDs, which can be used in combination with pheromone IDs to guide routing decisions. For example, in a distributed system with multiple nodes and routes, nodes that respond faster or have better network latency may produce more pheromones over time, indicating to agents or requests that they are a better option for routing requests. Additionally, agents or requests can use span statuses to identify nodes that are experiencing high resource utilization or downtime, and avoid these nodes in favor of more efficient and reliable routes.
 
-
-
 ```mermaid
-graph TD;
+%%{init: {'theme': 'forest', "flowchart" : { "curve" : "basis" } } }%%
+graph LR;
   A[Client] -->|HTTP Request| B[Service 1];
   B -->|RPC Request| C[Service 2];
   C -->|RPC Request| D[Service 3];
@@ -44,7 +43,7 @@ graph TD;
   style C fill:#FFEBCD,stroke:#FFA07A;
   style D fill:#FFEBCD,stroke:#FFA07A;
   style A fill:#F5F5F5,stroke:#C0C0C0;
-  style A, B, C, D stroke-width:3px;
+  style A B, C, D stroke-width:3px;
   B-.-pheromone1-.-C;
   C-.-pheromone2-.-D;
 

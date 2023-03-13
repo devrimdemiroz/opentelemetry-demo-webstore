@@ -23,5 +23,17 @@ scrape_configs:
     - 'otelcol:9464'
 - job_name: otel-collector
   static_configs:
-  - targets:
-    - 'otelcol:8888'
+    - targets:
+        - 'otelcol:8888'
+  metric_relabel_configs:
+    - source_labels: [ '__name__' ]
+      regex: 'otelcol_receiver.*'
+      action: 'keep'
+    - source_labels: [ 'receiver', 'transport' ]
+      regex: '(.*);(.*)'
+      replacement: '${1}_${2}'
+      target_label: 'client'
+    - source_labels: [ 'service_name' ]
+      regex: '(.*)'
+      replacement: '${1}'
+      target_label: 'server'

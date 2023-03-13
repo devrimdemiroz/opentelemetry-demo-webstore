@@ -21,8 +21,12 @@ import {getTraceOnNode} from "./Trace";
 import cxtmenu from 'cytoscape-cxtmenu';
 import cxtmenu_defaults from "./cxtmenu";
 import automove from 'cytoscape-automove';
+import dagre from 'cytoscape-dagre';
+import klay from 'cytoscape-klay';
 
-cytoscape.use( automove );
+cytoscape.use(klay);
+cytoscape.use(dagre);
+cytoscape.use(automove);
 
 cytoscape.use(cxtmenu);
 
@@ -157,14 +161,16 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
 
     private initGraph() {
-        this.setServiceNodes();
 
+        this.setServiceNodes();
         this.setService2ServiceEdges();
         this.setOperationNodes();
 
         let layout = this.cy.layout({
             ...layoutOptions,
             stop: () => {
+
+
                 //this.instance.collapseNodes(this.cy.nodes('[id="cartservice-compound"]'));
                 //this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
 //                this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
@@ -172,6 +178,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             }
         });
         resetConstraints();
+
         layout.run();
 
 
@@ -182,9 +189,10 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         console.log("updateGraph");
         this.cy.resize();
         this.cy.fit();
-        layoutOptions.randomize = false;
-        layoutOptions.quality = "default";
         let layout = this.cy.layout({...colaOptions});
+        //layout.run();
+        layoutOptions.randomize = false;
+        layout = this.cy.layout({...layoutOptions});
         layout.run();
 
 
@@ -365,18 +373,11 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 target: service.id,
                 service: service.id,
                 parent: service.id + "-compound",
+                weight: service.weight
             }
         }).addClass("label-edge").connectedNodes();
-        connectedNodes.layoutPositions(this.cy.layout({
-            name: 'grid',
-            rows: 1,
-            cols: 1,
-            position: function (node: any) {
-                return {row: 0, col: 0};
-            } // put all nodes in one row with one column
 
-        }), true)
-
+        // add automove to connected nodes
         console.log("auto-move=",connectedNodes);
         this.cy.automove({
             nodesMatching: connectedNodes,
@@ -437,10 +438,28 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 label: direction,
                 nodeType: "connector-" + direction,
                 parent: service.id + "-compound",
-                weight: weight
+                weight: weight,
+                service: service.id,
             }
         });
+// connect to service node
+        this.cy.add({
+            data: {
+                id: service.id + "-" + direction + "-edge",
+                label: "",
+                source: service.id + "-" + direction,
+                target: service.id,
+                service: service.id,
+                parent: service.id + "-compound",
 
+            }
+        }).addClass("service2hubs_edges").connectedNodes();
+        //
+        // if (direction === "in") {
+        //     addRelativeConstraint(hub.id,service.id);// left right
+        // } else if (direction === "out") {
+        //     addRelativeConstraint(service.id,hub.id);// left right
+        // }
 
     }
 

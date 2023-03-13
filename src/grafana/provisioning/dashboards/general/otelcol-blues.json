@@ -1,0 +1,150 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 7,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 17,
+        "x": 0,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "nodes": {
+          "mainStatUnit": "flops"
+        }
+      },
+      "repeat": "mainstat",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_replace(label_replace(label_replace(\n  sum by(client) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"$0\", \"client\", \".*\")\n    , \"title\", \"$0\", \"client\", \".*\")\n        ,\"mainstat\",\"\",\"\",\"\")\n         or\n    label_replace(label_replace(label_replace(\n  sum by(service_name) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"$0\", \"service_name\", \".*\")\n    , \"title\", \"$0\", \"service_name\", \".*\")\n    ,\"mainstat\",\"\",\"\",\"\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "nodes"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(\nlabel_replace(label_replace(\n  sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n ,\"source\",\"$0\",\"client\",\".*\")\n,\"target\",\"$0\",\"server\",\".*\")\n,\"id\",\"_\",\"client\",\"server\")",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "edges"
+        }
+      ],
+      "title": "Panel Title",
+      "transformations": [],
+      "type": "nodeGraph"
+    },
+    {
+      "datasource": {
+        "type": "tempo",
+        "uid": "P486426556EA68090"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 2,
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "P486426556EA68090"
+          },
+          "queryType": "serviceMap",
+          "refId": "A"
+        }
+      ],
+      "title": "Panel Title",
+      "type": "nodeGraph"
+    }
+  ],
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "1.30",
+          "value": "1.30"
+        },
+        "definition": "query_result(sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval])))",
+        "hide": 1,
+        "includeAll": false,
+        "multi": false,
+        "name": "mainstat",
+        "options": [],
+        "query": {
+          "query": "query_result(sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval])))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/{.*}.(?<value>\\d+\\.\\d\\d).*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "otelcol blues",
+  "uid": "EGiuh2a4z",
+  "version": 4,
+  "weekStart": ""
+}

@@ -163,8 +163,9 @@ export function colorConnector(ele) {
 }
 
 export function colorService(ele) {
-    // if compound is a service, get colors according to service name if defined in colors, otherwise use default color
-
+    if (ele.data('service')) {
+        return colors[ele.data('service')];
+    }
     if (colors[ele.data('label')]) {
         return colors[ele.data('label')];
     }

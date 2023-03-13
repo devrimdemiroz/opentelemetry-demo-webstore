@@ -1,4 +1,4 @@
-import {colorConnector, colors, colorService, colorSpanKind, colorStatus} from "./colors";
+import {colors, colorService, colorSpanKind, colorStatus} from "./colors";
 
 
 function default_for_compound_nodes() {
@@ -94,7 +94,7 @@ function service_node_attached_label_nodes() {
             "background-opacity": 0,
             "border-opacity": 0,
             "font-size": function (ele) {
-                let fontSize = nodeSize(ele) * 0.7;
+                let fontSize = nodeSize(ele) * 0.33;
                 if (fontSize < 10) {
                     fontSize = 10;
                 }
@@ -293,20 +293,20 @@ function service2service_edges() {
             //edge color SERVICE_HIGHWAY
             "line-color": colors['SERVICE_HIGHWAY'],
             "opacity": 0.6,
-
+            "curve-style": "straight",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
         }
     };
 }
 
 function service2hubs_edges() {
     return {// service in/out
-        selector: 'edge[edgeType *= "connector"]',
+        selector: '.service2hubs_edges',
         style: {
             //edge color
             "line-color": function (ele) {
                 // if edgetype connector-in, then color is colors SERVER  , out CLIENT, internal INTERNAL
                 //edgeType: 'connector-out'
-                return colorConnector(ele);
+                return colorService(ele);
 
             },
             "width": function (ele) {
@@ -316,9 +316,11 @@ function service2hubs_edges() {
             "border-width": function (ele) {
                 return edgeWidth(ele) / 3;
             },
+            "opacity": 0.2,
 
             // arrow target circle
             "target-arrow-shape": "none",
+            "mid-target-arrow-shape": "none",
 
 
         }
@@ -337,7 +339,7 @@ function operations2spanLeafs_edges() {
             // arrow target circle
             "target-arrow-shape": "none",
             "mid-target-arrow-shape": "none", // options:
-            "curve-style": "haystack",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
+            "curve-style": "straight-triangle",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
 
 
         },
@@ -352,6 +354,7 @@ function hubs2operations_edges() {
                 // if 'source'  contains 'in', then color is colors['SERVER']
                 return ele.data('source').includes('in') ? colors['SERVER'] : colors['CLIENT'];
             },
+            "curve-style": "bezier",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
 
 
         }
@@ -362,7 +365,7 @@ function service_node_attached_label_edges() {
     return {
         selector: '.label-edge',
         style: {
-            "curve-style": "segments",
+            "curve-style": "haystack",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
             "width": 1,
 
         }
@@ -449,7 +452,6 @@ export const cyStyle = [
             "arrow-scale": 1.3,
             "mid-target-arrow-color": "black",
             "z-index": "999",
-            "inside-to-node": "true",
         }
     },
     {

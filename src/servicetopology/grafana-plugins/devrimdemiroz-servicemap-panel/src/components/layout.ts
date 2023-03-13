@@ -49,12 +49,12 @@ export let layoutOptions = {
     //nodeRepulsion: node => 4000,
     nodeRepulsion: 4000,
     // Ideal edge (non nested) length
-    idealEdgeLength: edge => 40,
+    idealEdgeLength: 10,
     // Divisor to compute edge forces
-    edgeElasticity: edge => 0,
+    edgeElasticity: 1,
     //edgeElasticity: 1, // Devrim note: Change works for good
     // Nesting factor (multiplier) to compute ideal edge length for nested edges
-    nestingFactor: 1,
+    nestingFactor: true,
     // Maximum number of iterations to perform - this is a suggested value and might be adjusted by the algorithm as required
     numIter: 2500,
     // For enabling tiling
@@ -107,22 +107,24 @@ export let colaOptions = {
     animate: true, // whether to show the layout as it's running
     refresh: 1, // number of ticks per frame; higher is faster but more jerky
     maxSimulationTime: 4000, // max length in ms to run the layout
-    ungrabifyWhileSimulating: false, // so you can't drag nodes during layout
+    ungrabifyWhileSimulating: true, // so you can't drag nodes during layout
     fit: true, // on every layout reposition of nodes, fit the viewport
-    padding: 10, // padding around the simulation
+    padding: 20, // padding around the simulation
     boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
     nodeDimensionsIncludeLabels: false, // whether labels should be included in determining the space used by a node
 
     // layout event callbacks
-    ready: function(){}, // on layoutready
-    stop: function(){}, // on layoutstop
+    ready: function () {
+    }, // on layoutready
+    stop: function () {
+    }, // on layoutstop
 
     // positioning options
     randomize: false, // use random node positions at beginning of layout
     avoidOverlap: true, // if true, prevents overlap of node bounding boxes
     handleDisconnected: false, // if true, avoids disconnected components from overlapping
     convergenceThreshold: 0.01, // when the alpha value (system energy) falls below this value, the layout stops
-    nodeSpacing: function( node ){ return 1; }, // extra spacing around nodes
+    nodeSpacing: 1, // extra spacing around nodes
     flow: false, // use DAG/tree flow layout if specified, e.g. { axis: 'y', minSeparation: 30 }
     alignment: undefined, // relative alignment constraints on nodes, e.g. {vertical: [[{node: node1, offset: 0}, {node: node2, offset: 5}]], horizontal: [[{node: node3}, {node: node4}], [{node: node5}, {node: node6}]]}
     gapInequalities: undefined, // list of inequality constraints for the gap between the nodes, e.g. [{"axis":"y", "left":node1, "right":node2, "gap":25}]
