@@ -165,7 +165,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.setServiceNodes();
         this.setService2ServiceEdges();
         read_file_constraints();
-        this.setOperationNodes();
+        //this.setOperationNodes();
 
         let layout = this.cy.layout({
             ...layoutOptions,
