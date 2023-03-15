@@ -24,7 +24,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 7,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -35,7 +34,7 @@
       },
       "gridPos": {
         "h": 17,
-        "w": 17,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -55,7 +54,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_replace(label_replace(label_replace(\n  sum by(client) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"$0\", \"client\", \".*\")\n    , \"title\", \"$0\", \"client\", \".*\")\n        ,\"mainstat\",\"\",\"\",\"\")\n         or\n    label_replace(label_replace(label_replace(\n  sum by(service_name) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"$0\", \"service_name\", \".*\")\n    , \"title\", \"$0\", \"service_name\", \".*\")\n    ,\"mainstat\",\"\",\"\",\"\")",
+          "expr": "label_replace(label_replace(label_replace(\n  sum by(client) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"$0\", \"client\", \".*\")\n    , \"title\", \"$0\", \"client\", \".*\")\n        ,\"mainstat\",\"\",\"\",\"\")\n         or\n    label_replace(label_replace(label_replace(\n  sum by(service_name) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"$0\", \"service_name\", \".*\")\n    , \"title\", \"$0\", \"service_name\", \".*\")\n    ,\"mainstat\",\"\",\"\",\"\")\n\n             or\n    label_replace(label_replace(label_replace(\n    sum by(processor) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n      , \"id\", \"$0\", \"processor\", \".*\")\n    , \"title\", \"$0\", \"processor\", \".*\")\n    ,\"mainstat\",\"\",\"\",\"\")\n                 or\n    label_replace(label_replace(label_replace(\n sum by(exporter) (rate(otelcol_exporter_sent_spans{}[$__interval]))\n      , \"id\", \"$0\", \"exporter\", \".*\")\n    , \"title\", \"$0\", \"exporter\", \".*\")\n    ,\"mainstat\",\"\",\"\",\"\")",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -69,7 +68,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_join(\nlabel_replace(label_replace(\n  sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n ,\"source\",\"$0\",\"client\",\".*\")\n,\"target\",\"$0\",\"server\",\".*\")\n,\"id\",\"_\",\"client\",\"server\")",
+          "expr": "label_join(\nlabel_replace(label_replace(\n  sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n\n ,\"source\",\"$0\",\"client\",\".*\")\n,\"target\",\"$0\",\"server\",\".*\")\n,\"id\",\"_\",\"client\",\"server\")\n\n  or\n\n  label_join(\nlabel_replace(label_replace(\n    sum by(processor,server) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n ,\"source\",\"$0\",\"server\",\".*\")\n,\"target\",\"$0\",\"processor\",\".*\")\n,\"id\",\"_\",\"client\",\"processor\")\n\n",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -78,7 +77,7 @@
           "refId": "edges"
         }
       ],
-      "title": "Panel Title",
+      "title": "Trace Signalling Pipelines",
       "transformations": [],
       "type": "nodeGraph"
     },
@@ -115,9 +114,14 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "1.30",
-          "value": "1.30"
+          "isNone": true,
+          "selected": false,
+          "text": "None",
+          "value": ""
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "webstore-metrics"
         },
         "definition": "query_result(sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval])))",
         "hide": 1,
@@ -145,6 +149,6 @@
   "timezone": "",
   "title": "otelcol blues",
   "uid": "EGiuh2a4z",
-  "version": 4,
+  "version": 1,
   "weekStart": ""
 }

@@ -69,6 +69,8 @@ export const colors = {
     "43": "#B497E7",
     "44": "#D3B484",
     "gray": "#B3B3B3",
+    //vey light gray
+    "46": "#E6E6E6",
 
 
     // from https://github.com/karthik/wesanderson

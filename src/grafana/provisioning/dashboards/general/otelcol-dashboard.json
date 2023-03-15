@@ -1,0 +1,1338 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 9,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "panels": [],
+      "title": "Process",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 1
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "count(count(otelcol_process_cpu_seconds{service_instance_id=~\".*\"}) by (service_instance_id))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Otel Collector Instance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "otelcol_process_cpu_seconds",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 1
+      },
+      "id": 24,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "avg(rate(otelcol_process_cpu_seconds{}[$__rate_interval])*100) by (instance)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Cpu Usage",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 4,
+        "w": 18,
+        "x": 6,
+        "y": 1
+      },
+      "id": 32,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# opentelemetry collector contrib\n\nVersion 0.7.2\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.3.6",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 10,
+      "panels": [],
+      "title": "TracingPipeline",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 4,
+      "options": {
+        "nodes": {
+          "mainStatUnit": "flops"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_replace(label_replace(label_replace(\n  sum by(client) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"$0\", \"client\", \".*\")\n    , \"title\", \"$0\", \"client\", \".*\")\n        ,\"mainstat\",\"\",\"\",\"\")\n         or\n    label_replace(label_replace(label_replace(\n  sum by(service_name) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n  , \"id\", \"processor\", \"\", \"\")\n    , \"title\", \"processor\", \"\", \"\")\n    ,\"mainstat\",\"\",\"\",\"\")\n\n             or\n    label_replace(label_replace(label_replace(\n    sum by(processor) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n      , \"id\", \"$0\", \"processor\", \".*\")\n    , \"title\", \"$0\", \"processor\", \".*\")\n    ,\"mainstat\",\"\",\"\",\"\")\n\n  or\n    label_replace(label_replace(label_replace(\n sum by(exporter) (rate(otelcol_exporter_sent_spans{}[$__interval]))\n      , \"id\", \"exporter\", \"\", \"\")\n    , \"title\", \"exporter\", \"\", \"\")\n    ,\"mainstat\",\"\",\"\",\"\")\n                 or\n    label_replace(label_replace(label_replace(\n sum by(exporter) (rate(otelcol_exporter_sent_spans{}[$__interval]))\n      , \"id\", \"$0\", \"exporter\", \".*\")\n    , \"title\", \"$0\", \"exporter\", \".*\")\n    ,\"mainstat\",\"\",\"\",\"\")\n    \n    ",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "nodes"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(\nlabel_replace(label_replace(\n  sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval]))\n\n ,\"source\",\"$0\",\"client\",\".*\")\n,\"target\",\"processor\",\"server\",\".*\")\n,\"id\",\"-\",\"client\",\"server\")\n\n  or\n\n  label_join(\nlabel_replace(label_replace(\n    sum by(processor,server) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n ,\"source\",\"processor\",\"\",\"\")\n,\"target\",\"$0\",\"processor\",\".*\")\n,\"id\",\"-\",\"source\",\"processor\")\n\nor\n  label_join(\nlabel_replace(label_replace(\n    sum by(processor,server) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n ,\"source\",\"$0\",\"processor\",\".*\")\n,\"target\",\"exporter\",\"\",\"\")\n,\"id\",\"-\",\"source\",\"target\")\n\nor\n  label_join(\nlabel_replace(label_replace(\n    sum by(exporter) (rate(otelcol_exporter_sent_spans{}[$__interval]))\n ,\"source\",\"exporter\",\"\",\"\")\n,\"target\",\"$0\",\"exporter\",\".*\")\n,\"id\",\"-\",\"source\",\"target\")\n\n",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "edges"
+        }
+      ],
+      "title": "Trace Signalling Pipelines",
+      "transformations": [],
+      "type": "nodeGraph"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "Spans Accepted by Receiver and Transport",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "noValue": "no data",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 15
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_receiver_accepted_spans{}[$__rate_interval])) by (receiver,transport)",
+          "legendFormat": "{{receiver}}-{{transport}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Accepted",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "Total Spans Accepted ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 6,
+        "y": 15
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_receiver_accepted_spans{}[$__rate_interval])) ",
+          "legendFormat": "{{receiver}}-{{transport}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Accepted ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "Total Batch Processed",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 11,
+        "y": 15
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_processor_batch_batch_send_size_sum{}[$__rate_interval]))  by (processor)",
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Batch",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 15,
+        "y": 15
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(otelcol_exporter_sent_spans{}[$__rate_interval])) ",
+          "format": "time_series",
+          "instant": false,
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Export ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "Sent by Exporter",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 19,
+        "y": 15
+      },
+      "id": 30,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(otelcol_exporter_sent_spans{}[$__rate_interval])) by (exporter)",
+          "format": "time_series",
+          "instant": false,
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Sent",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "noValue": "no data",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 20
+      },
+      "id": 17,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_receiver_refused_spans{}[$__rate_interval])) by (receiver,transport)",
+          "legendFormat": "{{receiver}}-{{transport}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Refused",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "Total Spans Accepted ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 6,
+        "y": 20
+      },
+      "id": 18,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_receiver_refused_spans{}[$__rate_interval])) ",
+          "legendFormat": "{{receiver}}-{{transport}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Refused ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "otelcol_exporter_send_failed_spans",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 15,
+        "y": 20
+      },
+      "id": 19,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(otelcol_exporter_send_failed_spans{}[$__rate_interval])) ",
+          "format": "time_series",
+          "instant": false,
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Failed Export ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "Sent by Exporter\notelcol_exporter_send_failed_spans",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 20
+      },
+      "id": 20,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(otelcol_exporter_send_failed_spans{}[$__rate_interval])) by (exporter)",
+          "format": "time_series",
+          "instant": false,
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Failed",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 22,
+      "panels": [],
+      "title": "Metrics Pipeline",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 25,
+      "options": {
+        "nodes": {
+          "mainStatUnit": "flops"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_replace(label_replace(label_replace(\nsum by(client) (rate(otelcol_receiver_accepted_metric_points{}[$__interval]))\n, \"id\", \"$0\", \"client\", \".*\")\n, \"title\", \"$0\", \"client\", \".*\")\n,\"mainstat\",\"\",\"\",\"\")\nor\nlabel_replace(label_replace(label_replace(\nsum by(service_name) (rate(otelcol_processor_accepted_metric_points{}[$__interval]))\n, \"id\", \"processor\", \"\", \"\")\n, \"title\", \"processor\", \"\", \"\")\n,\"mainstat\",\"\",\"\",\"\")\n\n\nor\nlabel_replace(label_replace(label_replace(\nsum by(processor) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n, \"id\", \"$0\", \"processor\", \".*\")\n, \"title\", \"$0\", \"processor\", \".*\")\n,\"mainstat\",\"\",\"\",\"\")\n\nor\nlabel_replace(label_replace(label_replace(\nsum by(processor) (rate(otelcol_processor_accepted_metric_points{}[$__interval]))\n, \"id\", \"$0\", \"processor\", \".*\")\n, \"title\", \"$0\", \"processor\", \".*\")\n,\"mainstat\",\"\",\"\",\"\")\n\n\n\nor\nlabel_replace(label_replace(label_replace(\nsum (rate(otelcol_exporter_sent_metric_points{}[$__interval]))\n, \"id\", \"exporter\", \"\", \"\")\n, \"title\", \"exporter\", \"\", \"\")\n,\"mainstat\",\"\",\"\",\"\")\nor\nlabel_replace(label_replace(label_replace(\nsum by(exporter) (rate(otelcol_exporter_sent_metric_points{}[$__interval]))\n, \"id\", \"$0\", \"exporter\", \".*\")\n, \"title\", \"$0\", \"exporter\", \".*\")\n,\"mainstat\",\"\",\"\",\"\")\n\n",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "nodes"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "label_join(\nlabel_replace(label_replace(\nsum by(client,server) (rate(otelcol_receiver_accepted_metric_points{}[$__interval]))\n\n,\"source\",\"$0\",\"client\",\".*\")\n,\"target\",\"processor\",\"server\",\".*\")\n,\"id\",\"-\",\"client\",\"server\")\n\nor\n\nlabel_join(\nlabel_replace(label_replace(\nsum by(processor,server) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n,\"source\",\"processor\",\"\",\"\")\n,\"target\",\"$0\",\"processor\",\".*\")\n,\"id\",\"-\",\"source\",\"processor\")\n\n\n\nor\n\nlabel_join(\nlabel_replace(label_replace(\nsum by(processor,server) (rate(otelcol_processor_accepted_metric_points{}[$__interval]))\n,\"source\",\"processor\",\"\",\"\")\n,\"target\",\"$0\",\"processor\",\".*\")\n,\"id\",\"-\",\"source\",\"processor\")\n\nor\nlabel_join(\nlabel_replace(label_replace(\nsum by(processor,server) (rate(otelcol_processor_batch_batch_send_size_count{}[$__interval]))\n,\"source\",\"$0\",\"processor\",\".*\")\n,\"target\",\"exporter\",\"\",\"\")\n,\"id\",\"-\",\"source\",\"target\")\n\nor\nlabel_join(\nlabel_replace(label_replace(\nsum by(processor,server) (rate(otelcol_processor_accepted_metric_points{}[$__interval]))\n,\"source\",\"$0\",\"processor\",\".*\")\n,\"target\",\"exporter\",\"\",\"\")\n,\"id\",\"-\",\"source\",\"target\")\n\nor\nlabel_join(\nlabel_replace(label_replace(\nsum by(exporter) (rate(otelcol_exporter_sent_metric_points{}[$__interval]))\n,\"source\",\"exporter\",\"\",\"\")\n,\"target\",\"$0\",\"exporter\",\".*\")\n,\"id\",\"-\",\"source\",\"target\")\n\n",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "edges"
+        }
+      ],
+      "title": "Metrics Signalling Pipelines",
+      "transformations": [],
+      "type": "nodeGraph"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "otelcol_receiver_accepted_metric_points",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "noValue": "no data",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text"
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 35
+      },
+      "id": 26,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_receiver_accepted_metric_points{}[$__rate_interval])) by (receiver,transport)",
+          "legendFormat": "{{receiver}}-{{transport}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Accepted",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "otelcol_receiver_accepted_metric_points",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 6,
+        "y": 35
+      },
+      "id": 27,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_receiver_accepted_metric_points{}[$__rate_interval])) ",
+          "legendFormat": "{{receiver}}-{{transport}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Accepted ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 11,
+        "y": 35
+      },
+      "id": 28,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_processor_batch_batch_send_size_sum{}[$__rate_interval]))  by (processor)",
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Batc",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 15,
+        "y": 35
+      },
+      "id": 29,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(otelcol_exporter_sent_metric_points{}[$__rate_interval])) ",
+          "format": "time_series",
+          "instant": false,
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Export ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "description": "Sent by Exporter",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text"
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 19,
+        "y": 35
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(rate(otelcol_exporter_sent_metric_points{}[$__rate_interval])) by (exporter)",
+          "format": "time_series",
+          "instant": false,
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Sent",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "webstore-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 11,
+        "y": 38
+      },
+      "id": 33,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "webstore-metrics"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(otelcol_processor_accepted_metric_points{}[$__rate_interval]))  by (processor)",
+          "legendFormat": "{{processor}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Memory_Delimiter",
+      "type": "stat"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "4.02",
+          "value": "4.02"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "webstore-metrics"
+        },
+        "definition": "query_result(sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval])))",
+        "hide": 1,
+        "includeAll": false,
+        "multi": false,
+        "name": "mainstat",
+        "options": [],
+        "query": {
+          "query": "query_result(sum by(client,server) (rate(otelcol_receiver_accepted_spans{}[$__interval])))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/{.*}.(?<value>\\d+\\.\\d\\d).*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "otelcol metrics",
+  "uid": "_mdU7E-Vt",
+  "version": 1,
+  "weekStart": ""
+}

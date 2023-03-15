@@ -9,13 +9,12 @@ import cola from 'cytoscape-cola';
 import 'tippy.js/dist/tippy.css';
 import popper from 'cytoscape-popper';
 
-import {layoutOptions, place_left2right, read_file_constraints} from "./layout";
+import {layoutOptions, read_file_constraints} from "./layout";
 import {cyStyle} from "./style";
 
 
 // @ts-ignore
 import complexityManagement from "cytoscape-complexity-management";
-import {Edge, Operation, Service} from "./Schema";
 import {Tippies} from "./Tippies";
 import {getTraceOnNode} from "./Trace";
 import cxtmenu from 'cytoscape-cxtmenu';
@@ -23,6 +22,9 @@ import cxtmenu_defaults from "./cxtmenu";
 import automove from 'cytoscape-automove';
 import dagre from 'cytoscape-dagre';
 import klay from 'cytoscape-klay';
+import {Edge} from 'model/Edge';
+import {Service} from 'model/Service';
+import {Operation} from "../model/Operation";
 
 cytoscape.use(klay);
 cytoscape.use(dagre);
@@ -165,7 +167,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         this.setServiceNodes();
         this.setService2ServiceEdges();
         read_file_constraints();
-        //this.setOperationNodes();
+        this.setOperationNodes();
 
         let layout = this.cy.layout({
             ...layoutOptions,
@@ -203,9 +205,12 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
             let service: Service;
             service = new Service(serie);
-            this.addServiceCompound(service);
-            this.addServiceNode(service);
-            this.addConnectorNodes(service);
+            service.cy = this.cy;
+            service.set_series(data.series);
+            service.add_service_compound(this.cy);
+            service.add_service_nodes(this.cy);
+            service.add_hub_nodes(this.cy);
+            service.add_donut();
 
 
         });
@@ -263,6 +268,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
                     // if edge is undefined create it
                     if (this.cy.getElementById(edge.id).length === 0) {
+                        console.log("failed edge=", edge)
                         this.addServiceEdge(edge);
                         // also add a failed edge
 
@@ -343,130 +349,6 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
 
     }
 
-
-    private addServiceNode(service: Service) {
-        this.cy.add({
-            data: {
-                id: service.id,
-                label: service.weight.toString(),
-                nodeType: "service",
-                parent: service.id + "-compound",
-                weight: service.weight
-            }
-        }).addClass("service-node");
-        // and add a service label node attached to the service node connected just to show service name
-        this.cy.add({
-            data: {
-                id: service.id + "-label",
-                label: service.name,
-                type: "label-node",
-                parent: service.id + "-compound",
-                service: service.id,
-                weight: service.weight
-            }
-        }).addClass("label-node");
-        // connect to service node
-        let connectedNodes=this.cy.add({
-            data: {
-                id: service.id + "-label-edge",
-                label: "",
-                source: service.id + "-label",
-                target: service.id,
-                service: service.id,
-                parent: service.id + "-compound",
-                weight: service.weight
-            }
-        }).addClass("label-edge").connectedNodes();
-
-        // add automove to connected nodes
-        console.log("auto-move=",connectedNodes);
-        this.cy.automove({
-            nodesMatching: connectedNodes,
-            reposition: 'drag',
-            dragWith: connectedNodes
-        });
-    }
-
-    private addServiceCompound(service: Service) {
-        this.cy.add({
-            data: {
-                id: service.id + "-compound",
-                label: service.name,
-                nodeType: "service-compound",
-                weight: service.weight
-            }
-        });
-
-
-    }
-
-    private addConnectorNodes(service: Service) {
-        this.addConnectorNode(service, "in");
-        this.addConnectorNode(service, "out");
-        this.addConnectorNode(service, "internal");
-
-    }
-
-    private addConnectorNode(service: Service, direction: string) {
-
-        // find the related serie in this.props.data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total_span_kind") if exists and get value as weight
-        // if not exists set weight to 0 {service_name="frontend", span_kind="SPAN_KIND_INTERNAL"}
-        let span_kind;
-        if (direction === "in") {
-            span_kind = "SPAN_KIND_SERVER";
-        } else if (direction === "out") {
-            span_kind = "SPAN_KIND_CLIENT";
-        } else {
-            span_kind = "SPAN_KIND_INTERNAL";
-        }
-        let weight = 0;
-        this.props.data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total_span_kind")
-            .filter((serie: any) => serie.fields[1].labels.service_name === service.name && serie.fields[1].labels.span_kind === span_kind)
-            .forEach((serie: any) => {
-                //console.log("service_name=",service.name,",span_kind=",span_kind, ",serie=", serie);
-                if (serie.length === 1) {
-                    weight = round2(serie.fields[1].values.buffer[0]);
-                    return;
-                }
-                console.log("spanmetrics_calls_total_span_kind query returned more than one result", serie);
-
-                weight = 0;
-
-            });
-
-        // if (weight === 0) {
-        //     return;
-        // }
-        this.cy.add({
-            data: {
-                id: service.id + "-" + direction,
-                label: direction,
-                nodeType: "connector-" + direction,
-                parent: service.id + "-compound",
-                weight: weight,
-                service: service.id,
-            }
-        });
-// connect to service node
-        this.cy.add({
-            data: {
-                id: service.id + "-" + direction + "-edge",
-                label: "",
-                source: direction === "in" ? service.id + "-" + direction : service.id,
-                target: direction === "in" ? service.id : service.id + "-" + direction,
-                service: service.id,
-                parent: service.id + "-compound",
-
-            }
-        }).addClass("service2hubs_edges");
-
-        if (direction === "in") {
-            place_left2right(service.id + "-" + direction, service.id);// left right
-        } else if (direction === "out") {
-            place_left2right(service.id, service.id + "-" + direction);// left right
-        }
-
-    }
 
 
     private addOperationSpanNode(operation: Operation) {

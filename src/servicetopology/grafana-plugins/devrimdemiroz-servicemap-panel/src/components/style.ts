@@ -126,6 +126,7 @@ function service_nodes() {
             "color": "black",
 
 
+
         }
     };
 }
@@ -354,7 +355,7 @@ function hubs2operations_edges() {
                 // if 'source'  contains 'in', then color is colors['SERVER']
                 return ele.data('source').includes('in') ? colors['SERVER'] : colors['CLIENT'];
             },
-            "curve-style": "segments",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
+            "curve-style": "haystack",//options: segments, bezier, unbundled-bezier, segments, haystack straight - the default curve
 
 
         }
@@ -424,7 +425,7 @@ export const cyStyle = [
     {
         selector: '.ucmPath',
         style: {
-            // "curve-style": "unbundled-bezier",// options: haystack, bezier, unbundled-bezier, segments, haystack
+            "curve-style": "straight-triangle",// options: haystack, bezier, unbundled-bezier, segments, haystack
             "mid-target-arrow-shape": "triangle", // options:
             "background-color": colors['highlighted'],
             "line-color": "black",
@@ -499,7 +500,7 @@ export const nodeSize = function (ele) {
     let weight = 1;
     if (ele.data("weight")) {
         // like let weight = math.log(ele.data("weight")) * 7;
-        weight = ele.data("weight") * 30;
+        weight = ele.data("weight") * 20;
 
 
     }
@@ -527,7 +528,7 @@ export const edgeWidth = function (ele) {
         return 1;
     }
 
-    return calculatedWeight * 20;
+    return calculatedWeight * 30;
 }
 
 

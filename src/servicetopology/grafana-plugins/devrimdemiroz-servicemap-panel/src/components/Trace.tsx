@@ -1,6 +1,7 @@
 import {FetchResponse, getBackendSrv} from "@grafana/runtime";
-import {Edge} from "./Schema";
 import {colaOptions} from "./layout";
+import {Edge} from "../model/Edge";
+import {colors} from "./colors";
 
 export function getTraceOnNode(operationSpanStatusNode: any, panel: any) {
     let service = operationSpanStatusNode.service;
@@ -201,17 +202,16 @@ export class Trace {
         // walk the path and add the edges, add ucmNode class to visited nodes
         console.log("path", path);
         const bbStyle = {
-            virtualEdges: false,
+            virtualEdges: true,
             style: {
-                fill: 'gray',
-                stroke: 'black',
-                throttle: 11,
+                fill: colors["46"],
+                stroke: colors["46"],
+                throttle: 2,
                 interactive: true,
 
             }
         };
-        const bb = this.cy.bubbleSets();
-        bb.addPath(path.nodes(), path.edges(), null, bbStyle);
+
 
         let prevNode = null;
         path.forEach((ele: any) => {
@@ -251,7 +251,10 @@ export class Trace {
 
             }
         }).addClass("ucmPath").addClass("ucmLastEdge");
-        bb.addPath(this.cy.getElementById(edge.source), lastEdge, null, bbStyle);
+        const bb = this.cy.bubbleSets();
+        path.add(lastEdge);
+        bb.addPath(path.nodes(), path.edges(), null, bbStyle);
+        // bb.addPath(this.cy.getElementById(edge.source), lastEdge, null, bbStyle);
 
 
     }
