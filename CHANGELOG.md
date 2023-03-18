@@ -11,6 +11,8 @@ release.
 ([#787](https://github.com/open-telemetry/opentelemetry-demo/pull/787))
 * [cart] use 60m TTL for cart entries in redis
 ([#779](https://github.com/open-telemetry/opentelemetry-demo/pull/779))
+* Added app.session.id attribute to frontend spans
+([#795](https://github.com/open-telemetry/opentelemetry-demo/pull/795))
 
 ## v0.1.0
 
@@ -273,3 +275,5 @@ significant modifications will be credited to OpenTelemetry Authors.
   ([#764](https://github.com/open-telemetry/opentelemetry-demo/pull/764))
 * [chore] align memory limits with Helm chart
   ([#781](https://github.com/open-telemetry/opentelemetry-demo/pull/781))
+* [bug] fixing quoteservice metrics exporting (PHP)
+  ([#793](https://github.com/open-telemetry/opentelemetry-demo/pull/793))
