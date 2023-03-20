@@ -20,13 +20,13 @@ export const colors = {
 
 
     // CARTO Sequential Teal
-    "8": "#d1eeea",
-    "9": "#a8dbd9",
-    "10": "#85c4c9",
-    "span": "#68abb8",
-    "SERVICE_HIGHWAY": "#4f90a6",
-    "13": "#3b738f",
-    "14": "#2a5674",
+    "23INTERNAL": "#d1eeea",
+    "24SERVER": "#a8dbd9",
+    "span": "#85c4c9",
+    "26SERVICE_HIGHWAY": "#68abb8",
+    "11": "#4f90a6",
+    "12": "#3b738f",
+    "29CLIENT": "#2a5674",
 
     // CARTO Qualitative Antique
     "productcatalogservice": "#855C75",
@@ -146,6 +146,19 @@ export function colorSpanKind(ele) {
     } else {
         return colors['INTERNAL']
     }
+}
+
+export function colorHub(ele) {
+    // id ends with "-in"
+    if (ele.data('id').endsWith("-in")) {
+        return colors['SERVER'];
+    } else if (ele.data('id').endsWith("-out")) {
+        return colors['CLIENT'];
+    } else if (ele.data('id').endsWith("-internal")) {
+        return colors['INTERNAL'];
+    }
+
+    return colors['gray'];
 }
 
 export function colorStatus(ele) {

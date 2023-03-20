@@ -30,7 +30,7 @@ export let layoutOptions = {
     // Whether to pack disconnected components - cytoscape-layout-utilities extension should be registered and initialized
     packComponents: false,
     // Layout step - all, transformed, enforced, cose - for debug purpose only
-    step: "all",
+    // step: "all",
 
     /* spectral layout options */
 
@@ -81,7 +81,7 @@ export let layoutOptions = {
     // Gravity range (constant)
     gravityRange: 3.8,
     // Initial cooling factor for incremental layout
-    initialEnergyOnIncremental: 0.3,
+    initialEnergyOnIncremental: 0.1,
 
     /* constraint options */
 

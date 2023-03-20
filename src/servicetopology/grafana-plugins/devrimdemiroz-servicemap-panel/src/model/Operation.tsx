@@ -12,6 +12,7 @@ export class Operation {
     httpMethod: string;
     httpStatusCode: any;
     service: any;
+    parent: any;
 
     constructor(serie: any) {
         this.service = serie.fields[1].labels.service_name;

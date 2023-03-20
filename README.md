@@ -69,3 +69,31 @@ flowchart LR
     
         
 ```
+
+```mermaid
+graph LR
+  subgraph Traces
+    otlp((otlp)) --> spanmetrics
+    spanmetrics --> batch
+    batch --> otlp_jaeger((otlp/jaeger))
+  end
+
+  subgraph Traces Servicegraph
+    otlp -- traces_servicegraph --> servicegraph
+    servicegraph -- traces_servicegraph --> logging((logging))
+  end
+
+  subgraph Metrics Spanmetrics
+    otlp_dummy((otlp/dummy)) -- metrics_spanmetrics --> otlp_1((otlp))
+  end
+
+  subgraph Metrics
+    otlp -- metrics --> memory_limiter
+    memory_limiter --> metricstransform
+    metricstransform --> batch_1((batch))
+    batch_1 --> prometheus((prometheus))
+  end
+
+
+
+```

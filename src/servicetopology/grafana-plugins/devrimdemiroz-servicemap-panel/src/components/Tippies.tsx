@@ -1,7 +1,6 @@
 import tippy, {Instance, Props} from "tippy.js";
-import {getTraceOnNode, Trace} from "./Trace";
+import {getTraceOnNode} from "./Trace";
 import {SimplePanel} from "./SimplePanel";
-
 
 export class Tippies {
     panel: SimplePanel | undefined;
@@ -10,176 +9,125 @@ export class Tippies {
         this.panel = panel;
     }
 
-    makeEdgeTippy(ele, props) {
-        let ref = ele.popperRef();
+    createDummyElement() {
+        return document.createElement('div');
+    }
 
-        // Since tippy constructor requires DOM element/elements, create a placeholder
-        let dummyDomEle = document.createElement('div');
+    createContent(ele, idKey, buttonHTML) {
         let cardDetails = "";
-        let tip = tippy(dummyDomEle, {
+        let cardId = "";
+        const eleJson = JSON.stringify(ele.data(), null, 2);
+
+        // @ts-ignore
+        JSON.parse(eleJson, (key, value) => {
+            if (key === idKey) {
+                cardId = `<div>${value}<hr><div>${buttonHTML}</div></div>`;
+                return cardId;
+            }
+            cardDetails += `<b>${key}: ${value}</b><br/>`;
+        });
+
+        cardDetails += `classes: ${ele.classes()}<br/>`;
+        return {cardId, cardDetails};
+    }
+
+    createTippyInstance(ele, content, placement) {
+        const ref = ele.popperRef();
+        const dummyDomEle = this.createDummyElement();
+
+        return tippy(dummyDomEle, {
             appendTo: document.body,
-            arrow: true, // mandatory
-            placement: 'right-end',// options: top, bottom, left, right, top-start, top-end, bottom-start, bottom-end, left-start, left-end, right-start, right-end
-            content: function () {
-                let div = document.createElement('div'), eleJson = JSON.stringify(ele.data(), null, 2),
-                    edgeId = "";
-                // @ts-ignore
-                JSON.parse(eleJson, (key, value) => {
-                    //console.log("key", key, "value", value.toString());
-                    if (key === 'id') {
-
-                        edgeId += `<div > ${value}  
-                                <hr>
-                                <div >
-                                    <button class="tooltip-button" id="edgeDetails"><span > 👀</span></button>
-                                    
-                                </div>
-                            </div>`;
-
-
-                        return edgeId;
-                    }
-                    // stash the rest under cardDetails
-                    cardDetails += "<b>" + key + ": " + value + "</b><br/>";
-
-                });
-                // and classes of ele
-                cardDetails += "classes: " + ele.classes() + "<br/>";
-
-
-                div.innerHTML = edgeId;
-
+            arrow: true,
+            placement,
+            content: () => {
+                const div = document.createElement('div');
+                div.innerHTML = content;
                 return div;
             },
-            // your own preferences:
             getReferenceClientRect: ref.getBoundingClientRect,
             hideOnClick: true,
             interactive: true,
-            // if interactive:
-            sticky: true,
-            trigger: 'manual' // or append dummyDomEle to document.body
         });
+    }
+
+    makeEdgeTippy(ele) {
+        const {cardId, cardDetails} = this.createContent(
+            ele,
+            'id',
+            `<button class="tooltip-button" id="details"><span>👀</span></button>`
+        );
+
+        const tip = this.createTippyInstance(ele, cardId, 'right-end');
         tip.show();
+
         this.attachDetails(tip, cardDetails);
-        // @ts-ignore
-        this.attachTrace(tip, ele, this.panel);
-
-
         return tip;
     }
 
     makeNodeTippy(ele, props) {
-        let ref = ele.popperRef();
+        const {cardId, cardDetails} = this.createContent(
+            ele,
+            'id',
+            `<button class="tooltip-button" id="details"><span>👀</span></button>
+       <button class="tooltip-button" id="trace"><span>| trace</span></button>`
+        );
 
-        // Since tippy constructor requires DOM element/elements, create a placeholder
-        let dummyDomEle = document.createElement('div');
-        let cardDetails = "";
-        let tip = tippy(dummyDomEle, {
-            appendTo: document.body,
-            arrow: true, // mandatory
-            placement: 'right-end',// options: top, bottom, left, right, top-start, top-end, bottom-start, bottom-end, left-start, left-end, right-start, right-end
-            content: function () {
-                let div = document.createElement('div'), eleJson = JSON.stringify(ele.data(), null, 2),
-                    cardId = "";
-                // @ts-ignore
-                JSON.parse(eleJson, (key, value) => {
-                    //console.log("key", key, "value", value.toString());
-                    if (key === 'id') {
-
-                        cardId += `<div > ${value}  
-                                <hr>
-                                <div >
-                                    <button class="tooltip-button" id="cardDetails"><span > 👀</span></button>
-                                    <button class="tooltip-button" id="trace"><span > | trace </span></button>
-                                    
-                                </div>
-                            </div>`;
-
-
-                        return cardId;
-                    }
-                    // stash the rest under cardDetails
-                    cardDetails += "<b>" + key + ": " + value + "</b><br/>";
-
-                });
-                // and classes of ele
-                cardDetails += "classes: " + ele.classes() + "<br/>";
-
-
-                div.innerHTML = cardId;
-
-                return div;
-            },
-            // your own preferences:
-            getReferenceClientRect: ref.getBoundingClientRect,
-            hideOnClick: true,
-            interactive: true,
-            // if interactive:
-            sticky: true,
-            trigger: 'manual' // or append dummyDomEle to document.body
-        });
+        const tip = this.createTippyInstance(ele, cardId, 'right-end');
         tip.show();
+
         this.attachDetails(tip, cardDetails);
         this.attachTrace(tip, ele, this.panel);
-
 
         return tip;
     }
 
     attachDetails(tip: Instance<Props>, cardDetails: string) {
-        tip.popper.querySelector('#cardDetails').addEventListener('click', () => {
-            let detailsTippy = tippy(tip.popper, {
+        tip.popper.querySelector('#details').addEventListener('click', () => {
+            const detailsTippy = tippy(tip.popper, {
                 appendTo: 'parent',
-                arrow: true, // mandatory
-                // dom element inside the tippy:
-                content: function () {
-                    let div = document.createElement('div');
+                arrow: true,
+                content: () => {
+                    const div = document.createElement('div');
                     div.innerHTML = cardDetails;
                     return div;
                 },
-                // open in right
                 placement: 'bottom',
             });
             detailsTippy.show();
-
         });
     }
 
     attachTrace(tip: Instance<Props>, node: any, panel: SimplePanel | undefined) {
         tip.popper.querySelector('#trace').addEventListener('click', () => {
-            let traceTippy = tippy(tip.popper, {
+            const traceTippy = tippy(tip.popper, {
                 appendTo: 'parent',
-                arrow: true, // mandatory
-                // dom element inside the tippy:
-                content: function () {
-                    let div = document.createElement('div');
+                arrow: true,
+                content: () => {
+                    const div = document.createElement('div');
 
-                    let tracePromise = getTraceOnNode(node.data(), panel);
-                    // when promise completed
-                    let trace: Trace;
-
+                    const tracePromise = getTraceOnNode(node.data(), panel);
                     tracePromise.then((value) => {
-                        let traceResult = "<div >";
-
-                        trace = value;
-                        traceResult += `${trace.toString()}  
-                                <hr>
-                                <div >
-                                    <button class="tooltip-button" id="traditional">traditional</button><br>
-                                    <button class="tooltip-button" id="ucm">usecasemaps </button><br>
-                                    <button class="tooltip-button" id="ucm-full">usecasemaps full</button>
-                                    
-                                </div>`;
-                        traceResult += "</div >";
+                        const trace = value;
+                        const traceResult = `
+              <div>
+                ${trace.toString()}
+                <hr>
+                <div>
+                  <button class="tooltip-button" id="traditional">traditional</button><br>
+                  <button class="tooltip-button" id="ucm">usecasemaps</button><br>
+                  <button class="tooltip-button" id="ucm-full">usecasemaps full</button>
+                </div>
+              </div>
+            `;
 
                         div.innerHTML = traceResult;
+
                         traceTippy.popper.querySelector('#traditional').addEventListener('click', () => {
                             trace.appendTraditional();
                         });
                         traceTippy.popper.querySelector('#ucm').addEventListener('click', () => {
                             trace.appendUcm();
                         });
-
                         traceTippy.popper.querySelector('#ucm-full').addEventListener('click', () => {
                             trace.appendUcmFull();
                         });
@@ -187,25 +135,12 @@ export class Tippies {
 
                     return div;
                 },
-                // open in right
-                placement: 'bottom-start',// options:
-                // close on click
+                placement: 'bottom-start',
                 hideOnClick: true,
                 interactive: true,
-                // if interactive:
-                sticky: true,
-
             });
-            // assign tratidional button click listener
-
-
             traceTippy.show();
-
         });
     }
 }
-
-
-
-
 

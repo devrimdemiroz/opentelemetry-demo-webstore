@@ -9,7 +9,7 @@ import cola from 'cytoscape-cola';
 import 'tippy.js/dist/tippy.css';
 import popper from 'cytoscape-popper';
 
-import {layoutOptions, read_file_constraints} from "./layout";
+import {colaOptions, layoutOptions, read_file_constraints} from "./layout";
 import {cyStyle} from "./style";
 
 
@@ -99,16 +99,27 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             console.log("node.data()", node.data());
             console.log("node.classes()", node.classes());
 
+        });
+        // mouseover
+        this.cy.on('cxttap', 'node', (event: any) => {
+            // if node, make node tippy, if edge, edge tippy
+            const node = event.target;
             let tip = this.tippies.makeNodeTippy(node, this.props);
             tip.show();
+            // mouseout hide tippy
 
         });
 
+
+        this.cy.on('cxttap', 'edge', (event: any) => {
+            const edge = event.target;
+            let tip = this.tippies.makeEdgeTippy(edge, this.props);
+            tip.show();
+        });
         this.cy.on('click', 'edge', (event: any) => {
             const edge = event.target;
             console.log("edge.data()", edge.data());
-            let tip = this.tippies.makeEdgeTippy(edge, this.props);
-            tip.show();
+            console.log("edge.classes()", edge.classes());
         });
 
         this.cy.on('dblclick', 'node', (event: any) => {
@@ -190,10 +201,10 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         console.log("updateGraph");
         this.cy.resize();
         this.cy.fit();
-        // let layout = this.cy.layout({...colaOptions});
-        // layout.run();
-        layoutOptions.randomize = false;
-        this.cy.layout({...layoutOptions}).run();
+        let layout = this.cy.layout({...colaOptions});
+        layout.run();
+        // layoutOptions.randomize = false;
+        // this.cy.layout({...layoutOptions}).run();
 
 
     }
@@ -209,8 +220,8 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             service.set_series(data.series);
             service.add_service_compound(this.cy);
             service.add_service_nodes(this.cy);
-            service.add_hub_nodes(this.cy);
             service.add_donut();
+            service.add_hub_nodes();
 
 
         });
@@ -316,7 +327,13 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         data.series.filter((queryResults: any) => queryResults.refId === "spanmetrics_calls_total").forEach((serie: any) => {
             let operation: Operation;
             operation = new Operation(serie);
-
+            if (operation.spanKind === "CLIENT") {
+                operation.parent = operation.service + "-compound-out";
+            } else if (operation.spanKind === "SERVER") {
+                operation.parent = operation.service + "-compound-in";
+            } else {
+                operation.parent = operation.service + "-compound-internal";
+            }
             // TODO: hash node id in case length is too long or similar restrictions in cytoscape
 
             // if serie node does not exist create it
@@ -409,50 +426,50 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 label: operation.name,
                 nodeType: "operation-compound",
                 service: operation.service,
-                parent: operation.service + "-compound",
+                parent: operation.parent,
                 spanKind: operation.spanKind,
             }
         });
     }
 
     private addOperationNode(operation: Operation) {
+
         this.cy.add({
             data: {
                 id: operation.id,
                 label: operation.name,
                 name: operation.name,
-                nodeType: "operation",
                 spanKind: operation.spanKind,
                 httpMethod: operation.httpMethod,
                 service: operation.service,
                 parent: operation.id + "-compound",
                 weight: 0,
             }
-        });
-        let source;
-        let target;
-        if (operation.spanKind === "CLIENT") {
-            source = operation.id;
-            target = operation.service + "-out";
-        } else if (operation.spanKind === "SERVER") {
-            source = operation.service + "-in";
-            target = operation.id;
-        } else {
-            // still create edge , but do not connect to in/out
-            source = operation.service + "-internal";
-            target = operation.id;
-        }
-        this.cy.add({
-            data: {
-                id: "edge-" + operation.id,
-                label: "",
-                edgeType: "operation",
-                source: source,
-                target: target,
-                weight: operation.weight,
-            }
-
-        });
+        }).addClass('node-operation');
+        // let source;
+        // let target;
+        // if (operation.spanKind === "CLIENT") {
+        //     source = operation.id;
+        //     target = operation.service + "-out";
+        // } else if (operation.spanKind === "SERVER") {
+        //     source = operation.service + "-in";
+        //     target = operation.id;
+        // } else {
+        //     // still create edge , but do not connect to in/out
+        //     source = operation.service + "-internal";
+        //     target = operation.id;
+        // }
+        // this.cy.add({
+        //     data: {
+        //         id: "edge-" + operation.id,
+        //         label: "",
+        //         edgeType: "operation",
+        //         source: source,
+        //         target: target,
+        //         weight: operation.weight,
+        //     }
+        //
+        // });
     }
 
 
