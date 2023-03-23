@@ -59,7 +59,18 @@ processors:
         - name: http.method
           default: GET
         - name: http.status_code
-
+  # temporary measure until description is fixed in .NET
+  transform:
+    metric_statements:
+      - context: metric
+        statements:
+          - set(description, "Measures the duration of inbound HTTP requests") where name == "http.server.duration"
+  filter:
+    metrics:
+      exclude:
+        match_type: strict
+        metric_names:
+          - queueSize
   servicegraph:
     metrics_exporter: 'otlp' # Exporter to send metrics to
     latency_histogram_buckets: [100us, 1ms, 2ms, 6ms, 10ms, 100ms, 250ms] # Buckets for latency histogram
@@ -98,7 +109,13 @@ service:
     metrics/spanmetrics:
       receivers: [ otlp/dummy ]
       exporters: [ otlp ]
+      processors: [spanmetrics, batch]
+      exporters: [otlp, logging]
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter,metricstransform,batch]
+      processors: [memory_limiter,filter,metricstransform,batch]
       exporters: [prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]
