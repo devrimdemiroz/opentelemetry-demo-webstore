@@ -65,3 +65,5 @@ src/shippingservice/target/
 /src/productcatalogservice/genproto/
 /src/recommendationservice/demo_pb2*.py
 /src/shippingservice/proto/
+/src/servicetopology/grafana-plugins/devrimdemiroz-servicemap-panel/package-lock.json
+/src/servicetopology/grafana-plugins/devrimdemiroz-servicemap-panel/yarn.lock
