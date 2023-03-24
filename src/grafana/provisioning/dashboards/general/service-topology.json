@@ -24,6 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 10,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -669,7 +670,7 @@
           "type": "prometheus",
           "uid": "webstore-metrics"
         },
-        "definition": "query_result(count by (service_name)(count_over_time(traces_spanmetrics_calls_total[$__range])))",
+        "definition": "query_result(count by (service_name)(count_over_time({__name__=~\".*calls.*\"}[$__range])))",
         "description": "label_values(service_name)",
         "hide": 0,
         "includeAll": true,
@@ -725,7 +726,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "ServiceTopology",
-  "uid": "8AjB9mJ4z",
-  "version": 1,
+  "uid": "i7CKXcB4k",
+  "version": 3,
   "weekStart": ""
 }
