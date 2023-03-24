@@ -56,7 +56,7 @@ services:
 #        condition: service_healthy
 #    logging: *logging
 
-  # AdService
+#  # AdService
 #  adservice:
 #    image: ${IMAGE_NAME}:${IMAGE_VERSION}-adservice
 #    container_name: ad-service
@@ -78,8 +78,10 @@ services:
 #      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
 #      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
 #      - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+  #      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
 #      - OTEL_RESOURCE_ATTRIBUTES
 #      - OTEL_SERVICE_NAME=adservice
+  #      - OTEL_LOGS_EXPORTER
 #    depends_on:
 #      - otelcol
 #    logging: *logging
@@ -383,16 +385,42 @@ services:
       - frontend
     logging: *logging
 
+  # Payment service
+  #  paymentservice:
+  #    image: ${IMAGE_NAME}:${IMAGE_VERSION}-paymentservice
+  #    container_name: payment-service
+  #    build:
+  #      context: ./
+  #      dockerfile: ./src/paymentservice/Dockerfile
+  #      cache_from:
+  #        - ${IMAGE_NAME}:${IMAGE_VERSION}-paymentservice
+  #    deploy:
+  #      resources:
+  #        limits:
+  #          memory: 120M
+  #    restart: unless-stopped
+  #    ports:
+  #      - "${PAYMENT_SERVICE_PORT}"
+  #    environment:
+  #      - PAYMENT_SERVICE_PORT
+  #      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+  #      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+  #      - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+  #      - OTEL_RESOURCE_ATTRIBUTES
+  #      - OTEL_SERVICE_NAME=paymentservice
+  #    depends_on:
+  #      - otelcol
+  #    logging: *logging
 
   # Product Catalog service
-#  productcatalogservice:
-#    image: ${IMAGE_NAME}:${IMAGE_VERSION}-productcatalogservice
-#    container_name: product-catalog-service
-#    build:
-#      context: ./
-#      dockerfile: ./src/productcatalogservice/Dockerfile
-#      cache_from:
-#        - ${IMAGE_NAME}:${IMAGE_VERSION}-productcatalogservice
+  #  productcatalogservice:
+  #    image: ${IMAGE_NAME}:${IMAGE_VERSION}-productcatalogservice
+  #    container_name: product-catalog-service
+  #    build:
+  #      context: ./
+  #      dockerfile: ./src/productcatalogservice/Dockerfile
+  #      cache_from:
+  #        - ${IMAGE_NAME}:${IMAGE_VERSION}-productcatalogservice
 #    deploy:
 #      resources:
 #        limits:
@@ -429,7 +457,7 @@ services:
 #    ports:
 #      - "${QUOTE_SERVICE_PORT}"
 #    environment:
-#      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://${OTEL_COLLECTOR_HOST}:4318/v1/traces
+  #      - OTEL_EXPORTER_OTLP_ENDPOINT=http://${OTEL_COLLECTOR_HOST}:4318
 #      - OTEL_PHP_AUTOLOAD_ENABLED=true
 #      - QUOTE_SERVICE_PORT
 #      - OTEL_RESOURCE_ATTRIBUTES
@@ -449,28 +477,28 @@ services:
 #        - ${IMAGE_NAME}:${IMAGE_VERSION}-recommendationservice
 #    deploy:
 #      resources:
-#        limits:
-#          memory: 500M               # This is high to enable supporting the recommendationCache feature flag use case
-#    restart: unless-stopped
-#    ports:
-#      - "${RECOMMENDATION_SERVICE_PORT}"
-#    environment:
-#      - RECOMMENDATION_SERVICE_PORT
-#      - PRODUCT_CATALOG_SERVICE_ADDR
-#      - FEATURE_FLAG_GRPC_SERVICE_ADDR
-#      - OTEL_PYTHON_LOG_CORRELATION=true
-#      - OTEL_TRACES_EXPORTER=otlp
-#      - OTEL_METRICS_EXPORTER=otlp
-#      - OTEL_EXPORTER_OTLP_ENDPOINT
-#      - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-#      - OTEL_RESOURCE_ATTRIBUTES
-#      - OTEL_SERVICE_NAME=recommendationservice
-#      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-#    depends_on:
-#      - productcatalogservice
-#      - otelcol
-#      - featureflagservice
-#    logging: *logging
+  #        limits:
+  #          memory: 500M               # This is high to enable supporting the recommendationCache feature flag use case
+  #    restart: unless-stopped
+  #    ports:
+  #      - "${RECOMMENDATION_SERVICE_PORT}"
+  #    environment:
+  #      - RECOMMENDATION_SERVICE_PORT
+  #      - PRODUCT_CATALOG_SERVICE_ADDR
+  #      - FEATURE_FLAG_GRPC_SERVICE_ADDR
+  #      - OTEL_PYTHON_LOG_CORRELATION=true
+  #      - OTEL_TRACES_EXPORTER
+  #      - OTEL_METRICS_EXPORTER
+  #      - OTEL_EXPORTER_OTLP_ENDPOINT
+  #      - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+  #      - OTEL_RESOURCE_ATTRIBUTES
+  #      - OTEL_SERVICE_NAME=recommendationservice
+  #      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+  #    depends_on:
+  #      - productcatalogservice
+  #      - otelcol
+  #      - featureflagservice
+  #    logging: *logging
 #
 #  # Shipping service
 #  shippingservice:
