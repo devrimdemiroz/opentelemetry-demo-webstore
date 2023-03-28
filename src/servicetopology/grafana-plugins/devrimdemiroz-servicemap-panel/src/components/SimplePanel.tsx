@@ -186,8 +186,20 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
             stop: () => {
 
                 //this.instance.collapseNodes(this.cy.nodes('[id="cartservice-compound"]'));
-                //this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
-//                this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
+                this.instance.collapseNodes(this.cy.nodes('[id="featureflagservice-compound"]'));
+                this.instance.collapseNodes(this.cy.nodes('[id="frontend-proxy-compound"]'));
+                // find servic-edge classes in cy
+
+                // this.cy.elements('.service-edge').forEach((edge: any) => {
+                //     console.log("edge", edge.data());
+                //     let halign = [];
+                //     edge.connectedNodes().forEach((node: any) => {
+                //         console.log("node", node.data());
+                //         halign.push(node.id);
+                //     } );
+                //     align_horizontal(halign);
+                // });
+
 
             }
         });
@@ -205,6 +217,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
         layout.run();
         // layoutOptions.randomize = false;
         // this.cy.layout({...layoutOptions}).run();
+
 
 
     }
@@ -312,7 +325,7 @@ export class SimplePanel extends PureComponent<PanelProps, PanelState> {
                 failed_weight: edge.failed_weight,
             }
 
-        });
+        }).addClass('service-edge');
         // place_left2right(edge.source + "-out",  edge.target + "-in");// left right
 
 

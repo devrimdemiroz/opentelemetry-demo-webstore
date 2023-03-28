@@ -43,6 +43,10 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
     enable_open_metrics: true
+#  otlp/digma:
+#    endpoint: "host.docker.internal:5050"
+#    tls:
+#      insecure: true
 processors:
   batch:
     send_batch_size: 1000

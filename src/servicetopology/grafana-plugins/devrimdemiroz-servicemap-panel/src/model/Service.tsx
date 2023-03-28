@@ -42,7 +42,7 @@ export class Service {
     }
 
     add_service_nodes(cy: any) {
-        cy.add({
+        let service_node = cy.add({
             data: {
                 id: this.id,
                 label: this.weight.toString(),
@@ -52,7 +52,7 @@ export class Service {
             }
         }).addClass("service-node");
         // and add a service label node attached to the service node connected just to show service name
-        cy.add({
+        let label_node = cy.add({
             data: {
                 id: this.id + "-label",
                 label: this.name,
@@ -80,9 +80,9 @@ export class Service {
         // add automove to connected nodes
         console.log("auto-move=", connectedNodes);
         cy.automove({
-            nodesMatching: connectedNodes,
+            nodesMatching: label_node,
             reposition: 'drag',
-            dragWith: connectedNodes
+            dragWith: service_node
         });
     }
 
